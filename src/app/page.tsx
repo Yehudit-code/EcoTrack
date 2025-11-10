@@ -6,13 +6,15 @@ export default function HomePage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.logo}>
-          {/* עדכון לשם הקובץ החדש */}
           <img src="/logoEcoTrack.png" alt="Eco Track Logo" />
-          <span>ECO TRACK</span>
         </div>
         <div className={styles.authButtons}>
-          <Link href="/signin"><button className={styles.button}>Sign in</button></Link>
-          <Link href="/signup"><button className={styles.button}>Sign up</button></Link>
+          <Link href="/signin">
+            <button className={styles.authButton}>Sign in</button>
+          </Link>
+          <Link href="/signup">
+            <button className={styles.authButton}>Sign up</button>
+          </Link>
         </div>
       </header>
 
@@ -21,6 +23,10 @@ export default function HomePage() {
         <p>
           Technology changes, but sustainability lasts. With our platform, people, ideas, and smart tools unite to create greener, smarter homes for a better world.
         </p>
+
+        <Link href="/signup">
+          <button className={styles.getStartedButton}>Get Started</button>
+        </Link>
       </main>
     </div>
   );
