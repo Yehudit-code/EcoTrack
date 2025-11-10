@@ -1,18 +1,21 @@
+/* כללי */
 .container {
   font-family: Arial, sans-serif;
-  background-color: #f8f9f4;
+  background-color: #ffffff; /* רקע לבן */
   min-height: 100vh;
 }
 
+/* הכותרת העליונה */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
-  background-color: #c3d289;
+  background-color: #fff7e7;
   border-bottom: 1px solid #ddd;
 }
 
+/* לוגו */
 .logo {
   display: flex;
   align-items: center;
@@ -22,26 +25,33 @@
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
 }
 
-.authButtons button {
-  background-color: #a4c96d;
-  color: #264d00;
-  border: none;
+/* כפתורים עליונים */
+.authButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.authButton {
+  background-color: #a4c96d; /* צבע רקע */
+  color: #264d00; /* צבע טקסט */
+  border: 1px solid #264d00; /* מסגרת דקה בצבע הטקסט */
   padding: 6px 14px;
-  margin-left: 8px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.authButtons button:hover {
+.authButton:hover {
   background-color: #8ab54f;
+  border-color: #264d00;
 }
 
+/* התוכן המרכזי */
 .main {
   max-width: 600px;
   margin: 120px auto 0;
@@ -61,6 +71,25 @@
   font-weight: 600;
   font-size: 1rem;
   max-width: 450px;
-  margin: 0 auto;
+  margin: 0 auto 40px;
   color: #3a5a17;
 }
+
+/* כפתור Get Started */
+.getStartedButton {
+  background: linear-gradient(90deg, #a4c96d 0%, #264d00 100%);
+  color: #ffffff;
+  border: 1px solid #264d00;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.getStartedButton:hover {
+  background: linear-gradient(90deg, #8ab54f 0%, #264d00 100%);
+  transform: translateY(-2px);
+}
+
