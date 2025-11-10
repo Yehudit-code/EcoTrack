@@ -1,6 +1,6 @@
 // src/app/api/company-alerts/route.ts
 import { connectDB } from "@/app/lib/db";
-import { CompanyAlert } from "@/app/models/CompanyAlert";
+import { CompanyAlert } from "@/app/models/CompanyAlerts";
 import { fail, ok } from "@/app/lib/api-helpers";
 
 export async function GET(req: Request) {
