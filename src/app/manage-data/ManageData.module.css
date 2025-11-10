@@ -1,0 +1,132 @@
+.container {
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #333333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  background-color: #2e7d32; /* eco green */
+  color: white;
+  text-align: center;
+  font-weight: 600;
+  padding: 1rem 0;
+  font-size: 1.2rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.title, .subtitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.monthSelector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.monthSelector select {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGrid input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.formGrid input:focus {
+  outline: 2px solid #2e7d32;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.saveBtn {
+  background-color: #2e7d32;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.saveBtn:hover {
+  background-color: #1b5e20;
+}
+
+.prevBtn {
+  background-color: #e5e7eb;
+  color: #333;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.prevBtn:hover {
+  background-color: #d1d5db;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.table th, .table td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+}
+
+.table th {
+  background-color: #e8f5e9;
+  font-weight: 600;
+}
+
+.table tr:hover {
+  background-color: #f1f8e9;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 3rem;
+  text-align: center;
+  padding: 1rem 0;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  color: #666666;
+}

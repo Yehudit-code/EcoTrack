@@ -1,9 +1,9 @@
-// src/app/api/consumption/route.ts
 import { connectDB } from "@/app/lib/db";
 import { ConsumptionHabit } from "@/app/models/ConsumptionHabit";
 import { fail, ok } from "@/app/lib/api-helpers";
 import { consumptionUpsertSchema } from "@/app/types/api";
 
+// CRUD API for monthly consumption data
 export async function GET(req: Request) {
   try {
     await connectDB();
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     if (category) q.category = category;
     const items = await ConsumptionHabit.find(q).lean();
     return ok(items);
-  } catch {
+  } catch (err) {
     return fail("Failed to fetch consumption", 500);
   }
 }
@@ -24,12 +24,23 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
     const parsed = consumptionUpsertSchema.safeParse(body);
-    if (!parsed.success) return fail("Invalid payload", 400, parsed.error.flatten());
+    if (!parsed.success) return fail("Invalid payload", 400);
+
+    const { userId, category, month, year, value } = parsed.data;
+    const existing = await ConsumptionHabit.findOne({ userId, category, month, year });
+
+    // Update if record exists, else create new
+    if (existing) {
+      existing.value = value;
+      await existing.save();
+      return ok(existing, 200);
+    }
+
     const item = await ConsumptionHabit.create(parsed.data);
     return ok(item, 201);
-  } catch (e) {
-    // likely unique index violation on (userId,category,year,month)
-    return fail("Failed to create consumption", 500, (e as Error).message);
+  } catch (e: any) {
+    if (e.code === 11000) return fail("Duplicate month. Try PUT instead.", 409);
+    return fail("Failed to create consumption", 500);
   }
 }
 
