@@ -1,5 +1,5 @@
 // src/app/api/products/route.ts
-import { fetch } from "@/src/app/services/server/EcoTrackCollection";
+import { fetch } from "@/app/services/server/EcoTrackCollection";
 
 export async function GET() {
   try {
