@@ -1,0 +1,77 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.formWrapper {
+  text-align: center;
+  background: #fff;
+  padding: 40px 60px;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.logo {
+  color: #3b6e3b;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.signInButton {
+  background-color: #3b6e3b;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.signInButton:hover {
+  background-color: #2f5a2f;
+}
+
+.divider {
+  margin: 20px 0;
+  color: gray;
+}
+
+.googleBtn,
+.appleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.googleBtn {
+  background-color: #fff7f4;
+}
+
+.appleBtn {
+  background-color: #f8f8f8;
+}
+
+.googleBtn:hover,
+.appleBtn:hover {
+  background-color: #f1f1f1;
+}
