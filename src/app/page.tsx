@@ -24,7 +24,12 @@ export default function Home() {
       <main >
         <h1>Welcome to EcoTrack</h1>
                 {products.map((p, i) => (
-                  <pre key={i}>{JSON.stringify(p, null, 2)}</pre>
+          <div key={i}>
+            <h2>{p.name}</h2>
+            <p>{p.email}</p>
+            <p>{p.role}</p>
+            <p>{p.country}</p>
+          </div>
         ))}
 
       </main>

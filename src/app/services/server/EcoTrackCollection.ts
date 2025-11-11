@@ -1,18 +1,16 @@
-import { client } from "@/app/services/server/mongodb";
+// services/server/EcoTrackCollection.ts
+import { connectDB } from "@/app/services/server/mongodb";
 
-export async function fetch(collectionName : string) {
+export async function fetchCollection(collectionName: string) {
   try {
-    console.log("🚀 Connecting to MongoDB...");
-    await client.connect();
+    const db = await connectDB();
+    const collection = db.collection(collectionName);
+    const data = await collection.find().toArray();
 
-    const db = client.db("Eco-Track");
-    const products = await db.collection(collectionName).find().toArray();
-
-    console.log("✅ Users fetched successfully:", products.length);
-    return products;
+    console.log(`✅ Fetched ${data.length} items from ${collectionName}`);
+    return data;
   } catch (error) {
-    console.error("❌ MongoDB connection or query error:", error);
-    throw new Error("Failed to fetch products");
+    console.error("❌ MongoDB query error:", error);
+    throw new Error("Failed to fetch data");
   }
 }
-
