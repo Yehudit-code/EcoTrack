@@ -1,9 +1,9 @@
 // src/app/api/products/route.ts
-import { fetch } from "@/src/app/services/server/EcoTrackCollection";
+import { fetch } from "@/app/services/server/EcoTrackCollection";
 
 export async function GET() {
   try {
-    const products = await fetch("Products");
+    const products = await fetch("Products");/////קריאה לפי שם טבלה שצריכים
     return new Response(JSON.stringify(products), {
       status: 200,
       headers: { "Content-Type": "application/json" },

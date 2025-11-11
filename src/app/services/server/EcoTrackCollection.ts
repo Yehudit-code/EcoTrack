@@ -1,4 +1,4 @@
-import { client } from "@/src/app/services/server/mongodb";
+import { client } from "@/app/services/server/mongodb";
 
 export async function fetch(collectionName : string) {
   try {
