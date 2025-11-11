@@ -37,15 +37,6 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
         }
     };
 
-    const handleGithubSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, githubProvider);
-            console.log("✅ GitHub User:", result.user);
-        } catch (error) {
-            console.error("❌ GitHub Sign-in Error:", error);
-        }
-    };
-
     return (
         <>
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -86,11 +77,6 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
                 <button onClick={handleFacebookSignIn} className={`${styles.providerBtn} ${styles.facebookBtn}`}>
                     <img src="images/facebook.png" alt="Facebook" className={styles.icon} />
                     Continue with Facebook
-                </button>
-
-                <button onClick={handleGithubSignIn} className={`${styles.providerBtn} ${styles.githubBtn}`}>
-                    <img src="images/github.png" alt="GitHub" className={styles.icon} />
-                    Continue with GitHub
                 </button>
             </div>
         </>
