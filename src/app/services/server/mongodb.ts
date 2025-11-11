@@ -1,21 +1,39 @@
-// src/app/services/server/mongodb.js
+// services/server/mongodb.ts
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string;
+if (!uri) throw new Error("❌ Please define MONGODB_URI in your .env file");
 
-
-export const client = new MongoClient(uri, {
+const options = {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
   },
-});
+};
 
-async function run() {
-      await client.connect();
-      await client.db("admin").command({ ping: 1 });
-      console.log("✅ Connected to MongoDB!");
+// משתנים גלובליים כדי למנוע התחברות מחדש ב־Next.js בזמן פיתוח
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
+
+declare global {
+  // נגדיר משתנה גלובלי עבור הסביבה של Node.js
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-run();
+if (process.env.NODE_ENV === "development") {
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
+} else {
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
+
+export async function connectDB() {
+  const connectedClient = await clientPromise;
+  const db = connectedClient.db("Eco-Track");
+  return db;
+}
