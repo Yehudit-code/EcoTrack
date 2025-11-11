@@ -18,7 +18,6 @@ export default function SignInForm({ onSubmit }: SignInFormProps) {
         if (onSubmit) onSubmit(email, password);
     };
 
-    // התחברויות חיצוניות
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
