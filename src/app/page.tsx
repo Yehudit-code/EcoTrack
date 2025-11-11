@@ -28,10 +28,10 @@ export default function HomePage() {
           <img src="/logoEcoTrack.png" alt="Eco Track Logo" />
         </div>
         <div className={styles.authButtons}>
-          <Link href="/signIn">
+          <Link href="/signin">
             <button className={styles.authButton}>Sign in</button>
           </Link>
-          <Link href="/signUp">
+          <Link href="/signup">
             <button className={styles.authButton}>Sign up</button>
           </Link>
         </div>
