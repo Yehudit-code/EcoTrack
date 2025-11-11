@@ -12,7 +12,7 @@ export default function SignInPage() {
           Sign in to <span className={styles.logo}>EcoTrack</span>
         </h2>
 
-        <SignInForm />
+        <SignInForm /> 
       </div>
     </div>
   );
