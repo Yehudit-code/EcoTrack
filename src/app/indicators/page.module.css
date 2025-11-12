@@ -1,0 +1,137 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+.contentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #2d5c2d;
+  margin-bottom: 40px;
+  text-align: center;
+  direction: rtl;
+}
+
+.indicatorsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+.indicatorCard {
+  background-color: #f8fdf8;
+  border: 2px solid #9bc59b;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  direction: rtl;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.indicatorCard:hover {
+  transform: translateY(-5px);
+}
+
+.indicatorCard h3 {
+  color: #2d5c2d;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.valueDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2d5c2d;
+  line-height: 1;
+}
+
+.unit {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.comparison {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.positive {
+  color: #27ae60;
+}
+
+.negative {
+  color: #e74c3c;
+}
+
+.neutral {
+  color: #7f8c8d;
+}
+
+.chartSection {
+  width: 100%;
+  direction: rtl;
+}
+
+.chartSection h2 {
+  color: #2d5c2d;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.chartContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.chart {
+  height: 250px;
+  border: 2px solid #9bc59b;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #f8fdf8 0%, #e8f5e8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #2d5c2d;
+  text-align: center;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #faf3dc;
+  border-top: 1px solid #ddd;
+}

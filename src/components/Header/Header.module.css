@@ -1,0 +1,47 @@
+.header {
+  display: flex;
+  justify-content: space-between; /* לוגו בצד אחד, פרופיל בצד שני */
+  align-items: center;
+  background-color: #faf3dc;
+  padding: 10px 30px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* לוגו משמאל */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* הניווט במרכז, תפוס במיקום קבוע */
+.nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+/* תמונת המשתמש מימין */
+.profileContainer {
+  display: flex;
+  align-items: center;
+}
+
+.profileImg {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav a.active {
+  font-weight: bold;
+}

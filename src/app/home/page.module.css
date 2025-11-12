@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.contentBox {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.graph {
+  width: 300px;
+  height: 200px;
+  border: 2px solid #9bc59b;
+  border-radius: 15px;
+  background: linear-gradient(to right bottom, transparent 40%, #ccc 41%, transparent 42%);
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tipBox,
+.scoreBox {
+  background-color: #cde3b0;
+  padding: 15px 20px;
+  border-radius: 10px;
+  direction: rtl;
+}
+
+.tipText {
+  font-style: italic;
+  color: #2d5c2d;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #faf3dc;
+  border-top: 1px solid #ddd;
+}

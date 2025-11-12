@@ -1,10 +1,11 @@
 'use client';
-
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import Image from 'next/image';
 
 export default function SignupPage() {
+  const router = useRouter(); // <-- הוספה לניווט
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -54,7 +55,14 @@ export default function SignupPage() {
     if (validate()) {
       console.log('User data:', formData);
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+
+      // שמירת תמונת הפרופיל בזיכרון או סטייט גלובלי (פשוטה לדוגמה)
+      localStorage.setItem('profilePic', preview || '');
+
+      setTimeout(() => {
+        setSuccess(false);
+        router.push('/home'); // <-- מעבר לדף הבית
+      }, 1000);
     }
   };
 
@@ -65,7 +73,7 @@ export default function SignupPage() {
 
         {/* כפתורי התחברות */}
         <button className={styles.socialBtn}>
-          <Image src="/google.png" alt="Google" width={18} height={18} />
+          <img src="/google.png" alt="Google" width={18} height={18} />
           Continue with Google
         </button>
         <button className={styles.socialBtn}>
