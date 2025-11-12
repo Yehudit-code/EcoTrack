@@ -1,91 +1,78 @@
 "use client";
 
 import React, { useState } from "react";
-import { auth, googleProvider, facebookProvider } from "../firebase/firebaseConfig";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import styles from "./SignIn.module.css";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [googleUser, setGoogleUser] = useState<any>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setMessage(data.error || "Failed to sign in");
-        return;
-      }
-
-      setMessage("✅ Sign-in successful!");
-      console.log("User data:", data.user);
-    } catch (error) {
-      console.error("❌ Error during sign-in:", error);
-      setMessage("Something went wrong");
-    }
-  };
-
+  // 🔹 התחברות עם גוגל
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      console.log("✅ Google User:", user);
 
-      // שליחה לשרת לוודא קיום המשתמש
-      await fetch("/api/social-login", {
+      // 🔹 בדיקה אם המשתמש כבר קיים במסד הנתונים
+      const checkResponse = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (checkData.exists) {
+        // אם המשתמש כבר קיים → ננתב אותו לעמוד הבית
+        alert("ברוך הבא בחזרה! 😊");
+        window.location.href = "/home";
+      } else {
+        // אם הוא חדש → נשמור את המשתמש ונשאל אם הוא חברה או משתמש רגיל
+        setGoogleUser(user);
+        setShowRoleModal(true);
+      }
+    } catch (error) {
+      console.error("❌ Google Sign-in Error:", error);
+    }
+  };
+
+  // 🔹 שליחת הבחירה לשרת
+  const handleRoleSelect = async (role: "user" | "company") => {
+    try {
+      if (!googleUser) return;
+
+      const response = await fetch("/api/social-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           provider: "google",
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL,
+          email: googleUser.email,
+          name: googleUser.displayName,
+          photo: googleUser.photoURL,
+          role,
         }),
       });
 
-      setMessage("✅ Google sign-in successful!");
+      const data = await response.json();
+      console.log("🆕 Saved to DB:", data);
+
+      alert(`נרשמת בהצלחה כ${role === "company" ? "חברה" : "משתמש רגיל"}!`);
+      window.location.href = "/profile";
     } catch (error) {
-      console.error("❌ Google Sign-in Error:", error);
-      setMessage("Google sign-in failed");
-    }
-  };
-
-  const handleFacebookSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, facebookProvider);
-      const user = result.user;
-
-      await fetch("/api/social-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider: "facebook",
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL,
-        }),
-      });
-
-      setMessage("✅ Facebook sign-in successful!");
-    } catch (error) {
-      console.error("❌ Facebook Sign-in Error:", error);
-      setMessage("Facebook sign-in failed");
+      console.error("❌ Error saving social login:", error);
+    } finally {
+      setShowRoleModal(false);
     }
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form className={styles.form}>
         <label>Email</label>
         <input
           type="email"
@@ -93,7 +80,6 @@ export default function SignInForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.inputField}
-          required
         />
 
         <label>Password</label>
@@ -103,7 +89,6 @@ export default function SignInForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={styles.inputField}
-          required
         />
 
         <button type="submit" className={styles.signInButton}>
@@ -116,18 +101,26 @@ export default function SignInForm() {
       </div>
 
       <div className={styles.authButtons}>
-        <button onClick={handleGoogleSignIn} className={`${styles.providerBtn} ${styles.googleBtn}`}>
+        <button
+          onClick={handleGoogleSignIn}
+          className={`${styles.providerBtn} ${styles.googleBtn}`}
+        >
           <img src="images/google.png" alt="Google" className={styles.icon} />
           Continue with Google
         </button>
-
-        <button onClick={handleFacebookSignIn} className={`${styles.providerBtn} ${styles.facebookBtn}`}>
-          <img src="images/facebook.png" alt="Facebook" className={styles.icon} />
-          Continue with Facebook
-        </button>
       </div>
 
-      {message && <p style={{ color: message.includes("✅") ? "green" : "red" }}>{message}</p>}
+      {showRoleModal && (
+        <div className={styles.roleModal}>
+          <div className={styles.roleBox}>
+            <h3>האם אתה משתמש רגיל או חברה?</h3>
+            <div className={styles.roleButtons}>
+              <button onClick={() => handleRoleSelect("user")}>משתמש רגיל</button>
+              <button onClick={() => handleRoleSelect("company")}>חברה</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
