@@ -16,7 +16,6 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      {/* לוגו משמאל */}
       <div className={styles.logoContainer}>
         <Image src="/logoEcoTrack.png" alt="ECO TRACK logo" width={40} height={40} />
         <span className={styles.logoText}></span>
@@ -24,7 +23,7 @@ export default function Header() {
 
       <nav className={styles.nav}>
   <Link href="/home">Home</Link>
-  <Link href="/home/manage">Manage data</Link>
+  <Link href="/manage-data">Manage data</Link>
   <Link href="/home/indicators">Indicators</Link>
   <Link href="/home/social">Social Sharing</Link>
   <Link href="/about">About</Link> 
