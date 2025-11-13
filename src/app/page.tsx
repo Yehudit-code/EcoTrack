@@ -1,7 +1,26 @@
-import styles from './page.module.css';
-import Link from 'next/link';
+"use client";
+
+import { useEffect, useState } from "react";
+import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function HomePage() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api", { cache: "no-store" });
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -9,10 +28,10 @@ export default function HomePage() {
           <img src="/logoEcoTrack.png" alt="Eco Track Logo" />
         </div>
         <div className={styles.authButtons}>
-          <Link href="/signin">
+          <Link href="/signIn">
             <button className={styles.authButton}>Sign in</button>
           </Link>
-          <Link href="/signup">
+          <Link href="/signUp">
             <button className={styles.authButton}>Sign up</button>
           </Link>
         </div>
@@ -27,6 +46,16 @@ export default function HomePage() {
         <Link href="/signup">
           <button className={styles.getStartedButton}>Get Started</button>
         </Link>
+
+        {/* מציג נתונים שהובאו מהשרת */}
+        {products.length > 0 && (
+          <section>
+            <h2>Products:</h2>
+            {products.map((p, i) => (
+              <pre key={i}>{JSON.stringify(p, null, 2)}</pre>
+            ))}
+          </section>
+        )}
       </main>
     </div>
   );

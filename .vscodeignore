@@ -1,0 +1,3 @@
+# Ignore phantom files that don't exist
+src/app/api/eco-chat/
+src/components/EcoChatBot/
