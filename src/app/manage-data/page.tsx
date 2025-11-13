@@ -12,6 +12,7 @@ export default function ManageData() {
   });
   const [message, setMessage] = useState("");
 
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
