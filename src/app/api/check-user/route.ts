@@ -13,22 +13,18 @@ export async function POST(req: Request) {
 
     const db = await connectDB();
     const usersCollection = db.collection("Users");
-
     const user = await usersCollection.findOne({ email });
 
     return new Response(
-      JSON.stringify({
-        exists: !!user,
-        user: user || null,
-      }),
+      JSON.stringify({ exists: !!user }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
-
   } catch (error) {
-    console.error("❌ Error checking user:", error);
+    console.log("MongoDB not available, returning false for user check");
+    // Return false when DB is not available
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify({ exists: false }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   }
 }

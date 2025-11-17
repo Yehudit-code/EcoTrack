@@ -18,14 +18,13 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.logoContainer}>
         <Image src="/logoEcoTrack.png" alt="ECO TRACK logo" width={40} height={40} />
-        <span className={styles.logoText}></span>
+        <span className={styles.logoText}>ECO TRACK</span>
       </div>
 
       <nav className={styles.nav}>
   <Link href="/home">Home</Link>
   <Link href="/manage-data">Manage data</Link>
-  <Link href="/home/indicators">Indicators</Link>
-  <Link href="/home/social">Social Sharing</Link>
+  <Link href="/indicators">Indicators</Link>
   <Link href="/about">About</Link> 
 </nav>
 

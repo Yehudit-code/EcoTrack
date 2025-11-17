@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #fff;
+  background-color: #f5f5f5;
   font-family: Arial, sans-serif;
 }
 
@@ -26,106 +26,186 @@
 .title {
   font-size: 2.5rem;
   color: #2d5c2d;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   text-align: center;
   direction: rtl;
 }
 
-.indicatorsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  width: 100%;
-  margin-bottom: 50px;
-}
-
-.indicatorCard {
-  background-color: #f8fdf8;
-  border: 2px solid #9bc59b;
-  border-radius: 15px;
-  padding: 25px;
-  text-align: center;
-  direction: rtl;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.indicatorCard:hover {
-  transform: translateY(-5px);
-}
-
-.indicatorCard h3 {
-  color: #2d5c2d;
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-}
-
-.valueDisplay {
+/* TAB BUTTONS */
+.tabButtons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 40px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.value {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2d5c2d;
-  line-height: 1;
-}
-
-.unit {
+.tabButton {
+  padding: 12px 30px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
   font-size: 1rem;
   color: #666;
-  margin-top: 5px;
+  transition: all 0.3s ease;
 }
 
-.comparison {
-  font-size: 0.9rem;
-  font-weight: 500;
+.tabButton:first-child {
+  border-right: 1px solid #ddd;
 }
 
-.positive {
-  color: #27ae60;
+.tabButton.active {
+  background-color: #2d5c2d;
+  color: white;
 }
 
-.negative {
-  color: #e74c3c;
+.tabButton:hover:not(.active) {
+  background-color: #f0f0f0;
 }
 
-.neutral {
-  color: #7f8c8d;
-}
-
-.chartSection {
+/* CHARTS GRID - 2x2 Layout */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 30px;
   width: 100%;
-  direction: rtl;
+  max-width: 1000px;
 }
 
-.chartSection h2 {
-  color: #2d5c2d;
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 30px;
+.chartCard {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 280px;
+}
+
+.chartTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  text-align: right;
+  direction: rtl;
 }
 
 .chartContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 30px;
+  display: flex;
+  height: calc(100% - 50px);
 }
 
-.chart {
-  height: 250px;
-  border: 2px solid #9bc59b;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #f8fdf8 0%, #e8f5e8 100%);
+.chartArea {
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  color: #2d5c2d;
+}
+
+.chartInfo {
+  flex: 1;
+  padding-left: 15px;
+  border-left: 1px solid #eee;
+}
+
+/* SIMPLE LINE CHART */
+.chartSvg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.monthLabel {
+  font-size: 0.7rem;
+}
+
+.noData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 0.9rem;
   text-align: center;
+}
+
+.noData .icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* TABLE VIEW */
+.tableContainer {
+  width: 100%;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataTable th {
+  background-color: #2d5c2d;
+  color: white;
+  padding: 15px;
+  text-align: right;
+  direction: rtl;
+  font-weight: 600;
+}
+
+.dataTable td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  text-align: right;
+  direction: rtl;
+}
+
+.dataTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.dataTable tr:hover {
+  background-color: #f0f8f0;
+}
+
+/* LOADING */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+  }
+  
+  .chartCard {
+    height: 250px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
 }
 
 /* FOOTER */
