@@ -35,23 +35,38 @@ export default function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      alert(`✅ Welcome, ${formData.name}!`);
+      if (!res.ok) {
+        alert(data.error || "Registration failed");
+        return;
+      }
+
+      // ✅ הצגת הודעה ברורה
+      alert("🎉 נרשמת בהצלחה למערכת EcoTrack!");
+
+      // ✅ שמירת המשתמש בלוקאל סטורג'
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href =
-        formData.role === "company" ? "/company-home" : "/home";
-    } else {
-      alert(data.error || "Registration failed");
+
+      // ✅ ניתוב לפי סוג המשתמש
+      if (data.user.role === "company") {
+        window.location.href = "/company-home";
+      } else {
+        window.location.href = "/home";
+      }
+    } catch (err) {
+      console.error("❌ Signup error:", err);
+      alert("Something went wrong. Try again.");
     }
   };
+
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>

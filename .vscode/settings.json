@@ -7,12 +7,17 @@
     "**/.git": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    "**/.next": true
+    "**/.next": true,
+    "**/eco-chat": true,
+    "**/EcoChatBot": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/.next": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/eco-chat": true,
+    "**/EcoChatBot": true
   },
-  "typescript.preferences.includeCompletionsForModuleExports": true
+  "typescript.preferences.includeCompletionsForModuleExports": true,
+  "problems.showCurrentInStatus": false
 }
