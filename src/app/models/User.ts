@@ -10,6 +10,8 @@ export interface IUser {
   country?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  photo: { type: String },
+  birthDate: { type: Date },
 }
 
 const UserSchema = new Schema<IUser>(

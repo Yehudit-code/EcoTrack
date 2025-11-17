@@ -7,6 +7,7 @@ export async function GET() {
   try {
     await connectDB();
     const items = await User.find().select("-password").lean();
+    console.log("Fetched users:", items);
     return ok(items);
   } catch {
     return fail("Failed to fetch users", 500);

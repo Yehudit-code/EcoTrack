@@ -10,7 +10,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api", { cache: "no-store" });
+        const res = await fetch("/api/collections", { cache: "no-store" });
         const data = await res.json();
         setProducts(data);
       } catch (err) {

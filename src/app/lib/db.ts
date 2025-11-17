@@ -6,8 +6,10 @@ if (!cached) {
 }
 
 export async function connectDB() {
-  if (cached.conn) return cached.conn; // Reuse existing connection in dev
-
+  if (cached.conn) {
+    console.log("Connecting to MongoDB...");
+    return cached.conn; // Reuse existing connection in dev
+  }
   if (!cached.promise) {
     const uri = process.env.MONGODB_URI; // Read env at call-time, not module load
     if (!uri) {

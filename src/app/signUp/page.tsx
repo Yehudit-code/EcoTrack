@@ -1,156 +1,94 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
-import Image from 'next/image';
+"use client";
 
-export default function SignupPage() {
-  const router = useRouter(); // <-- הוספה לניווט
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    username: '',
-    country: '',
-    profilePic: null as File | null,
-  });
+import React, { useState } from "react";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
+import { signInWithPopup } from "firebase/auth";
+import styles from "./SignUp.module.css";
+import SignUpForm from "./SignUpForm";
 
-  const [errors, setErrors] = useState<any>({});
-  const [success, setSuccess] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+export default function SignUpPage() {
+  const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    const newErrors: any = {};
-    if (!formData.email) newErrors.email = 'נא להזין אימייל';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = 'האימייל אינו תקין';
+  // ✅ התחברות עם Google
+  const handleGoogleSignUp = async () => {
+    try {
+      setLoading(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-    if (!formData.password) newErrors.password = 'נא להזין סיסמה';
-    else if (formData.password.length < 6)
-      newErrors.password = 'הסיסמה חייבת להיות באורך של לפחות 6 תווים';
+      // 🔹 בדיקה אם המשתמש כבר קיים
+      const checkResponse = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
 
-    if (!formData.username) newErrors.username = 'נא להזין שם משתמש';
-    else if (formData.username.length < 3)
-      newErrors.username = 'שם המשתמש חייב להכיל לפחות 3 תווים';
+      const checkData = await checkResponse.json();
 
-    if (!formData.country) newErrors.country = 'נא לבחור מדינה';
+      if (checkData.exists) {
+        alert("😄 Welcome back!");
+        window.location.href = "/home";
+        return;
+      }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+      // 🔹 משתמש חדש → הוספה למסד הנתונים
+      const saveResponse = await fetch("/api/social-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "google",
+          email: user.email,
+          name: user.displayName,
+          photo: user.photoURL,
+          role: "user", // אפשר לשנות לפי הצורך
+        }),
+      });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, files } = e.target as any;
-    if (name === 'profilePic') {
-      const file = files[0];
-      setFormData({ ...formData, profilePic: file });
-      if (file) setPreview(URL.createObjectURL(file));
-    } else {
-      setFormData({ ...formData, [name]: value });
-      setErrors({ ...errors, [name]: '' });
-    }
-  };
+      const saveData = await saveResponse.json();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      console.log('User data:', formData);
-      setSuccess(true);
-
-      // שמירת תמונת הפרופיל בזיכרון או סטייט גלובלי (פשוטה לדוגמה)
-      localStorage.setItem('profilePic', preview || '');
-
-      setTimeout(() => {
-        setSuccess(false);
-        router.push('/home'); // <-- מעבר לדף הבית
-      }, 1000);
+      if (saveResponse.ok) {
+        alert("🎉 נרשמת בהצלחה דרך Google!");
+        window.location.href = "/home";
+      } else {
+        alert(saveData.error || "Registration failed");
+      }
+    } catch (error) {
+      console.error("❌ Google signup error:", error);
+      alert("Something went wrong with Google signup.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main className={styles.container}>
-      <div className={styles.signupBox}>
-        <p className={styles.smallTitle}>Sign up personal</p>
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <h2>
+          Sign up to <span className={styles.logo}>EcoTrack</span>
+        </h2>
 
-        {/* כפתורי התחברות */}
-        <button className={styles.socialBtn}>
-          <img src="/google.png" alt="Google" width={18} height={18} />
-          Continue with Google
-        </button>
-        <button className={styles.socialBtn}>
-          <Image src="/apple.png" alt="Apple" width={18} height={18} />
-          Continue with Apple
-        </button>
+        <div className={styles.authButtons}>
+          <button
+            onClick={handleGoogleSignUp}
+            disabled={loading}
+            className={`${styles.providerBtn} ${styles.googleBtn}`}
+          >
+            <img src="/images/google.png" alt="Google" className={styles.icon} />
+            {loading ? "Connecting..." : "Continue with Google"}
+          </button>
 
-        <h2>Sign up to EcoTrack</h2>
+          <button className={`${styles.providerBtn} ${styles.appleBtn}`}>
+            <img src="/images/apple.png" alt="Apple" className={styles.icon} />
+            Continue with Apple
+          </button>
+        </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
-            <div className={styles.left}>
-              <label>Email*</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {errors.email && <p className={styles.error}>{errors.email}</p>}
+        <div className={styles.divider}>
+          <span>or sign up with email</span>
+        </div>
 
-              <label>Password*</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              {errors.password && <p className={styles.error}>{errors.password}</p>}
-
-              <label>Username*</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-              />
-              {errors.username && <p className={styles.error}>{errors.username}</p>}
-
-              <label>Your Country/Region*</label>
-              <select
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-              >
-                <option value="">Select...</option>
-                <option value="Israel">Israel</option>
-                <option value="USA">USA</option>
-                <option value="UK">UK</option>
-                <option value="France">France</option>
-              </select>
-              {errors.country && <p className={styles.error}>{errors.country}</p>}
-            </div>
-
-            {/* העלאת תמונת פרופיל */}
-            <div className={styles.right}>
-              <label>Upload a profile picture</label>
-              <div className={styles.uploadBox}>
-                {preview ? (
-                  <img src={preview} alt="Profile preview" className={styles.preview} />
-                ) : (
-                  <span>+</span>
-                )}
-                <input
-                  type="file"
-                  name="profilePic"
-                  accept="image/*"
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-          </div>
-
-          <button type="submit" className={styles.signBtn}>Sign up</button>
-          {success && <p className={styles.success}>נרשמת בהצלחה 🎉</p>}
-        </form>
+        <SignUpForm />
       </div>
-    </main>
+    </div>
   );
 }

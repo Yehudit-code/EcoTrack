@@ -13,12 +13,17 @@ export async function POST(req: Request) {
 
     const db = await connectDB();
     const usersCollection = db.collection("Users");
+
     const user = await usersCollection.findOne({ email });
 
     return new Response(
-      JSON.stringify({ exists: !!user }),
+      JSON.stringify({
+        exists: !!user,
+        user: user || null,
+      }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     console.error("❌ Error checking user:", error);
     return new Response(
