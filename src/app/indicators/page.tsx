@@ -29,6 +29,7 @@ export default function IndicatorsPage() {
     Water: { hebrewName: 'מים', color: '#2196F3' },
     Electricity: { hebrewName: 'חשמל', color: '#FF9800' },
     Transportation: { hebrewName: 'תחבורה', color: '#4CAF50' },
+    Transport: { hebrewName: 'תחבורה', color: '#4CAF50' }, // Support old naming
     Waste: { hebrewName: 'פסולת', color: '#F44336' }
   };
 
@@ -48,11 +49,15 @@ export default function IndicatorsPage() {
     try {
       // Check if user data exists in localStorage
       const userDataString = localStorage.getItem('currentUser');
+      console.log('🔍 Frontend: localStorage currentUser:', userDataString);
+      
       if (userDataString) {
         const userData = JSON.parse(userDataString);
+        console.log('👤 Frontend: Parsed user data:', userData);
         setCurrentUser(userData);
       } else {
         // User not logged in, show message but don't redirect
+        console.log('❌ Frontend: No user in localStorage');
         setCurrentUser(null);
       }
     } catch (error) {
@@ -66,14 +71,25 @@ export default function IndicatorsPage() {
   const fetchConsumptionData = async () => {
     try {
       if (currentUser) {
-        // Send userId as query parameter to get only current user's data
-        const response = await fetch(`/api/consumption?userId=${currentUser._id}`);
+        // Send userEmail as query parameter to get only current user's data
+        const url = `/api/consumption?userEmail=${currentUser.email}`;
+        console.log('🔗 Frontend: Fetching from URL:', url);
+        console.log('📧 Frontend: Using email:', currentUser.email);
+        
+        const response = await fetch(url);
+        console.log('📡 Frontend: API response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('📊 Frontend: Received data:', data);
+          console.log('📊 Frontend: Data array:', data.data);
           setConsumptionData(data.data || []);
+        } else {
+          console.log('❌ Frontend: API response not ok:', response.status);
         }
       } else {
         // No user logged in - show empty graphs
+        console.log('❌ Frontend: No currentUser, setting empty data');
         setConsumptionData([]);
       }
     } catch (error) {
@@ -85,24 +101,27 @@ export default function IndicatorsPage() {
   };
 
   const processChartData = (): ChartData[] => {
-    const categories = ['Water', 'Electricity', 'Transportation', 'Waste'] as const;
     const months = ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יונ', 'יול', 'אוג', 'ספט', 'אוק', 'נוב', 'דצמ'];
     
-    return categories.map(category => {
+    // Get only categories that actually have data
+    const availableCategories = [...new Set(consumptionData.map(item => item.category))];
+    
+    return availableCategories.map(category => {
       const categoryData = consumptionData
         .filter(item => item.category === category)
         .sort((a, b) => a.year - b.year || a.month - b.month)
-        .slice(-6) // Last 6 months
         .map(item => ({
-          month: months[item.month - 1],
-          value: item.value
-        }));
+          month: months[item.month - 1] || `${item.month}/${item.year}`,
+          value: item.value,
+          date: new Date(item.year, item.month - 1)
+        }))
+        .slice(-12); // Show up to last 12 data points
 
       return {
         category,
         data: categoryData,
-        hebrewName: categoryConfig[category].hebrewName,
-        color: categoryConfig[category].color
+        hebrewName: categoryConfig[category as keyof typeof categoryConfig]?.hebrewName || category,
+        color: categoryConfig[category as keyof typeof categoryConfig]?.color || '#999'
       };
     });
   };
@@ -131,6 +150,38 @@ export default function IndicatorsPage() {
           <h1 className={styles.title}>
             מדדים ונתונים{currentUser ? ` - ${currentUser.name || currentUser.email}` : ''}
           </h1>
+          
+          {/* Data Summary */}
+          {consumptionData.length > 0 && (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-around', 
+              margin: '20px 0', 
+              padding: '20px', 
+              backgroundColor: '#f0f8f0', 
+              borderRadius: '12px',
+              direction: 'rtl'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
+                  {consumptionData.length}
+                </div>
+                <div style={{ color: '#666' }}>סה״כ רשומות</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
+                  {[...new Set(consumptionData.map(item => item.category))].length}
+                </div>
+                <div style={{ color: '#666' }}>קטגוריות פעילות</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
+                  {[...new Set(consumptionData.map(item => `${item.month}/${item.year}`))].length}
+                </div>
+                <div style={{ color: '#666' }}>חודשים עם נתונים</div>
+              </div>
+            </div>
+          )}
           
           {/* Tab Buttons */}
           <div className={styles.tabButtons}>
@@ -182,12 +233,14 @@ export default function IndicatorsPage() {
                 </thead>
                 <tbody>
                   {consumptionData.length > 0 ? (
-                    consumptionData.map((item) => (
+                    consumptionData
+                      .sort((a, b) => b.year - a.year || b.month - a.month) // Sort newest first
+                      .map((item) => (
                       <tr key={item._id}>
                         <td>{categoryConfig[item.category as keyof typeof categoryConfig]?.hebrewName || item.category}</td>
                         <td>{item.month}</td>
                         <td>{item.year}</td>
-                        <td>{item.value}</td>
+                        <td>{item.value.toLocaleString()}</td>
                         <td>{item.improvementScore || 0}</td>
                       </tr>
                     ))
@@ -222,12 +275,24 @@ function SimpleLineChart({ data, color }: { data: { month: string; value: number
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
+  // Validate data values
+  const validData = data.filter(d => typeof d.value === 'number' && !isNaN(d.value));
+  
+  if (validData.length === 0) {
+    return (
+      <div className={styles.noData}>
+        <div className={styles.icon}>📊</div>
+        <div>נתונים לא חוקיים</div>
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...validData.map(d => d.value));
+  const minValue = Math.min(...validData.map(d => d.value));
   const range = maxValue - minValue || 1;
 
-  const points = data.map((item, index) => {
-    const x = (index / (data.length - 1)) * 200;
+  const points = validData.map((item, index) => {
+    const x = validData.length > 1 ? (index / (validData.length - 1)) * 200 : 100;
     const y = 80 - ((item.value - minValue) / range) * 60;
     return `${x},${y}`;
   }).join(' ');
@@ -241,14 +306,19 @@ function SimpleLineChart({ data, color }: { data: { month: string; value: number
           strokeWidth="2"
           points={points}
         />
-        {data.map((item, index) => {
-          const x = (index / (data.length - 1)) * 200;
+        {validData.map((item, index) => {
+          const x = validData.length > 1 ? (index / (validData.length - 1)) * 200 : 100;
           const y = 80 - ((item.value - minValue) / range) * 60;
+          
+          // Ensure x and y are valid numbers
+          const safeX = isNaN(x) ? 100 : x;
+          const safeY = isNaN(y) ? 50 : y;
+          
           return (
             <circle
               key={index}
-              cx={x}
-              cy={y}
+              cx={safeX}
+              cy={safeY}
               r="3"
               fill={color}
             />

@@ -10,6 +10,42 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [googleUser, setGoogleUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  // 🔹 התחברות עם Email/Password
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      alert("יש להזין אימייל וסיסמה");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // שמירת המשתמש ב-localStorage
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        alert("התחברת בהצלחה! 😊");
+        window.location.href = "/home";
+      } else {
+        alert(`שגיאה: ${data.error || 'התחברות נכשלה'}`);
+      }
+    } catch (error) {
+      console.error("❌ Sign-in error:", error);
+      alert("שגיאה בחיבור לשרת");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 🔹 התחברות עם גוגל
   const handleGoogleSignIn = async () => {
@@ -82,7 +118,7 @@ export default function SignInForm() {
 
   return (
     <>
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleEmailSignIn}>
         <label>Email</label>
         <input
           type="email"
@@ -90,6 +126,7 @@ export default function SignInForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.inputField}
+          disabled={loading}
         />
 
         <label>Password</label>
@@ -99,10 +136,11 @@ export default function SignInForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={styles.inputField}
+          disabled={loading}
         />
 
-        <button type="submit" className={styles.signInButton}>
-          Sign in
+        <button type="submit" className={styles.signInButton} disabled={loading}>
+          {loading ? "מתחבר..." : "Sign in"}
         </button>
       </form>
 

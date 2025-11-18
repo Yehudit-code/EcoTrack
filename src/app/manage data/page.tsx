@@ -47,7 +47,7 @@ export default function ManageDataPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: currentUser._id,
+          userEmail: currentUser.email,
           category,
           value,
           month: currentDate.getMonth() + 1,
