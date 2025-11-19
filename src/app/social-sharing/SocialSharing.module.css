@@ -1,0 +1,429 @@
+.page {
+  background: radial-gradient(circle at top left, #eaf8f0 0, #ffffff 40%, #f0f5ff 100%);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: grid;
+  grid-template-columns: 26% 46% 28%;
+  gap: 24px;
+}
+
+/* טייטלים של עמודות */
+.columnTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #2f3b4c;
+}
+
+/* LEFT – SAVERS */
+.leftColumn {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(220, 230, 240, 0.8);
+}
+
+.saversList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.saverItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.rankBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffd966, #ffb347);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #4a3b20;
+}
+
+.saverAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid #cfead3;
+}
+
+.saverInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.saverName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #243444;
+}
+
+.saverSaving {
+  font-size: 12px;
+  color: #6f7c8c;
+}
+
+/* CENTER – POSTS */
+.centerColumn {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(224, 232, 245, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Create Post Card */
+.createPostCard {
+  border-radius: 14px;
+  background: #f7fafc;
+  border: 1px solid #dde6f2;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.createPostTop {
+  display: flex;
+  gap: 10px;
+}
+
+.createAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.postTextarea {
+  flex: 1;
+  resize: none;
+  border-radius: 12px;
+  border: 1px solid #ccd6e6;
+  padding: 8px 10px;
+  font-size: 14px;
+  min-height: 48px;
+}
+
+.postTextarea:focus {
+  outline: none;
+  border-color: #5fa86e;
+  box-shadow: 0 0 0 1px rgba(95, 168, 110, 0.2);
+}
+
+.createPostBottom {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.imageInput {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px dashed #b9c6dd;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.postButton {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #3b8f5a, #58b46f);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Posts List */
+.postsList {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.postCard {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e3eaf5;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.postAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.postMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.postUser {
+  font-size: 14px;
+  font-weight: 600;
+  color: #283546;
+}
+
+.postTime {
+  font-size: 12px;
+  color: #7b8796;
+}
+
+.postContent {
+  font-size: 14px;
+  color: #333f4f;
+  margin-top: 4px;
+}
+
+.postImageWrapper {
+  margin-top: 6px;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 260px;
+}
+
+.postImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.postActions {
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.postActions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #5f6b7c;
+}
+
+/* RIGHT – TELEGRAM STYLE CHAT */
+.rightColumn {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(224, 232, 245, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+.chatCard {
+  margin-top: 4px;
+  border-radius: 16px;
+  background: #f4f8ff;
+  border: 1px solid #d3e0f7;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+.messagesArea {
+  flex: 1;
+  padding: 10px 10px 4px;
+  overflow-y: auto;
+}
+
+/* Telegram-like rows */
+.messageRowOther,
+.messageRowMe {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.messageRowOther {
+  justify-content: flex-start;
+}
+
+.messageRowMe {
+  justify-content: flex-end;
+}
+
+.chatAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.messageBubbleOther,
+.messageBubbleMe {
+  max-width: 70%;
+  border-radius: 16px;
+  padding: 8px 10px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.messageBubbleOther {
+  background: #ffffff;
+  border: 1px solid #d6e0f2;
+}
+
+.messageBubbleMe {
+  background: #c8e6ff;
+  border: 1px solid #9ec8f2;
+}
+
+.messageName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #36506f;
+}
+
+.messageText {
+  font-size: 13px;
+  color: #233044;
+}
+
+.messageTime {
+  font-size: 11px;
+  color: #7c8da4;
+  align-self: flex-end;
+}
+
+/* Chat input */
+.chatInputRow {
+  border-top: 1px solid #d3e0f7;
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #eff4ff;
+  border-radius: 0 0 16px 16px;
+}
+
+.chatInput {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #c1d2f0;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.chatInput:focus {
+  outline: none;
+  border-color: #82a8ff;
+}
+
+.chatSendButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #3c7cff, #5ea9ff);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* טקסט ריק */
+.emptyText {
+  font-size: 13px;
+  color: #8a96a7;
+  margin-top: 8px;
+}
+
+/* רספונסיביות */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .leftColumn,
+  .centerColumn,
+  .rightColumn {
+    width: 100%;
+  }
+}
+
+.hiddenFile {
+  display: none;
+}
+
+.imageUploadBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: #e8eef9;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.imageUploadBtn:hover {
+  background: #d9e3f7;
+}
+
+.previewImage {
+  width: 100%;
+  max-height: 250px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-top: 10px;
+  border: 1px solid #d9e3f7;
+}
+
+.imageUploadBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #eaf0ff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: 0.2s;
+}
+
+.imageUploadBtn:hover {
+  background: #d8e3ff;
+  transform: scale(1.1);
+}

@@ -1,20 +1,18 @@
 .header {
   display: flex;
-  justify-content: space-between; /* לוגו בצד אחד, פרופיל בצד שני */
+  justify-content: space-between;
   align-items: center;
   background-color: #faf3dc;
   padding: 10px 30px;
   border-bottom: 1px solid #ddd;
 }
 
-/* לוגו משמאל */
 .logoContainer {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* הניווט במרכז, תפוס במיקום קבוע */
 .nav {
   position: absolute;
   left: 50%;
@@ -23,25 +21,41 @@
   gap: 20px;
 }
 
-/* תמונת המשתמש מימין */
+.nav a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav a:hover {
+  color: #3b6e3b;
+}
+
+/* פרופיל */
 .profileContainer {
   display: flex;
   align-items: center;
 }
 
+.profileLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profileLink:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 5px rgba(59, 110, 59, 0.3);
+}
+
 .profileImg {
-  width: 35px;
-  height: 35px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
-}
-
-.nav a {
-  color: #333;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.nav a.active {
-  font-weight: bold;
+  border: 2px solid #3b6e3b;
 }

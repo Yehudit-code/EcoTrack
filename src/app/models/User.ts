@@ -1,28 +1,42 @@
 // src/models/User.ts
 import { Schema, model, models } from "mongoose";
 import type { UserRole } from "@/app/types/common";
+import { dbConnect } from "@/app/lib/mongooseConnect";
+dbConnect();
+
 
 export interface IUser {
   email: string;
-  password: string; // hashed
+  password: string; // hashed or plain
   role: UserRole; // "user" | "company"
   companyCategory?: string;
   country?: string;
+  phone?: string;
+  birthDate?: Date;
+  photo?: string;
+  companies?: {
+    electricity?: string;
+    water?: string;
+    transport?: string;
+    recycling?: string;
+    solar?: string;
+  };
   createdAt?: Date;
   updatedAt?: Date;
-  photo: { type: String },
-  birthDate: { type: Date },
 }
 
-const UserSchema = new Schema<IUser>(
-  {
-    email: { type: String, unique: true, required: true, index: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["user", "company"], required: true },
-    companyCategory: { type: String },
-    country: { type: String },
-  },
-  { timestamps: true }
-);
+const UserSchema = new Schema({
+  name: String,
+  email: { type: String, required: true, unique: true },
+  password: String,
+  photo: String,
+  provider: String,
+  role: String,
+  country: String,
+  birthDate: Date,
+  companyCategory: String,
+  improvementScore: Number
+});
 
-export const User = models.User || model<IUser>("User", UserSchema);
+export const User = models.User || model("User", UserSchema);
+

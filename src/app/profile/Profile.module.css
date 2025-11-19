@@ -1,0 +1,301 @@
+.profilePage {
+  background-color: #f8f7f3;
+  min-height: 100vh;
+  padding: 50px 30px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  position: relative;
+}
+
+.backButton {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #3b6e3b;
+  font-weight: 600;
+}
+
+.backButton:hover {
+  color: #2e5b2e;
+  text-decoration: underline;
+}
+
+.profileCard {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  max-width: 950px;
+  margin: 80px auto;
+  padding: 40px 60px;
+}
+
+/* כותרת עם תמונה */
+.headerSection {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 25px;
+}
+
+.profileImg {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #3b6e3b;
+  object-fit: cover;
+}
+
+.userInfo h2 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.email {
+  color: #3b6e3b;
+  text-decoration: underline;
+  margin-top: 4px;
+}
+
+.role {
+  color: #777;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* אזור התוכן מתחת */
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 30px;
+  gap: 50px;
+}
+
+/* פרטים אישיים */
+.detailsSection {
+  flex: 1;
+}
+
+.detailsSection h3 {
+  color: #3b6e3b;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.detailsGrid div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 8px 0;
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  color: #333;
+}
+
+.editBtn {
+  margin-top: 15px;
+  background-color: #3b6e3b;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.editBtn:hover {
+  background-color: #2e5b2e;
+}
+
+/* חברות מחוברות */
+.companySection {
+  flex: 0.9;
+}
+
+.companySection h3 {
+  color: #3b6e3b;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.companySection ul {
+  list-style: none;
+  padding: 0;
+}
+
+.companyItem {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: background 0.2s ease;
+}
+
+.companyItem:hover {
+  background: #edf6ed;
+}
+
+.companyIcon {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.manageBtn {
+  background-color: #e8f2e8;
+  color: #3b6e3b;
+  border: 1px solid #c8dec8;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.manageBtn:hover {
+  background-color: #d7ebd7;
+}
+
+.loading {
+  text-align: center;
+  color: #555;
+  margin-top: 100px;
+}
+
+/* === חלון עריכה (Modal) === */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalBox {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  width: 450px;
+  max-height: 80vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.modalBox h2 {
+  color: #3b6e3b;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.modalBox label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: #444;
+}
+
+.modalBox input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+}
+
+.companyOptions {
+  margin-top: 10px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.saveBtn {
+  background-color: #3b6e3b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.saveBtn:hover {
+  background-color: #2e5b2e;
+}
+
+.cancelBtn {
+  background-color: #eee;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancelBtn:hover {
+  background-color: #ddd;
+}
+.companyCategory p {
+  font-size: 15px;
+  background: #f9f9f9;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.companyCategory span {
+  color: #3b6e3b;
+  font-weight: 500;
+}
+
+.companyInputs label {
+  margin-top: 10px;
+  display: block;
+  font-weight: 600;
+  color: #333;
+}
+
+.companyInputs input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+}
+
