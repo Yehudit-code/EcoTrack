@@ -32,14 +32,21 @@ export async function POST(req: Request) {
       createdAt: new Date(),
     };
 
-    await usersCollection.insertOne(newUser);
+    // await usersCollection.insertOne(newUser);
+    const result = await usersCollection.insertOne(newUser);
 
     console.log("✅ User registered:", newUser.email);
 
     return new Response(
       JSON.stringify({
         message: "User registered successfully",
-        user: { name, email, role, photo },
+        user: {
+          _id: result.insertedId,
+          name,
+          email,
+          role,
+          photo,
+        },
       }),
       {
         status: 201,

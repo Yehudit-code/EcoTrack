@@ -6,7 +6,8 @@ dbConnect();
 
 
 export interface IConsumptionHabit {
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId; // Keep for backwards compatibility
+  userEmail: string; // Use email as identifier
   category: ConsumptionCategory;
   value: number; // current consumption
   previousValue?: number; // last month’s consumption
@@ -20,7 +21,8 @@ export interface IConsumptionHabit {
 
 const ConsumptionHabitSchema = new Schema<IConsumptionHabit>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", index: true }, // Optional for backwards compatibility
+    userEmail: { type: String, required: true, index: true }, // Primary identifier
     category: {
       type: String,
       enum: ["Water", "Electricity", "Gas", "Transportation", "Waste"],
@@ -38,8 +40,7 @@ const ConsumptionHabitSchema = new Schema<IConsumptionHabit>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-// כדי למנוע כפילויות חודשיות
-ConsumptionHabitSchema.index({ userId: 1, category: 1, year: 1, month: 1 }, { unique: true });
+ConsumptionHabitSchema.index({ userEmail: 1, category: 1, year: 1, month: 1 }, { unique: true });
 
 export const ConsumptionHabit =
   models.ConsumptionHabit || model<IConsumptionHabit>("ConsumptionHabit", ConsumptionHabitSchema);

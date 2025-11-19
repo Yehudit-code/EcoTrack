@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import styles from "./ManageData.module.css";
+// import { useSession } from "next-auth/react";
+
+// const { data: session } = useSession();
 
 export default function ManageData() {
   const [month, setMonth] = useState("");
@@ -11,17 +14,20 @@ export default function ManageData() {
     waste: "",
   });
   const [message, setMessage] = useState("");
-
+  
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
   // Save or update consumption data
   const handleSave = async () => {
     if (!month) return setMessage("Please select a month.");
     const [year, monthNum] = month.split("-").map(Number);
-    const userId = "67654abc1234"; // temporary placeholder
+    // const userEmail = session?.user?.email;
+    // const userId = session?.user?.id; // זה מזהה מתוך ה־DB
+    // // const userId = "67654abc1234";
+    // const userEmail = "yehudit59501@gmail.com";
 
     try {
       const categories = [
@@ -34,7 +40,8 @@ export default function ManageData() {
       // Loop through categories and send API requests
       for (const cat of categories) {
         const payload = {
-          userId,
+          // userId,
+          // userEmail,
           category: cat.name,
           value: Number((formData as any)[cat.key]),
           month: monthNum,
@@ -49,16 +56,16 @@ export default function ManageData() {
 
         // If already exists, update instead
         if (res.status !== 201) {
-          const getRes = await fetch(`/api/consumption?userId=${userId}&category=${cat.name}`);
-          const items = await getRes.json();
-          const existing = items.find((i: any) => i.month === monthNum && i.year === year);
-          if (existing?._id) {
-            await fetch("/api/consumption", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ _id: existing._id, ...payload }),
-            });
-          }
+          // const getRes = await fetch(`/api/consumption?userId=${userId}&userEmail=${userEmail}&category=${cat.name}`);
+          // const items = await getRes.json();
+          // const existing = items.find((i: any) => i.month === monthNum && i.year === year);
+          // if (existing?._id) {
+          //   await fetch("/api/consumption", {
+          //     method: "PUT",
+          //     headers: { "Content-Type": "application/json" },
+          //     body: JSON.stringify({ _id: existing._id, ...payload }),
+          //   });
+          // }
         }
       }
 

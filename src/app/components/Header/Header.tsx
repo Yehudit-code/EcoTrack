@@ -34,7 +34,7 @@ export default function Header() {
       {/* לוגו */}
       <div className={styles.logoContainer}>
         <Image src="/logoEcoTrack.png" alt="ECO TRACK logo" width={40} height={40} />
-        <span className={styles.logoText}>EcoTrack</span>
+        <span className={styles.logoText}>ECO TRACK</span>
       </div>
 
       {/* ניווט */}

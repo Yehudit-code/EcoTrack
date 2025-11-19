@@ -10,47 +10,51 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [googleUser, setGoogleUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  // 🧩 התחברות רגילה (מייל + סיסמה)
-  const handleSubmit = async (e: React.FormEvent) => {
+  // 🔹 התחברות עם Email/Password
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!email || !password) {
+      alert("יש להזין אימייל וסיסמה");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const res = await fetch("/api/signin", {
+      const response = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        alert(data.error || "Login failed");
-        return;
+      if (response.ok) {
+        // שמירת המשתמש ב-localStorage
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        alert("התחברת בהצלחה! 😊");
+        window.location.href = "/home";
+      } else {
+        alert(`שגיאה: ${data.error || 'התחברות נכשלה'}`);
       }
-
-      // שמירת המשתמש בלוקאל סטורג'
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // הודעה
-      alert(`✅ Welcome back, ${data.user.name || "user"}!`);
-
-      // ✅ הפניה לעמוד הבית
-      window.location.href = "/home";
-
     } catch (error) {
-      console.error("❌ Login error:", error);
-      alert("An error occurred during login");
+      console.error("❌ Sign-in error:", error);
+      alert("שגיאה בחיבור לשרת");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔹 התחברות עם גוגל (לא נוגעים)
+  // 🔹 התחברות עם גוגל
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       console.log("✅ Google User:", user);
 
+      // 🔹 בדיקה אם המשתמש כבר קיים במסד הנתונים
       const checkResponse = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,8 +64,18 @@ export default function SignInForm() {
       const checkData = await checkResponse.json();
 
       if (checkData.exists) {
-        alert("ברוך הבא בחזרה! 😊");
-        localStorage.setItem("user", JSON.stringify(checkData.user));
+        // אם המשתמש כבר קיים → נשמור אותו ב-localStorage וננתב לעמוד הבית
+        // const userData = {
+        //   _id: user.uid,
+        //   email: user.email,
+        //   name: user.displayName,
+        //   photo: user.photoURL
+        // };
+        // localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+// localStorage.getItem("currentUser")
+
+        alert("welcome back😊");
         window.location.href = "/home";
       } else {
         setGoogleUser(user);
@@ -72,6 +86,7 @@ export default function SignInForm() {
     }
   };
 
+  // 🔹 שליחת הבחירה לשרת
   const handleRoleSelect = async (role: "user" | "company") => {
     try {
       if (!googleUser) return;
@@ -89,7 +104,10 @@ export default function SignInForm() {
       });
 
       const data = await response.json();
-      localStorage.setItem("user", JSON.stringify(data.user));
+      console.log("🆕 Saved to DB:", data);
+
+      // ✅ שמירת המשתמש ב-localStorage
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
 
       alert(`נרשמת בהצלחה כ${role === "company" ? "חברה" : "משתמש רגיל"}!`);
       window.location.href = "/home";
@@ -102,7 +120,7 @@ export default function SignInForm() {
 
   return (
     <>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleEmailSignIn}>
         <label>Email</label>
         <input
           type="email"
@@ -110,6 +128,7 @@ export default function SignInForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.inputField}
+          disabled={loading}
         />
 
         <label>Password</label>
@@ -119,10 +138,11 @@ export default function SignInForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={styles.inputField}
+          disabled={loading}
         />
 
-        <button type="submit" className={styles.signInButton}>
-          Sign in
+        <button type="submit" className={styles.signInButton} disabled={loading}>
+          {loading ? "מתחבר..." : "Sign in"}
         </button>
       </form>
 
