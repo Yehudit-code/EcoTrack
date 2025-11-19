@@ -16,14 +16,14 @@ export async function POST(req: Request) {
     const user = await usersCollection.findOne({ email });
 
     return new Response(
-      JSON.stringify({ exists: !!user }),
+      JSON.stringify({ exists: !!user, user }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
+
   } catch (error) {
-    console.log("MongoDB not available, returning false for user check");
-    // Return false when DB is not available
+    console.log("MongoDB not available, returning exists:false");
     return new Response(
-      JSON.stringify({ exists: false }),
+      JSON.stringify({ exists: false, user: null }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   }

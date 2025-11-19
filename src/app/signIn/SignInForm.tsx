@@ -15,7 +15,7 @@ export default function SignInForm() {
   // 🔹 התחברות עם Email/Password
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       alert("יש להזין אימייל וסיסמה");
       return;
@@ -65,17 +65,19 @@ export default function SignInForm() {
 
       if (checkData.exists) {
         // אם המשתמש כבר קיים → נשמור אותו ב-localStorage וננתב לעמוד הבית
-        const userData = {
-          _id: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL
-        };
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        alert("ברוך הבא בחזרה! 😊");
+        // const userData = {
+        //   _id: user.uid,
+        //   email: user.email,
+        //   name: user.displayName,
+        //   photo: user.photoURL
+        // };
+        // localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+// localStorage.getItem("currentUser")
+
+        alert("welcome back😊");
         window.location.href = "/home";
       } else {
-        // אם הוא חדש → נשמור את המשתמש ונשאל אם הוא חברה או משתמש רגיל
         setGoogleUser(user);
         setShowRoleModal(true);
       }

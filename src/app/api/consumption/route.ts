@@ -11,6 +11,10 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
     const userEmail = searchParams.get("userEmail");
     const category = searchParams.get("category") ?? undefined;
+    console.log("--------------------------------");
+    
+    console.log(" useEmail:", userEmail, "userId:", userId, "category:", category);
+    
     
     // Build query - try multiple approaches to find user data
     let items: any[] = [];
@@ -81,13 +85,12 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
-    
-    // Ensure userEmail is included
+    console.log("POST /api/consumption body:", body);
     if (!body.userEmail) {
       return fail("userEmail is required", 400);
     }
-    
     const item = await ConsumptionHabit.create(body);
+    // console.log("item");
     return ok(item, 201);
   } catch (e) {
     // likely unique index violation on (userEmail,category,year,month)
