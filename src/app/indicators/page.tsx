@@ -1,22 +1,29 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Header from '@/app/components/Header/Header';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
 import styles from './page.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTint, faBolt, faCar, faTrash, faTable, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { consumptionService, ConsumptionData as ServiceConsumptionData } from '../services/client/ConsumptionService';
 
 interface ConsumptionData {
-  _id: string;
+  _id?: string;
   category: 'Water' | 'Electricity' | 'Gas' | 'Transportation' | 'Waste';
   value: number;
   month: number;
   year: number;
   improvementScore?: number;
+  userId?: string;
+  tipsGiven?: string[];
 }
 
 interface ChartData {
   category: string;
   data: { month: string; value: number }[];
-  hebrewName: string;
+  displayName: string;
   color: string;
+  icon: any;
 }
 
 export default function IndicatorsPage() {
@@ -26,11 +33,11 @@ export default function IndicatorsPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   const categoryConfig = {
-    Water: { hebrewName: 'מים', color: '#2196F3' },
-    Electricity: { hebrewName: 'חשמל', color: '#FF9800' },
-    Transportation: { hebrewName: 'תחבורה', color: '#4CAF50' },
-    Transport: { hebrewName: 'תחבורה', color: '#4CAF50' }, // Support old naming
-    Waste: { hebrewName: 'פסולת', color: '#F44336' }
+    Water: { displayName: 'Water Consumption', color: '#556b2f', icon: faTint },
+    Electricity: { displayName: 'Electricity Usage', color: '#556b2f', icon: faBolt },
+    Transportation: { displayName: 'Transportation', color: '#556b2f', icon: faCar },
+    Transport: { displayName: 'Transportation', color: '#556b2f', icon: faCar }, // Support old naming
+    Waste: { displayName: 'Waste Management', color: '#556b2f', icon: faTrash }
   };
 
   useEffect(() => {
@@ -39,9 +46,14 @@ export default function IndicatorsPage() {
   }, []);
 
   useEffect(() => {
-    // Fetch consumption data only after we have user info
+    // Load consumption data after user check
     if (currentUser) {
-      fetchConsumptionData();
+      loadConsumptionData();
+    } else {
+      // Show static demo data when no user is logged in
+      const staticData = consumptionService.getStaticData();
+      setConsumptionData(staticData as ConsumptionData[]);
+      setLoading(false);
     }
   }, [currentUser]);
 
@@ -68,40 +80,31 @@ export default function IndicatorsPage() {
     }
   };
 
-  const fetchConsumptionData = async () => {
+  const loadConsumptionData = async () => {
     try {
-      if (currentUser) {
-        // Send userEmail as query parameter to get only current user's data
-        const url = `/api/consumption?userEmail=${currentUser.email}`;
-        console.log('🔗 Frontend: Fetching from URL:', url);
-        console.log('📧 Frontend: Using email:', currentUser.email);
-        
-        const response = await fetch(url);
-        console.log('📡 Frontend: API response status:', response.status);
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('📊 Frontend: Received data:', data);
-          console.log('📊 Frontend: Data array:', data.data);
-          setConsumptionData(data.data || []);
-        } else {
-          console.log('❌ Frontend: API response not ok:', response.status);
-        }
+      setLoading(true);
+      if (currentUser?.email) {
+        console.log('📊 Loading consumption data via service for:', currentUser.email);
+        const data = await consumptionService.getUserConsumption(currentUser.email);
+        console.log('📊 Received data from service:', data);
+        setConsumptionData(data as ConsumptionData[]);
       } else {
-        // No user logged in - show empty graphs
-        console.log('❌ Frontend: No currentUser, setting empty data');
-        setConsumptionData([]);
+        console.log('📊 No user email, loading static data');
+        const staticData = consumptionService.getStaticData();
+        setConsumptionData(staticData as ConsumptionData[]);
       }
     } catch (error) {
-      console.error('Error fetching consumption data:', error);
-      setConsumptionData([]);
+      console.error('Error loading consumption data:', error);
+      // Fallback to static data on error
+      const staticData = consumptionService.getStaticData();
+      setConsumptionData(staticData as ConsumptionData[]);
     } finally {
       setLoading(false);
     }
   };
 
   const processChartData = (): ChartData[] => {
-    const months = ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יונ', 'יול', 'אוג', 'ספט', 'אוק', 'נוב', 'דצמ'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
     // Get only categories that actually have data
     const availableCategories = [...new Set(consumptionData.map(item => item.category))];
@@ -120,8 +123,9 @@ export default function IndicatorsPage() {
       return {
         category,
         data: categoryData,
-        hebrewName: categoryConfig[category as keyof typeof categoryConfig]?.hebrewName || category,
-        color: categoryConfig[category as keyof typeof categoryConfig]?.color || '#999'
+        displayName: categoryConfig[category as keyof typeof categoryConfig]?.displayName || category,
+        color: categoryConfig[category as keyof typeof categoryConfig]?.color || '#999',
+        icon: categoryConfig[category as keyof typeof categoryConfig]?.icon || faChartBar
       };
     });
   };
@@ -131,9 +135,8 @@ export default function IndicatorsPage() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <Header />
         <main className={styles.main}>
-          <div className={styles.loading}>טוען נתונים...</div>
+          <div className={styles.loading}>Loading data...</div>
         </main>
       </div>
     );
@@ -142,46 +145,13 @@ export default function IndicatorsPage() {
   // Remove this check - always show the graphs
 
   return (
-    <div className={styles.container}>
+    <>
       <Header />
-
+      <div className={styles.container}>
       <main className={styles.main}>
         <div className={styles.contentBox}>
-          <h1 className={styles.title}>
-            מדדים ונתונים{currentUser ? ` - ${currentUser.name || currentUser.email}` : ''}
-          </h1>
           
-          {/* Data Summary */}
-          {consumptionData.length > 0 && (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-around', 
-              margin: '20px 0', 
-              padding: '20px', 
-              backgroundColor: '#f0f8f0', 
-              borderRadius: '12px',
-              direction: 'rtl'
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
-                  {consumptionData.length}
-                </div>
-                <div style={{ color: '#666' }}>סה״כ רשומות</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
-                  {[...new Set(consumptionData.map(item => item.category))].length}
-                </div>
-                <div style={{ color: '#666' }}>קטגוריות פעילות</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2d5c2d' }}>
-                  {[...new Set(consumptionData.map(item => `${item.month}/${item.year}`))].length}
-                </div>
-                <div style={{ color: '#666' }}>חודשים עם נתונים</div>
-              </div>
-            </div>
-          )}
+
           
           {/* Tab Buttons */}
           <div className={styles.tabButtons}>
@@ -189,22 +159,32 @@ export default function IndicatorsPage() {
               className={`${styles.tabButton} ${viewMode === 'table' ? styles.active : ''}`}
               onClick={() => setViewMode('table')}
             >
-              table
+              <FontAwesomeIcon icon={faTable} style={{color: '#666', marginRight: '8px', fontSize: '14px', fontWeight: '300'}} /> Table View
             </button>
             <button 
               className={`${styles.tabButton} ${viewMode === 'graph' ? styles.active : ''}`}
               onClick={() => setViewMode('graph')}
             >
-              graph
+              <FontAwesomeIcon icon={faChartBar} style={{color: '#666', marginRight: '8px', fontSize: '14px', fontWeight: '300'}} /> Chart View
             </button>
           </div>
 
           {viewMode === 'graph' && (
             <div className={styles.chartsGrid}>
               {chartData.map((chart) => (
-                <div key={chart.category} className={styles.chartCard}>
+                <div 
+                  key={chart.category} 
+                  className={styles.chartCard}
+                >
                   <h3 className={styles.chartTitle} style={{ color: chart.color }}>
-                    {chart.hebrewName}
+                    <span className={styles.chartIcon}>
+                      <FontAwesomeIcon icon={chart.icon} style={{
+                        color: '#666', 
+                        fontSize: '16px',
+                        fontWeight: '300'
+                      }} />
+                    </span>
+                    {chart.displayName}
                   </h3>
                   <div className={styles.chartContainer}>
                     <div className={styles.chartArea}>
@@ -224,11 +204,11 @@ export default function IndicatorsPage() {
               <table className={styles.dataTable}>
                 <thead>
                   <tr>
-                    <th>קטגוריה</th>
-                    <th>חודש</th>
-                    <th>שנה</th>
-                    <th>ערך</th>
-                    <th>ציון שיפור</th>
+                    <th>Category</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>Value</th>
+                    <th>Improvement Score</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -237,7 +217,19 @@ export default function IndicatorsPage() {
                       .sort((a, b) => b.year - a.year || b.month - a.month) // Sort newest first
                       .map((item) => (
                       <tr key={item._id}>
-                        <td>{categoryConfig[item.category as keyof typeof categoryConfig]?.hebrewName || item.category}</td>
+                        <td>
+                          <span style={{marginRight: '8px'}}>
+                            <FontAwesomeIcon 
+                              icon={categoryConfig[item.category as keyof typeof categoryConfig]?.icon || faChartBar} 
+                              style={{
+                                color: '#666', 
+                                fontSize: '14px',
+                                fontWeight: '300'
+                              }} 
+                            />
+                          </span>
+                          {categoryConfig[item.category as keyof typeof categoryConfig]?.displayName || item.category}
+                        </td>
                         <td>{item.month}</td>
                         <td>{item.year}</td>
                         <td>{item.value.toLocaleString()}</td>
@@ -247,7 +239,7 @@ export default function IndicatorsPage() {
                   ) : (
                     <tr>
                       <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                        {currentUser ? 'אין נתונים עדיין. התחל לעקוב אחר הצריכה שלך!' : 'התחבר כדי לראות את הנתונים שלך'}
+                        {currentUser ? 'No data yet. Start tracking your consumption!' : 'Please sign in to view your data'}
                       </td>
                     </tr>
                   )}
@@ -257,9 +249,9 @@ export default function IndicatorsPage() {
           )}
         </div>
       </main>
-
-      <footer className={styles.footer}>footer</footer>
     </div>
+    <Footer />
+    </>
   );
 }
 
@@ -269,8 +261,8 @@ function SimpleLineChart({ data, color }: { data: { month: string; value: number
     return (
       <div className={styles.noData}>
         <div className={styles.icon}>📊</div>
-        <div>אין נתונים עדיין</div>
-        <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>התחל לעקוב אחר הצריכה שלך</div>
+        <div>No data available yet</div>
+        <div style={{ fontSize: '0.8rem', marginTop: '5px' }}>Start tracking your consumption</div>
       </div>
     );
   }
@@ -282,7 +274,7 @@ function SimpleLineChart({ data, color }: { data: { month: string; value: number
     return (
       <div className={styles.noData}>
         <div className={styles.icon}>📊</div>
-        <div>נתונים לא חוקיים</div>
+        <div>Invalid data</div>
       </div>
     );
   }

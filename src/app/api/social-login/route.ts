@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
-    const { email, name, photo, provider, role } = await req.json(); // נוסיף את role כאן
+    const { email, name, photo, provider, role } = await req.json(); // Add role here
 
-    // בדיקה בסיסית
+    // Basic validation
     if (!email) {
       return new Response(
         JSON.stringify({ error: "Email is required" }),
@@ -16,22 +16,22 @@ export async function POST(req: Request) {
     const db = await connectDB();
     const usersCollection = db.collection("Users");
 
-    // נבדוק אם המשתמש כבר קיים
+    // Check if user already exists
     let user = await usersCollection.findOne({ email });
 
     if (!user) {
-      // יצירת סיסמה רנדומלית והצפנה
+      // Generate random password and encrypt
       const randomPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-      // יצירת אובייקט המשתמש החדש
+      // Create new user object
       const newUser = {
         email,
         name: name || email.split("@")[0],
         provider,
         photo,
         password: hashedPassword,
-        role: role === "company" ? "company" : "user", // ✅ שמירה לפי הבחירה
+        role: role === "company" ? "company" : "user", // Save by selection
         createdAt: new Date(),
       };
 
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       console.log("✅ Existing Google user:", email);
     }
 
-    // החזרה ללקוח
+    // Return to client
     return new Response(
       JSON.stringify({ message: "Social login successful", user }),
       { status: 200, headers: { "Content-Type": "application/json" } }

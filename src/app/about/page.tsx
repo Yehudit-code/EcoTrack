@@ -1,51 +1,52 @@
-import Header from '@/app/components/Header/Header';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
 import styles from './page.module.css';
 
 export default function AboutPage() {
   return (
-    <div className={styles.pageContainer}>
+    <>
       <Header />
-      
+      <div className={styles.pageContainer}>
       <main className={styles.container}>
         <div className={styles.contentWrapper}>
           <header className={styles.header}>
-            <h1 className={styles.title}>About Us</h1>
+            <h1 className={styles.title}>About EcoTrack</h1>
             <div className={styles.titleUnderline}></div>
           </header>
 
           <section className={styles.content}>
             <div className={styles.textBlock}>
+              <h2 className={styles.sectionTitle}>Our Mission</h2>
               <p className={styles.paragraph}>
-                At our company, we believe that a greener future begins at home.
+                EcoTrack provides intelligent environmental tracking solutions that help individuals and organizations monitor, analyze, and reduce their ecological footprint through data-driven insights and actionable recommendations.
               </p>
             </div>
 
             <div className={styles.textBlock}>
+              <h2 className={styles.sectionTitle}>Technology & Innovation</h2>
               <p className={styles.paragraph}>
-                Our goal is to make every home a smarter, more efficient, and eco-friendly environment — without compromising on comfort or quality of life.
+                Our platform leverages advanced analytics and machine learning to transform complex environmental data into clear, actionable insights. We make sustainability accessible through intuitive interfaces and personalized recommendations.
               </p>
             </div>
 
             <div className={styles.textBlock}>
+              <h2 className={styles.sectionTitle}>Impact & Results</h2>
               <p className={styles.paragraph}>
-                By combining innovative technology, environmental awareness, and practical solutions, we help people reduce energy consumption, save water, and prevent waste — one step at a time toward a cleaner, healthier world.
+                Since our launch, EcoTrack has helped users reduce energy consumption by an average of 23%, decrease water usage by 18%, and minimize waste generation by 31% through informed decision-making and behavioral optimization.
               </p>
             </div>
 
             <div className={styles.textBlock}>
+              <h2 className={styles.sectionTitle}>Our Commitment</h2>
               <p className={styles.paragraph}>
-                We aim to inspire real change — change that starts with one small decision at home and grows into a community choosing to live smart, green, and with purpose.
+                We are committed to continuous innovation in environmental technology, ensuring our solutions remain at the forefront of sustainability science while maintaining the highest standards of data privacy and security.
               </p>
             </div>
           </section>
-
-          <div className={styles.decorativeElement}>
-            <div className={styles.leafIcon}>🌿</div>
-          </div>
         </div>
       </main>
-
-      <footer className={styles.footer}>footer</footer>
     </div>
+    <Footer />
+    </>
   );
 }

@@ -14,13 +14,13 @@ export async function POST(req: Request) {
     const db = await connectDB();
     const usersCollection = db.collection("Users");
 
-    // בדיקה אם המשתמש כבר קיים
+    // Check if user already exists
     const existingUser = await usersCollection.findOne({ email });
     if (existingUser) {
       return new Response(JSON.stringify({ error: "User already exists" }), { status: 409 });
     }
 
-    // הצפנת הסיסמה לפני שמירה
+    // Encrypt password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = {

@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Header from '../components/Header/Header';
+import { consumptionService } from '../services/client/ConsumptionService';
 import styles from "./ManageData.module.css";
 
 export default function ManageData() {
@@ -31,9 +33,9 @@ export default function ManageData() {
         { name: "Waste", key: "waste" },
       ];
 
-      // Loop through categories and send API requests
+      // Loop through categories and save/update consumption data using service
       for (const cat of categories) {
-        const payload = {
+        const consumptionData = {
           userId,
           category: cat.name,
           value: Number((formData as any)[cat.key]),
@@ -41,25 +43,7 @@ export default function ManageData() {
           year,
         };
 
-        const res = await fetch("/api/consumption", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        // If already exists, update instead
-        if (res.status !== 201) {
-          const getRes = await fetch(`/api/consumption?userId=${userId}&category=${cat.name}`);
-          const items = await getRes.json();
-          const existing = items.find((i: any) => i.month === monthNum && i.year === year);
-          if (existing?._id) {
-            await fetch("/api/consumption", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ _id: existing._id, ...payload }),
-            });
-          }
-        }
+        await consumptionService.saveOrUpdateConsumption(consumptionData);
       }
 
       setMessage("Data saved successfully!");
@@ -69,7 +53,9 @@ export default function ManageData() {
   };
 
   return (
-    <div className={styles.container}>
+    <>
+      <Header />
+      <div className={styles.container}>
       <header className={styles.header}>EcoTrack | Manage Data</header>
 
       <section className={styles.card}>
@@ -93,10 +79,7 @@ export default function ManageData() {
 
         {message && <p className={styles.message}>{message}</p>}
       </section>
-
-      <footer className={styles.footer}>
-        Home | Manage Data | Indicators | Social Sharing | About
-      </footer>
     </div>
+    </>
   );
 }

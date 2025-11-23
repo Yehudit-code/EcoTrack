@@ -12,12 +12,12 @@ export default function SignInForm() {
   const [googleUser, setGoogleUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 התחברות עם Email/Password
+  // Sign in with Email/Password
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
-      alert("יש להזין אימייל וסיסמה");
+      alert("Please enter email and password");
       return;
     }
 
@@ -32,29 +32,29 @@ export default function SignInForm() {
       const data = await response.json();
 
       if (response.ok) {
-        // שמירת המשתמש ב-localStorage
+        // Save user to localStorage
         localStorage.setItem('currentUser', JSON.stringify(data.user));
-        alert("התחברת בהצלחה! 😊");
+        alert("Successfully signed in! 😊");
         window.location.href = "/home";
       } else {
-        alert(`שגיאה: ${data.error || 'התחברות נכשלה'}`);
+        alert(`Error: ${data.error || 'Login failed'}`);
       }
     } catch (error) {
       console.error("❌ Sign-in error:", error);
-      alert("שגיאה בחיבור לשרת");
+      alert("Server connection error");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 התחברות עם גוגל
+  // 🔹 Google login
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       console.log("✅ Google User:", user);
 
-      // 🔹 בדיקה אם המשתמש כבר קיים במסד הנתונים
+      // Check if user already exists in database
       const checkResponse = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,7 +64,7 @@ export default function SignInForm() {
       const checkData = await checkResponse.json();
 
       if (checkData.exists) {
-        // אם המשתמש כבר קיים → נשמור אותו ב-localStorage וננתב לעמוד הבית
+        // If user exists → save to localStorage and redirect to home
         const userData = {
           _id: user.uid,
           email: user.email,
@@ -75,7 +75,7 @@ export default function SignInForm() {
         alert("ברוך הבא בחזרה! 😊");
         window.location.href = "/home";
       } else {
-        // אם הוא חדש → נשמור את המשתמש ונשאל אם הוא חברה או משתמש רגיל
+        // If new user → save user and ask if company or regular user
         setGoogleUser(user);
         setShowRoleModal(true);
       }
@@ -104,10 +104,10 @@ export default function SignInForm() {
       const data = await response.json();
       console.log("🆕 Saved to DB:", data);
 
-      // ✅ שמירת המשתמש ב-localStorage
+      // Save user to localStorage
       localStorage.setItem('currentUser', JSON.stringify(data.user));
 
-      alert(`נרשמת בהצלחה כ${role === "company" ? "חברה" : "משתמש רגיל"}!`);
+      alert(`Successfully registered as ${role === "company" ? "company" : "regular user"}!`);
       window.location.href = "/home";
     } catch (error) {
       console.error("❌ Error saving social login:", error);

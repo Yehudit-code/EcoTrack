@@ -16,7 +16,7 @@ export default function SignUpPage() {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // 🔹 בדיקה אם המשתמש כבר קיים
+      // Check if user already exists
       const checkResponse = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ export default function SignUpPage() {
         return;
       }
 
-      // 🔹 משתמש חדש → הוספה למסד הנתונים
+      // New user → add to database
       const saveResponse = await fetch("/api/social-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
