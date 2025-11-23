@@ -1,8 +1,6 @@
 // src/models/User.ts
 import { Schema, model, models } from "mongoose";
 import type { UserRole } from "@/app/types/common";
-import { dbConnect } from "@/app/lib/mongooseConnect";
-dbConnect();
 
 
 export interface IUser {

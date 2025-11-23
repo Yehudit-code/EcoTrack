@@ -41,7 +41,7 @@ export default function Header() {
       <nav className={styles.nav}>
         <Link href="/home">Home</Link>
         <Link href="/manage-data">Manage data</Link>
-        <Link href="/home/indicators">Indicators</Link>
+        <Link href="/indicators">Indicators</Link>
         <Link href="/social-sharing">Social Sharing</Link>
         <Link href="/about">About</Link>
       </nav>

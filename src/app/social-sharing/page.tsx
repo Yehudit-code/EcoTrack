@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
-
+import { io, Socket } from "socket.io-client";
 
 interface Saver {
     name: string;
     email: string;
     avgSaving: number;
     photo?: string | null;
+}
+
+interface CommentObj {
+    text: string;
+    userName: string;
+    userPhoto?: string | null;
+    createdAt?: string;
 }
 
 interface Post {
@@ -20,7 +27,12 @@ interface Post {
     content: string;
     imageUrl?: string | null;
     createdAt?: string;
+
+    likes: number;
+    comments: CommentObj[];
+    shares: number;
 }
+
 
 interface Message {
     _id?: string;
@@ -39,22 +51,26 @@ interface CurrentUser {
 }
 
 export default function SocialSharingPage() {
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [postImageFile, setPostImageFile] = useState<string | null>(null);
-
     const [savers, setSavers] = useState<Saver[]>([]);
     const [posts, setPosts] = useState<Post[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
     const [newPostText, setNewPostText] = useState("");
-    const [newPostImage, setNewPostImage] = useState("");
+    const [newPostImage, setNewPostImage] = useState<string | null>(null);
     const [newMessage, setNewMessage] = useState("");
 
-    // ⬇️ טוען משתמש נוכחי מ-localStorage
+    const [typingUser, setTypingUser] = useState<string | null>(null);
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const typingTimeoutRef = useRef<number | null>(null);
+    const socketRef = useRef<Socket | null>(null);
+
+    // ⬇️ טוען משתמש נוכחי מ-localStorage (מפתח: "user")
     useEffect(() => {
         try {
-            const stored = localStorage.getItem("currentUser");
+            const stored = localStorage.getItem("user");
             if (stored) {
                 setCurrentUser(JSON.parse(stored));
             }
@@ -62,6 +78,19 @@ export default function SocialSharingPage() {
             // מתעלמים
         }
     }, []);
+
+    // ⬇️ scroll למטה בצ'אט כשמגיעות הודעות
+    useEffect(() => {
+        const el = messagesEndRef.current?.parentElement;
+        if (!el) return;
+
+        const isAtBottom =
+            el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+
+        if (isAtBottom) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
 
     // ⬇️ טוען Best Savers
     useEffect(() => {
@@ -71,35 +100,69 @@ export default function SocialSharingPage() {
             .catch(() => setSavers([]));
     }, []);
 
-    // ⬇️ טוען פוסטים
-    const loadPosts = () => {
-        fetch("/api/posts")
-            .then((res) => res.json())
-            .then((data) => (Array.isArray(data) ? setPosts(data) : setPosts([])))
-            .catch(() => setPosts([]));
-    };
-
-    // ⬇️ טוען הודעות
-    const loadMessages = () => {
-        fetch("/api/messages")
-            .then((res) => res.json())
-            .then((data) =>
-                Array.isArray(data) ? setMessages(data) : setMessages([])
-            )
-            .catch(() => setMessages([]));
-    };
-
+    // ⬇️ טוען פוסטים והודעות פעם אחת בהתחלה
     useEffect(() => {
         loadPosts();
         loadMessages();
-
-        // Polling לצ'אט כל כמה שניות (אפשר לשפר בעתיד ל-WebSocket)
-        const interval = setInterval(() => {
-            loadMessages();
-        }, 5000);
-
-        return () => clearInterval(interval);
     }, []);
+
+    // ⬇️ חיבור ל-WebSocket (socket.io)
+    useEffect(() => {
+        const socket = io("http://localhost:4000", {
+            transports: ["websocket"],
+        });
+
+        socketRef.current = socket;
+
+        socket.on("connect", () => {
+            console.log("🔌 Socket connected");
+        });
+
+        // הודעה חדשה מהשרת
+        socket.on("new_message", (msg: Message) => {
+            setMessages((prev) => {
+                const exists = prev.some(
+                    (m) => String(m._id) === String(msg._id)
+                );
+                if (exists) return prev;
+                return [...prev, msg];
+            });
+        });
+
+        // מישהו מקליד
+        socket.on("typing", (data: { userId: string; userName: string }) => {
+            setTypingUser(data.userName);
+            if (typingTimeoutRef.current) {
+                window.clearTimeout(typingTimeoutRef.current);
+            }
+            typingTimeoutRef.current = window.setTimeout(() => {
+                setTypingUser(null);
+            }, 2000);
+        });
+
+        socket.on("disconnect", () => {
+            console.log("🔌 Socket disconnected");
+        });
+
+        return () => {
+            socket.disconnect();
+            if (typingTimeoutRef.current) {
+                window.clearTimeout(typingTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // ⬇️ העלאת תמונה לפוסט (כמו אינסטגרם)
+    const handlePostImageUpload = (e: any) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setNewPostImage(reader.result as string); // base64
+        };
+        reader.readAsDataURL(file);
+    };
 
     // ⬇️ יצירת פוסט חדש
     const handleCreatePost = async () => {
@@ -107,14 +170,14 @@ export default function SocialSharingPage() {
             alert("Please sign in to create a post.");
             return;
         }
-        if (!newPostText.trim()) return;
+        if (!newPostText.trim() && !newPostImage) return;
 
         const body = {
             userId: currentUser._id,
             userName: currentUser.name,
             userPhoto: currentUser.photo,
             content: newPostText.trim(),
-            imageUrl: newPostImage.trim() || null,
+            imageUrl: newPostImage || null,
         };
 
         const res = await fetch("/api/posts", {
@@ -127,25 +190,11 @@ export default function SocialSharingPage() {
             const created = await res.json();
             setPosts((prev) => [created, ...prev]);
             setNewPostText("");
-            setNewPostImage("");
+            setNewPostImage(null);
         } else {
             alert("Failed to create post");
         }
     };
-
-    // העלאת תמונה לפוסט (כמו אינסטגרם)
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setPostImageFile(reader.result as string); // base64
-            setNewPostImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-    };
-
 
     // ⬇️ שליחת הודעה בצ'אט
     const handleSendMessage = async () => {
@@ -170,11 +219,27 @@ export default function SocialSharingPage() {
 
         if (res.ok) {
             const created = await res.json();
+
+            // מוסיפים לעצמנו מיד
             setMessages((prev) => [...prev, created]);
             setNewMessage("");
+
+            // משדרים דרך socket לשאר המשתמשים
+            socketRef.current?.emit("send_message", created);
         } else {
             alert("Failed to send message");
         }
+    };
+
+    // ⬇️ שינוי טקסט בצ'אט + שידור typing
+    const handleChatInputChange = (value: string) => {
+        setNewMessage(value);
+        if (!currentUser || !socketRef.current) return;
+
+        socketRef.current.emit("typing", {
+            userId: currentUser._id,
+            userName: currentUser.name,
+        });
     };
 
     const formatTime = (iso?: string) => {
@@ -188,18 +253,79 @@ export default function SocialSharingPage() {
         });
     };
 
-    return (
+    const loadPosts = () => {
+        fetch("/api/posts")
+            .then((res) => res.json())
+            .then((data) => (Array.isArray(data) ? setPosts(data) : setPosts([])))
+            .catch(() => setPosts([]));
+    };
 
+    const loadMessages = () => {
+        fetch("/api/messages")
+            .then((res) => res.json())
+            .then((data) =>
+                Array.isArray(data) ? setMessages(data) : setMessages([])
+            )
+            .catch(() => setMessages([]));
+    };
+
+
+    const likePost = async (postId: string) => {
+        await fetch("/api/posts", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ postId, action: "like" }),
+        });
+        loadPosts();
+    };
+
+    const sharePost = async (postId: string) => {
+        await fetch("/api/posts", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ postId, action: "share" }),
+        });
+        loadPosts();
+    };
+
+    const commentPost = async (postId: string, text: string) => {
+        await fetch("/api/posts", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                postId,
+                action: "comment",
+                comment: text,
+                userName: currentUser?.name,
+                userPhoto: currentUser?.photo,
+            }),
+        });
+        loadPosts();
+    };
+
+
+    return (
         <div className={styles.page}>
             <Header />
+
             <div className={styles.container}>
                 {/* LEFT – BEST SAVERS */}
                 <div className={styles.leftColumn}>
                     <h3 className={styles.columnTitle}>The best savers 🏆</h3>
                     <ul className={styles.saversList}>
                         {savers.map((u, i) => (
-                            <li key={i} className={styles.saverItem}>
-                                <span className={styles.rankBadge}>{i + 1}</span>
+                            <li
+                                key={i}
+                                className={styles.saverItem}
+                                style={{ animationDelay: `${i * 0.12}s` }}
+                            >
+                                <span className={`${styles.rankBadge} ${i === 0 ? styles.gold :
+                                    i === 1 ? styles.silver :
+                                        i === 2 ? styles.bronze : ""
+                                    }`}>
+                                    {i + 1}
+                                </span>
+
                                 <img
                                     src={u.photo || "/defaultUser.png"}
                                     className={styles.saverAvatar}
@@ -231,18 +357,13 @@ export default function SocialSharingPage() {
                                 alt="me"
                                 className={styles.createAvatar}
                             />
+
                             <textarea
                                 className={styles.postTextarea}
                                 placeholder="Share your eco achievement… 💡"
                                 value={newPostText}
                                 onChange={(e) => setNewPostText(e.target.value)}
                             />
-                        </div>
-                        {postImageFile && (
-                            <img src={postImageFile} alt="preview" className={styles.previewImage} />
-                        )}
-
-                        <div className={styles.createPostBottom}>
 
                             {/* אייקון מצלמה להעלאת תמונה */}
                             <button
@@ -257,10 +378,31 @@ export default function SocialSharingPage() {
                                 type="file"
                                 ref={fileInputRef}
                                 accept="image/*"
-                                onChange={handleImageUpload}
                                 className={styles.hiddenFile}
+                                onChange={handlePostImageUpload}
                             />
+                        </div>
 
+                        {/* תצוגת תמונה לפני פרסום */}
+                        {newPostImage && (
+                            <div className={styles.previewWrapper}>
+                                <img
+                                    src={newPostImage}
+                                    alt="preview"
+                                    className={styles.previewImage}
+                                />
+
+                                <button
+                                    type="button"
+                                    className={styles.removeImageBtn}
+                                    onClick={() => setNewPostImage(null)}
+                                >
+                                    ❌
+                                </button>
+                            </div>
+                        )}
+
+                        <div className={styles.createPostBottom}>
                             <button
                                 className={styles.postButton}
                                 type="button"
@@ -269,7 +411,6 @@ export default function SocialSharingPage() {
                                 Post
                             </button>
                         </div>
-
                     </div>
 
                     {/* Posts List */}
@@ -303,9 +444,17 @@ export default function SocialSharingPage() {
                                 )}
 
                                 <div className={styles.postActions}>
-                                    <button type="button">👍 Like</button>
-                                    <button type="button">💬 Comment</button>
-                                    <button type="button">↗ Share</button>
+                                    <button type="button" onClick={() => likePost(String(post._id))}>👍 Like ({post.likes})</button>
+
+                                    <button type="button" onClick={() => {
+                                        const text = prompt("Write a comment:");
+                                        if (text?.trim()) commentPost(String(post._id), text.trim());
+                                    }}>
+                                        💬 Comment ({post.comments?.length || 0})
+                                    </button>
+
+                                    <button type="button" onClick={() => sharePost(String(post._id))}>↗ Share ({post.shares})</button>
+
                                 </div>
                             </div>
                         ))}
@@ -342,7 +491,9 @@ export default function SocialSharingPage() {
                                         )}
                                         <div
                                             className={
-                                                isMe ? styles.messageBubbleMe : styles.messageBubbleOther
+                                                isMe
+                                                    ? styles.messageBubbleMe
+                                                    : styles.messageBubbleOther
                                             }
                                         >
                                             {!isMe && (
@@ -368,6 +519,20 @@ export default function SocialSharingPage() {
                                     No messages yet… say hi 👋
                                 </div>
                             )}
+
+                            {/* typing indicator */}
+                            {typingUser && (
+                                <div className={styles.typingIndicator}>
+                                    <span>{typingUser} is typing</span>
+                                    <div className={styles.typingDots}>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div ref={messagesEndRef} />
                         </div>
 
                         <div className={styles.chatInputRow}>
@@ -376,7 +541,7 @@ export default function SocialSharingPage() {
                                 className={styles.chatInput}
                                 placeholder="Write a message…"
                                 value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
+                                onChange={(e) => handleChatInputChange(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         e.preventDefault();

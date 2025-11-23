@@ -1,7 +1,25 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./Profile.module.css";
+
+// אייקונים מקצועיים
+import {
+  ArrowLeft,
+  LogOut,
+  Mail,
+  Phone,
+  User,
+  Calendar,
+  Building2,
+  Edit3,
+  Factory,
+  Droplet,
+  Bus,
+  Recycle,
+  Sun,
+} from "lucide-react";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -27,11 +45,15 @@ export default function ProfilePage() {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/signin");
+  };
+
   const handleSave = async () => {
     try {
       const updatedUser = { ...user, ...editData };
 
-      // שליחה לשרת
       const response = await fetch("/api/update-profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -44,16 +66,14 @@ export default function ProfilePage() {
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
         setIsEditing(false);
-        alert("✅ Profile updated successfully!");
+        alert("Profile updated successfully!");
       } else {
-        alert("❌ Failed to update: " + data.error);
+        alert("Failed to update: " + data.error);
       }
     } catch (error) {
-      console.error("❌ Error updating profile:", error);
-      alert("❌ Error updating profile");
+      alert("Error updating profile");
     }
   };
-
 
   if (!user) return <p className={styles.loading}>Loading profile...</p>;
 
@@ -61,79 +81,107 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.profilePage}>
-      {/* חזרה אחורה */}
-      <button onClick={() => router.back()} className={styles.backButton}>
-        ⬅ Back
+      {/* חזרה */}
+      <button onClick={() => router.back()} className={styles.backBtn}>
+        <ArrowLeft size={20} /> Back
+      </button>
+
+      {/* לוגאאוט */}
+      <button onClick={handleLogout} className={styles.logoutBtn}>
+        <LogOut size={18} /> Logout
       </button>
 
       <div className={styles.profileCard}>
-        {/* תמונת פרופיל + פרטים */}
+        {/* כותרת */}
         <div className={styles.headerSection}>
           <img
             src={user.photo || "/images/default-profile.png"}
             alt="Profile"
             className={styles.profileImg}
           />
+
           <div className={styles.userInfo}>
             <h2>{user.name}</h2>
-            <p className={styles.email}>{user.email}</p>
+
+            <p className={styles.email}>
+              <Mail size={16} /> {user.email}
+            </p>
+
             <p className={styles.role}>
-              {user.role === "company" ? "Company Account" : "Individual User"}
+              <User size={16} />
+              {user.role === "company" ? " Company Account" : " Individual User"}
             </p>
           </div>
         </div>
 
-        {/* פרטים כלליים */}
+        {/* תוכן */}
         <div className={styles.content}>
           {/* פרטים אישיים */}
-          <div className={styles.detailsSection}>
+          <div className={styles.section}>
             <h3>Personal Information</h3>
-            <div className={styles.detailsGrid}>
-              <div>
-                <span className={styles.label}>📞 Phone:</span>
-                <span className={styles.value}>{user.phone || "Not provided"}</span>
-              </div>
-              <div>
-                <span className={styles.label}>🎂 Birth Date:</span>
-                <span className={styles.value}>{user.birthDate || "—"}</span>
-              </div>
-              <div>
-                <span className={styles.label}>📅 Member Since:</span>
-                <span className={styles.value}>
-                  {user.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString()
-                    : "—"}
-                </span>
-              </div>
-              <div>
-                <span className={styles.label}>👤 Role:</span>
-                <span className={styles.value}>{user.role || "user"}</span>
-              </div>
+
+            <div className={styles.row}>
+              <Phone size={18} />
+              <span>Phone:</span>
+              <strong>{user.phone || "Not provided"}</strong>
             </div>
 
-            <button
-              className={styles.editBtn}
-              onClick={() => setIsEditing(true)}
-            >
-              ✏️ Edit Profile
+            <div className={styles.row}>
+              <Calendar size={18} />
+              <span>Birth Date:</span>
+              <strong>{user.birthDate || "—"}</strong>
+            </div>
+
+            <div className={styles.row}>
+              <Calendar size={18} />
+              <span>Member Since:</span>
+              <strong>
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString()
+                  : "—"}
+              </strong>
+            </div>
+
+            <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
+              <Edit3 size={16} /> Edit Profile
             </button>
           </div>
 
-          {/* חברות לפי קטגוריה */}
-          <div className={styles.companySection}>
+          {/* חברות */}
+          <div className={styles.section}>
             <h3>Connected Companies</h3>
-            <div className={styles.companyCategory}>
-              <p>⚡ Electricity: <span>{c.electricity || "Not connected"}</span></p>
-              <p>💧 Water: <span>{c.water || "Not connected"}</span></p>
-              <p>🚗 Transport: <span>{c.transport || "Not connected"}</span></p>
-              <p>♻️ Recycling: <span>{c.recycling || "Not connected"}</span></p>
-              <p>☀️ Solar: <span>{c.solar || "Not connected"}</span></p>
+
+            <div className={styles.companyList}>
+              <div className={styles.row}>
+                <Factory size={18} />
+                Electricity: <strong>{c.electricity || "Not connected"}</strong>
+              </div>
+
+              <div className={styles.row}>
+                <Droplet size={18} />
+                Water: <strong>{c.water || "Not connected"}</strong>
+              </div>
+
+              <div className={styles.row}>
+                <Bus size={18} />
+                Transport: <strong>{c.transport || "Not connected"}</strong>
+              </div>
+
+              <div className={styles.row}>
+                <Recycle size={18} />
+                Recycling: <strong>{c.recycling || "Not connected"}</strong>
+              </div>
+
+              <div className={styles.row}>
+                <Sun size={18} />
+                Solar: <strong>{c.solar || "Not connected"}</strong>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* חלון עריכה */}
+      {/* מודאל עריכה — יישאר שלך */}
       {isEditing && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalBox}>
@@ -143,14 +191,18 @@ export default function ProfilePage() {
             <input
               type="text"
               value={editData.name}
-              onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+              onChange={(e) =>
+                setEditData({ ...editData, name: e.target.value })
+              }
             />
 
             <label>Phone</label>
             <input
               type="text"
               value={editData.phone || ""}
-              onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+              onChange={(e) =>
+                setEditData({ ...editData, phone: e.target.value })
+              }
             />
 
             <label>Birth Date</label>
@@ -163,85 +215,76 @@ export default function ProfilePage() {
             />
 
             <h3>Connected Companies</h3>
-            <div className={styles.companyInputs}>
-              <label>⚡ Electricity Company</label>
-              <input
-                type="text"
-                placeholder="Enter company name"
-                value={editData.companies?.electricity || ""}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    companies: {
-                      ...editData.companies,
-                      electricity: e.target.value,
-                    },
-                  })
-                }
-              />
 
-              <label>💧 Water Company</label>
-              <input
-                type="text"
-                placeholder="Enter water supplier"
-                value={editData.companies?.water || ""}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    companies: { ...editData.companies, water: e.target.value },
-                  })
-                }
-              />
+            <label>Electricity</label>
+            <input
+              type="text"
+              value={editData.companies?.electricity || ""}
+              onChange={(e) =>
+                setEditData({
+                  ...editData,
+                  companies: { ...editData.companies, electricity: e.target.value },
+                })
+              }
+            />
 
-              <label>🚗 Transport Service</label>
-              <input
-                type="text"
-                placeholder="Enter transport company"
-                value={editData.companies?.transport || ""}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    companies: { ...editData.companies, transport: e.target.value },
-                  })
-                }
-              />
+            <label>Water</label>
+            <input
+              type="text"
+              value={editData.companies?.water || ""}
+              onChange={(e) =>
+                setEditData({
+                  ...editData,
+                  companies: { ...editData.companies, water: e.target.value },
+                })
+              }
+            />
 
-              <label>♻️ Recycling Service</label>
-              <input
-                type="text"
-                placeholder="Enter recycling provider"
-                value={editData.companies?.recycling || ""}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    companies: { ...editData.companies, recycling: e.target.value },
-                  })
-                }
-              />
+            <label>Transport</label>
+            <input
+              type="text"
+              value={editData.companies?.transport || ""}
+              onChange={(e) =>
+                setEditData({
+                  ...editData,
+                  companies: { ...editData.companies, transport: e.target.value },
+                })
+              }
+            />
 
-              <label>☀️ Solar Energy Company</label>
-              <input
-                type="text"
-                placeholder="Enter solar company"
-                value={editData.companies?.solar || ""}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    companies: { ...editData.companies, solar: e.target.value },
-                  })
-                }
-              />
-            </div>
+            <label>Recycling</label>
+            <input
+              type="text"
+              value={editData.companies?.recycling || ""}
+              onChange={(e) =>
+                setEditData({
+                  ...editData,
+                  companies: { ...editData.companies, recycling: e.target.value },
+                })
+              }
+            />
+
+            <label>Solar</label>
+            <input
+              type="text"
+              value={editData.companies?.solar || ""}
+              onChange={(e) =>
+                setEditData({
+                  ...editData,
+                  companies: { ...editData.companies, solar: e.target.value },
+                })
+              }
+            />
 
             <div className={styles.modalButtons}>
               <button className={styles.saveBtn} onClick={handleSave}>
-                💾 Save Changes
+                Save Changes
               </button>
               <button
                 className={styles.cancelBtn}
                 onClick={() => setIsEditing(false)}
               >
-                ✖ Cancel
+                Cancel
               </button>
             </div>
           </div>

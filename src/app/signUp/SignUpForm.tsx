@@ -54,7 +54,8 @@ export default function SignUpForm() {
 
       // ✅ שמירת המשתמש בלוקאל סטורג'
       // localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // ✅ ניתוב לפי סוג המשתמש
       if (data.user.role === "company") {
