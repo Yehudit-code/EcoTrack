@@ -5,11 +5,11 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    // התחברות למסד
+    // Connect to database
     const db = await connectDB();
     const usersCollection = db.collection("Users");
 
-    // בדיקה אם המשתמש קיים
+    // Check if user exists
     const user = await usersCollection.findOne({ email });
 
     if (!user) {
@@ -18,11 +18,11 @@ export async function POST(req: Request) {
 
     let isPasswordValid = false;
 
-    // 🔹 אם הסיסמה שמורה כהאש מוצפן
+    // 🔹 If password is stored encrypted
     if (user.password && user.password.startsWith("$2b$")) {
       isPasswordValid = await bcrypt.compare(password, user.password);
     } else {
-      // 🔹 אם הסיסמה שמורה רגילה (plain text)
+      // 🔹 If password is stored as plain text
       isPasswordValid = password === user.password;
     }
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Invalid password" }), { status: 401 });
     }
 
-    // הצלחה
+    // Success
     console.log("✅ User signed in:", user.email);
     return new Response(
       JSON.stringify({ message: "Sign-in successful", user }),

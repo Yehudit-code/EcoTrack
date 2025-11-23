@@ -66,54 +66,26 @@
 .textBlock:nth-child(3) { animation-delay: 0.6s; }
 .textBlock:nth-child(4) { animation-delay: 0.8s; }
 
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c5530;
+  margin: 0 0 12px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
 .paragraph {
-  font-size: 1.1rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.6;
   margin: 0;
-  text-align: justify;
-  text-justify: inter-word;
-  color: #555;
-  position: relative;
-  padding-left: 22px;
+  text-align: left;
+  color: #444;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.paragraph::before {
-  content: '"';
-  position: absolute;
-  left: 0;
-  top: -3px;
-  font-size: 1.8rem;
-  color: #9bc59b;
-  font-family: serif;
-}
 
-.paragraph:last-child::after {
-  content: '"';
-  color: #9bc59b;
-  font-size: 1.8rem;
-  font-family: serif;
-}
 
-/* DECORATIVE ELEMENT */
-.decorativeElement {
-  text-align: center;
-  margin-top: 30px;
-}
 
-.leafIcon {
-  font-size: 2rem;
-  opacity: 0.7;
-  animation: gentle-bounce 3s ease-in-out infinite;
-}
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  padding: 15px;
-  background: rgba(250, 243, 220, 0.8);
-  border-top: 1px solid rgba(221, 221, 221, 0.5);
-  backdrop-filter: blur(5px);
-}
 
 /* ANIMATIONS */
 @keyframes fadeInUp {
@@ -147,9 +119,12 @@
     font-size: 2rem;
   }
   
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+  
   .paragraph {
-    font-size: 1rem;
-    padding-left: 18px;
+    font-size: 0.95rem;
   }
 }
 
@@ -167,8 +142,11 @@
     letter-spacing: 1px;
   }
   
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+  
   .paragraph {
-    font-size: 0.95rem;
-    text-align: left;
+    font-size: 0.9rem;
   }
 }

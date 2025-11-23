@@ -1,7 +1,8 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -33,27 +34,45 @@ export default function Header() {
     <header className={styles.header}>
       {/* לוגו */}
       <div className={styles.logoContainer}>
-        <Image src="/logoEcoTrack.png" alt="ECO TRACK logo" width={40} height={40} />
-        <span className={styles.logoText}>ECO TRACK</span>
+        <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
+        <span className={styles.logoText}>EcoTrack</span>
       </div>
 
       {/* ניווט */}
       <nav className={styles.nav}>
-        <Link href="/home">Home</Link>
-        <Link href="/manage-data">Manage data</Link>
-        <Link href="/indicators">Indicators</Link>
-        <Link href="/social-sharing">Social Sharing</Link>
-        <Link href="/about">About</Link>
+        <Link href="/home" className={styles.navLink}>
+          <FontAwesomeIcon icon={faHome} />
+          <span>Home</span>
+        </Link>
+        <Link href="/manage-data" className={styles.navLink}>
+          <FontAwesomeIcon icon={faDatabase} />
+          <span>Manage Data</span>
+        </Link>
+        <Link href="/indicators" className={styles.navLink}>
+          <FontAwesomeIcon icon={faChartBar} />
+          <span>Analytics</span>
+        </Link>
+        <Link href="/social-sharing" className={styles.navLink}>
+          <FontAwesomeIcon icon={faUser} />
+          <span>Social Sharing</span>
+        </Link>
+        <Link href="/about" className={styles.navLink}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          <span>About</span>
+        </Link>
       </nav>
 
-      {/* תמונת משתמש */}
-      <div className={styles.profileContainer}>
+      <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
-          <img
-            src={profilePic}
-            alt="User profile"
-            className={styles.profileImg}
-          />
+          {profilePic ? (
+            <div className={styles.profileContainer}>
+              <img src={profilePic} alt="User Profile" className={styles.profileImg} />
+            </div>
+          ) : (
+            <div className={styles.defaultProfile}>
+              <FontAwesomeIcon icon={faUser} />
+            </div>
+          )}
         </Link>
       </div>
     </header>

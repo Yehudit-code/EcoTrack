@@ -52,12 +52,10 @@ export default function SignUpForm() {
       // ✅ הצגת הודעה ברורה
       alert("🎉 נרשמת בהצלחה למערכת EcoTrack!");
 
-      // ✅ שמירת המשתמש בלוקאל סטורג'
-      // localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.removeItem("user");
+      // Save user to localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // ✅ ניתוב לפי סוג המשתמש
+      // Navigate by user type
       if (data.user.role === "company") {
         window.location.href = "/company-home";
       } else {

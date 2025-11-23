@@ -6,174 +6,169 @@ import { signInWithPopup } from "firebase/auth";
 import styles from "./SignIn.module.css";
 
 export default function SignInForm() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showRoleModal, setShowRoleModal] = useState(false);
-    const [googleUser, setGoogleUser] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [googleUser, setGoogleUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-    // 🔹 התחברות עם Email/Password
-    const handleEmailSignIn = async (e: React.FormEvent) => {
-        e.preventDefault();
+  // Sign in with Email/Password
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      alert("Please enter email and password");
+      return;
+    }
 
-        if (!email || !password) {
-            alert("יש להזין אימייל וסיסמה");
-            return;
-        }
+    setLoading(true);
+    try {
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-        setLoading(true);
-        try {
-            const response = await fetch("/api/signin", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+      const data = await response.json();
 
-            const data = await response.json();
+      if (response.ok) {
+        // Save user to localStorage
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        alert("Successfully signed in! 😊");
+        window.location.href = "/home";
+      } else {
+        alert(`Error: ${data.error || 'Login failed'}`);
+      }
+    } catch (error) {
+      console.error("❌ Sign-in error:", error);
+      alert("Server connection error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            if (response.ok) {
-                // שמירת המשתמש ב-localStorage
-                localStorage.removeItem("user");
-                localStorage.setItem('user', JSON.stringify(data.user));
-                alert("התחברת בהצלחה! 😊");
-                window.location.href = "/home";
-            } else {
-                alert(`שגיאה: ${data.error || 'התחברות נכשלה'}`);
-            }
-        } catch (error) {
-            console.error("❌ Sign-in error:", error);
-            alert("שגיאה בחיבור לשרת");
-        } finally {
-            setLoading(false);
-        }
-    };
+  // 🔹 Google login
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log("✅ Google User:", user);
 
-    // 🔹 התחברות עם גוגל
-    const handleGoogleSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            console.log("✅ Google User:", user);
+      // Check if user already exists in database
+      const checkResponse = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
 
-            // 🔹 בדיקה אם המשתמש כבר קיים במסד הנתונים
-            const checkResponse = await fetch("/api/check-user", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: user.email }),
-            });
+      const checkData = await checkResponse.json();
 
-            const checkData = await checkResponse.json();
+      if (checkData.exists) {
+        // If user exists → save to localStorage and redirect to home
+        const userData = {
+          _id: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photo: user.photoURL
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        alert("ברוך הבא בחזרה! 😊");
+        window.location.href = "/home";
+      } else {
+        // If new user → save user and ask if company or regular user
+        setGoogleUser(user);
+        setShowRoleModal(true);
+      }
+    } catch (error) {
+      console.error("❌ Google Sign-in Error:", error);
+    }
+  };
 
-            if (checkData.exists) {
-                // אם המשתמש כבר קיים → נשמור אותו ב-localStorage וננתב לעמוד הבית
-                // const userData = {
-                //   _id: user.uid,
-                //   email: user.email,
-                //   name: user.displayName,
-                //   photo: user.photoURL
-                // };
-                // localStorage.setItem('currentUser', JSON.stringify(userData));
-                localStorage.removeItem("user");
-                localStorage.setItem("user", JSON.stringify(checkData.user));
-                // localStorage.getItem("currentUser")
+  // 🔹 שליחת הבחירה לשרת
+  const handleRoleSelect = async (role: "user" | "company") => {
+    try {
+      if (!googleUser) return;
 
-                alert("welcome back😊");
-                window.location.href = "/home";
-            } else {
-                setGoogleUser(user);
-                setShowRoleModal(true);
-            }
-        } catch (error) {
-            console.error("❌ Google Sign-in Error:", error);
-        }
-    };
+      const response = await fetch("/api/social-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "google",
+          email: googleUser.email,
+          name: googleUser.displayName,
+          photo: googleUser.photoURL,
+          role,
+        }),
+      });
 
-    // 🔹 שליחת הבחירה לשרת
-    const handleRoleSelect = async (role: "user" | "company") => {
-        try {
-            if (!googleUser) return;
+      const data = await response.json();
+      console.log("🆕 Saved to DB:", data);
 
-            const response = await fetch("/api/social-login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    provider: "google",
-                    email: googleUser.email,
-                    name: googleUser.displayName,
-                    photo: googleUser.photoURL,
-                    role,
-                }),
-            });
+      // Save user to localStorage
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
 
-            const data = await response.json();
-            console.log("🆕 Saved to DB:", data);
+      alert(`Successfully registered as ${role === "company" ? "company" : "regular user"}!`);
+      window.location.href = "/home";
+    } catch (error) {
+      console.error("❌ Error saving social login:", error);
+    } finally {
+      setShowRoleModal(false);
+    }
+  };
 
-            // ✅ שמירת המשתמש ב-localStorage
-            localStorage.removeItem("user");
-            localStorage.setItem('user', JSON.stringify(data.user));
+  return (
+    <>
+      <form className={styles.form} onSubmit={handleEmailSignIn}>
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={styles.inputField}
+          disabled={loading}
+        />
 
-            alert(`נרשמת בהצלחה כ${role === "company" ? "חברה" : "משתמש רגיל"}!`);
-            window.location.href = "/home";
-        } catch (error) {
-            console.error("❌ Error saving social login:", error);
-        } finally {
-            setShowRoleModal(false);
-        }
-    };
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={styles.inputField}
+          disabled={loading}
+        />
 
-    return (
-        <>
-            <form className={styles.form} onSubmit={handleEmailSignIn}>
-                <label>Email</label>
-                <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={styles.inputField}
-                    disabled={loading}
-                />
+        <button type="submit" className={styles.signInButton} disabled={loading}>
+          {loading ? "מתחבר..." : "Sign in"}
+        </button>
+      </form>
 
-                <label>Password</label>
-                <input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={styles.inputField}
-                    disabled={loading}
-                />
+      <div className={styles.divider}>
+        <span>or continue with</span>
+      </div>
 
-                <button type="submit" className={styles.signInButton} disabled={loading}>
-                    {loading ? "מתחבר..." : "Sign in"}
-                </button>
-            </form>
+      <div className={styles.authButtons}>
+        <button
+          onClick={handleGoogleSignIn}
+          className={`${styles.providerBtn} ${styles.googleBtn}`}
+        >
+          <img src="images/google.png" alt="Google" className={styles.icon} />
+          Continue with Google
+        </button>
+      </div>
 
-            <div className={styles.divider}>
-                <span>or continue with</span>
+      {showRoleModal && (
+        <div className={styles.roleModal}>
+          <div className={styles.roleBox}>
+            <h3>האם אתה משתמש רגיל או חברה?</h3>
+            <div className={styles.roleButtons}>
+              <button onClick={() => handleRoleSelect("user")}>משתמש רגיל</button>
+              <button onClick={() => handleRoleSelect("company")}>חברה</button>
             </div>
-
-            <div className={styles.authButtons}>
-                <button
-                    onClick={handleGoogleSignIn}
-                    className={`${styles.providerBtn} ${styles.googleBtn}`}
-                >
-                    <img src="images/google.png" alt="Google" className={styles.icon} />
-                    Continue with Google
-                </button>
-            </div>
-
-            {showRoleModal && (
-                <div className={styles.roleModal}>
-                    <div className={styles.roleBox}>
-                        <h3>האם אתה משתמש רגיל או חברה?</h3>
-                        <div className={styles.roleButtons}>
-                            <button onClick={() => handleRoleSelect("user")}>משתמש רגיל</button>
-                            <button onClick={() => handleRoleSelect("company")}>חברה</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

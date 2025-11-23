@@ -9,12 +9,12 @@ const options = {
   },
 };
 
-// משתנים גלובליים כדי למנוע התחברות מחדש ב־Next.js בזמן פיתוח
+// Global variables to prevent reconnection in Next.js during development
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 declare global {
-  // נגדיר משתנה גלובלי עבור הסביבה של Node.js
+  // Define global variable for Node.js environment
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
