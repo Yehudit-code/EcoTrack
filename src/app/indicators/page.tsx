@@ -29,7 +29,7 @@ export default function IndicatorsPage() {
     Water: { hebrewName: 'מים', color: '#2196F3' },
     Electricity: { hebrewName: 'חשמל', color: '#FF9800' },
     Transportation: { hebrewName: 'תחבורה', color: '#4CAF50' },
-    Transport: { hebrewName: 'תחבורה', color: '#4CAF50' }, // Support old naming
+    Transport: { hebrewName: 'תחבורה', color: '#4CAF50' }, 
     Waste: { hebrewName: 'פסולת', color: '#F44336' }
   };
 

@@ -2,10 +2,11 @@ const { Server } = require("socket.io");
 
 const io = new Server(4000, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
+
 
 io.on("connection", (socket) => {
   console.log("✅ Socket connected:", socket.id);
