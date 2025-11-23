@@ -325,16 +325,16 @@ useEffect(() => {
                 )}
 
                 <div className={styles.postActions}>
-                  <button onClick={() => likePost(post._id!)}>👍 Like ({post.likes})</button>
+                  <button onClick={() => likePost(post._id!)}>👍 Like ({post.likes ?? 0})</button>
                   <button
                     onClick={() => {
                       const text = prompt("Write a comment");
                       if (text?.trim()) commentPost(post._id!, text);
                     }}
                   >
-                    💬 Comment ({post.comments.length})
+                    💬 Comment ({post.comments?.length ?? 0})
                   </button>
-                  <button onClick={() => sharePost(post._id!)}>↗ Share ({post.shares})</button>
+                  <button onClick={() => sharePost(post._id!)}>↗ Share ({post.shares ?? 0})</button>
                 </div>
               </div>
             ))}

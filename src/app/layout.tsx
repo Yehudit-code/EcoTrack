@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EcoTrack - Sustainable Consumption Tracking",
+  title: "EcoTrack",
   description: "Track and manage your environmental impact with EcoTrack's comprehensive consumption monitoring system.",
 };
 
