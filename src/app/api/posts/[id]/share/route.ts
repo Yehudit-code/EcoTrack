@@ -1,8 +1,9 @@
 import { connectDB } from "@/app/services/server/mongodb";
 import { ObjectId } from "mongodb";
+import { NextRequest } from "next/server";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
