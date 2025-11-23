@@ -3,9 +3,9 @@ import { ObjectId } from "mongodb";
 
 export async function POST(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   try {
     const db = await connectDB();
