@@ -31,7 +31,7 @@ export async function POST() {
         month,
         year,
         improvementScore: 70 + i * 3,
-        tipsGiven: ["כבה מכשירים בסיום השימוש", "השתמש בתאורת LED"]
+        tipsGiven: ["Turn off devices when not in use", "Use LED lighting"]
       });
       
       // Water consumption (decreasing over time)
@@ -42,7 +42,7 @@ export async function POST() {
         month,
         year,
         improvementScore: 65 + i * 4,
-        tipsGiven: ["קצר את זמן המקלחת", "תקן דליפות מיד"]
+        tipsGiven: ["Reduce shower time", "Fix leaks immediately"]
       });
       
       // Gas consumption (seasonal variation)
@@ -53,7 +53,7 @@ export async function POST() {
         month,
         year,
         improvementScore: 75 + i * 2,
-        tipsGiven: ["הנמך את החימום בלילה", "בדוק בידוד"]
+        tipsGiven: ["Lower heating at night", "Check insulation"]
       });
       
       // Transportation (varying)
@@ -64,7 +64,7 @@ export async function POST() {
         month,
         year,
         improvementScore: 60 - i * 2,
-        tipsGiven: ["השתמש בתחבורה ציבורית", "נסיעות משותפות"]
+        tipsGiven: ["Use public transport", "Share rides"]
       });
       
       // Waste (decreasing over time)
@@ -75,7 +75,7 @@ export async function POST() {
         month,
         year,
         improvementScore: 80 + i * 2,
-        tipsGiven: ["מיחזור", "קנה רק מה שצריך"]
+        tipsGiven: ["Recycle more", "Buy only what you need"]
       });
     }
     
