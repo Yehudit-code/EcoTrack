@@ -53,7 +53,7 @@ export default function SignUpForm() {
       alert("🎉 נרשמת בהצלחה למערכת EcoTrack!");
 
       // Save user to localStorage
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
 
       // Navigate by user type
       if (data.user.role === "company") {

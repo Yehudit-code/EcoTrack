@@ -76,20 +76,17 @@ export default function SocialSharingPage() {
   const typingTimeoutRef = useRef<number | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
-  // ⭐ טעינת המשתמש
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+    const stored = localStorage.getItem("currentUser");
     if (stored) setCurrentUser(JSON.parse(stored));
   }, []);
 
-  // ⭐ טעינת Best Savers
   useEffect(() => {
     getSavers().then((data) =>
       Array.isArray(data) ? setSavers(data) : setSavers([])
     );
   }, []);
 
-  // ⭐ טעינת פוסטים וצ׳אט
   useEffect(() => {
     loadPosts();
     loadMessages();
@@ -105,7 +102,6 @@ export default function SocialSharingPage() {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-  // ⭐ חיבור WebSocket
 useEffect(() => {
   const socket = io("http://localhost:4000", {
     transports: ["websocket"],
@@ -130,14 +126,12 @@ useEffect(() => {
     console.log("❌ Socket disconnected");
   });
 
-  // ⭐ זה החלק החשוב!!
   return () => {
     socket.disconnect();
   };
 }, []);
  
 
-  // ⭐ יצירת פוסט
   const handleCreatePost = async () => {
     if (!currentUser) return;
     if (!newPostText.trim() && !newPostImage) return;
@@ -156,29 +150,37 @@ useEffect(() => {
     setNewPostImage(null);
   };
 
-  // ⭐ לייק
-  const likePost = async (id: string) => {
-    await updatePost("like", { postId: id });
-    loadPosts();
-  };
+const likePost = async (id: string) => {
+  const updated = await updatePost("like", { postId: id });
 
-  // ⭐ תגובה
-  const commentPost = async (id: string, text: string) => {
-    await updatePost("comment", {
-      postId: id,
-      comment: text,
-      userName: currentUser?.name,
-      userPhoto: currentUser?.photo,
-    });
+  setPosts((prev) =>
+    prev.map((p) => (p._id === updated._id ? updated : p))
+  );
+};
 
-    loadPosts();
-  };
 
-  // ⭐ שיתוף
-  const sharePost = async (id: string) => {
-    await updatePost("share", { postId: id });
-    loadPosts();
-  };
+const commentPost = async (id: string, text: string) => {
+  const updated = await updatePost("comment", {
+    postId: id,
+    comment: text,
+    userName: currentUser?.name,
+    userPhoto: currentUser?.photo,
+  });
+
+  setPosts((prev) =>
+    prev.map((p) => (p._id === updated._id ? updated : p))
+  );
+};
+
+
+const sharePost = async (id: string) => {
+  const updated = await updatePost("share", { postId: id });
+
+  setPosts((prev) =>
+    prev.map((p) => (p._id === updated._id ? updated : p))
+  );
+};
+
 
   // ⭐ שליחת הודעה בצ׳אט
   const handleSendMessage = async () => {
@@ -224,7 +226,7 @@ useEffect(() => {
             {savers.map((u, i) => (
               <li key={i} className={styles.saverItem}>
                 <span className={styles.rankBadge}>{i + 1}</span>
-                <img src={u.photo || "/defaultUser.png"} className={styles.saverAvatar} />
+                <img src={u.photo || "/images/default-profile.png"} className={styles.saverAvatar} />
                 <div>
                   <div className={styles.saverName}>{u.name}</div>
                   <div className={styles.saverSaving}>
@@ -248,7 +250,7 @@ useEffect(() => {
           <div className={styles.createPostCard}>
             <div className={styles.createPostTop}>
               <img
-                src={currentUser?.photo || "/defaultUser.png"}
+                src={currentUser?.photo || "/images/default-profile.png"}
                 className={styles.createAvatar}
               />
 
@@ -305,7 +307,7 @@ useEffect(() => {
               <div key={post._id} className={styles.postCard}>
                 <div className={styles.postHeader}>
                   <img
-                    src={post.userPhoto || "/defaultUser.png"}
+                    src={post.userPhoto || "/images/default-profile.png"}
                     className={styles.postAvatar}
                   />
                   <div className={styles.postMeta}>
@@ -362,7 +364,7 @@ useEffect(() => {
                   >
                     {!isMe && (
                       <img
-                        src={m.userPhoto || "/defaultUser.png"}
+                        src={m.userPhoto || "/images/default-profile.png"}
                         className={styles.chatAvatar}
                       />
                     )}
@@ -375,7 +377,7 @@ useEffect(() => {
 
                     {isMe && (
                       <img
-                        src={m.userPhoto || "/defaultUser.png"}
+                        src={m.userPhoto || "/images/default-profile.png"}
                         className={styles.chatAvatar}
                       />
                     )}
