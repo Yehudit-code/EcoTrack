@@ -10,7 +10,7 @@ export default function Header() {
 
   useEffect(() => {
     // נשלף את המשתמש השמור בלוקאל סטורג'
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem('currentUser');
     if (userData) {
       const parsed = JSON.parse(userData);
 

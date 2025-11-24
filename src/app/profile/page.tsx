@@ -28,7 +28,7 @@ export default function ProfilePage() {
   const [editData, setEditData] = useState<any>({});
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedUser = localStorage.getItem("currentUser");
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setUser(parsed);
@@ -46,8 +46,8 @@ export default function ProfilePage() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/signin");
+    localStorage.removeItem("currentUser");
+    router.push("/");
   };
 
   const handleSave = async () => {
@@ -63,7 +63,7 @@ export default function ProfilePage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
         setUser(updatedUser);
         setIsEditing(false);
         alert("Profile updated successfully!");
