@@ -1,109 +1,263 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import styles from "./ManageData.module.css";
-// import { useSession } from "next-auth/react";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
 
-// const { data: session } = useSession();
+import {
+  fetchUserConsumptionByEmail,
+  createConsumption,
+  updateConsumption,
+  ConsumptionHabitDto,
+  ConsumptionCategory,
+} from "@/app/services/client/consumptionClient";
 
-export default function ManageData() {
-  const [month, setMonth] = useState("");
-  const [formData, setFormData] = useState({
-    electricity: "",
-    water: "",
-    transport: "",
-    waste: "",
+// ⭐ עכשיו כולל Gas
+type MainCategory =
+  | "Electricity"
+  | "Water"
+  | "Gas"
+  | "Transportation"
+  | "Waste";
+
+const MAIN_CATEGORIES: MainCategory[] = [
+  "Electricity",
+  "Water",
+  "Gas",
+  "Transportation",
+  "Waste",
+];
+
+interface FormState {
+  [key: string]: string;
+}
+
+interface IdState {
+  [key: string]: string | undefined;
+}
+
+interface MessageState {
+  [key: string]: string | null;
+}
+
+interface LoadingState {
+  [key: string]: boolean;
+}
+
+export default function ManageDataPage() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const [formValues, setFormValues] = useState<FormState>({
+    Electricity: "",
+    Water: "",
+    Gas: "",
+    Transportation: "",
+    Waste: "",
   });
-  const [message, setMessage] = useState("");
-  
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  
-  // Save or update consumption data
-  const handleSave = async () => {
-    if (!month) return setMessage("Please select a month.");
-    const [year, monthNum] = month.split("-").map(Number);
-    // const userEmail = session?.user?.email;
-    // const userId = session?.user?.id; // זה מזהה מתוך ה־DB
-    // // const userId = "67654abc1234";
-    // const userEmail = "yehudit59501@gmail.com";
+
+  const [docIds, setDocIds] = useState<IdState>({});
+  const [messages, setMessages] = useState<MessageState>({});
+  const [loading, setLoading] = useState<LoadingState>({});
+
+  // --------------------------
+  // LOAD USER EMAIL FROM LOCALSTORAGE
+  // --------------------------
+  useEffect(() => {
+    const stored = localStorage.getItem("currentUser");
+    let emailFromStorage = null;
+
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        emailFromStorage = parsed.email || null;
+      } catch {
+        console.error("Failed to parse currentUser");
+      }
+    }
+
+    if (emailFromStorage) {
+      setUserEmail(emailFromStorage);
+      loadExistingData(emailFromStorage);
+    } else {
+      setMessages((prev) => ({
+        ...prev,
+        global: "User e-mail is missing. Please sign in again.",
+      }));
+    }
+  }, []);
+
+  // --------------------------
+  // LOAD EXISTING DATA
+  // --------------------------
+  async function loadExistingData(email: string) {
+    try {
+      const data = await fetchUserConsumptionByEmail(email);
+
+      const newValues = { ...formValues };
+      const newIds = { ...docIds };
+
+      (data || []).forEach((item) => {
+        if (MAIN_CATEGORIES.includes(item.category as MainCategory)) {
+          newValues[item.category] = item.value?.toString() ?? "";
+          newIds[item.category] = item._id;
+        }
+      });
+
+      setFormValues(newValues);
+      setDocIds(newIds);
+    } catch {
+      setMessages((prev) => ({
+        ...prev,
+        global: "Failed to load existing data.",
+      }));
+    }
+  }
+
+  // --------------------------
+  // INPUT CHANGE
+  // --------------------------
+  function handleInputChange(category: MainCategory, value: string) {
+    setFormValues((prev) => ({ ...prev, [category]: value }));
+    setMessages((prev) => ({ ...prev, [category]: null }));
+  }
+
+  // --------------------------
+  // SAVE BUTTON (One category each)
+  // --------------------------
+  async function handleSave(category: MainCategory) {
+    if (!userEmail) {
+      setMessages((prev) => ({
+        ...prev,
+        [category]: "User e-mail is missing.",
+      }));
+      return;
+    }
+
+    const numericValue = Number(formValues[category]);
+
+    if (Number.isNaN(numericValue) || numericValue < 0) {
+      setMessages((prev) => ({
+        ...prev,
+        [category]: "Please enter a valid number.",
+      }));
+      return;
+    }
+
+    setLoading((prev) => ({ ...prev, [category]: true }));
 
     try {
-      const categories = [
-        { name: "Electricity", key: "electricity" },
-        { name: "Water", key: "water" },
-        { name: "Transportation", key: "transport" },
-        { name: "Waste", key: "waste" },
-      ];
+      const baseInput = {
+        userEmail,
+        category: category as ConsumptionCategory,
+        value: numericValue,
+      };
 
-      // Loop through categories and send API requests
-      for (const cat of categories) {
-        const payload = {
-          // userId,
-          // userEmail,
-          category: cat.name,
-          value: Number((formData as any)[cat.key]),
-          month: monthNum,
-          year,
-        };
+      const existingId = docIds[category];
+      let saved: ConsumptionHabitDto;
 
-        const res = await fetch("/api/consumption", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        // If already exists, update instead
-        if (res.status !== 201) {
-          // const getRes = await fetch(`/api/consumption?userId=${userId}&userEmail=${userEmail}&category=${cat.name}`);
-          // const items = await getRes.json();
-          // const existing = items.find((i: any) => i.month === monthNum && i.year === year);
-          // if (existing?._id) {
-          //   await fetch("/api/consumption", {
-          //     method: "PUT",
-          //     headers: { "Content-Type": "application/json" },
-          //     body: JSON.stringify({ _id: existing._id, ...payload }),
-          //   });
-          // }
-        }
+      if (existingId) {
+        saved = await updateConsumption({ ...baseInput, _id: existingId });
+      } else {
+        saved = await createConsumption(baseInput);
       }
 
-      setMessage("Data saved successfully!");
-    } catch (err) {
-      setMessage("Error saving data.");
+      setDocIds((prev) => ({ ...prev, [category]: saved._id }));
+      setMessages((prev) => ({ ...prev, [category]: "Saved successfully!" }));
+    } catch (err: any) {
+      setMessages((prev) => ({
+        ...prev,
+        [category]: err.message || "Failed to save.",
+      }));
+    } finally {
+      setLoading((prev) => ({ ...prev, [category]: false }));
     }
-  };
+  }
 
+  // --------------------------
+  // RENDER CARD UI
+  // --------------------------
+  function renderCard(
+    category: MainCategory,
+    title: string,
+    unit: string,
+    placeholder: string
+  ) {
+    return (
+      <div className={styles.dataCard}>
+        <h3>{title}</h3>
+        <p className={styles.cardDescription}>
+          Enter your monthly {title.toLowerCase()} usage.
+        </p>
+
+        <div className={styles.inputGroup}>
+          <label htmlFor={category}>{unit}</label>
+          <input
+            id={category}
+            type="number"
+            value={formValues[category]}
+            onChange={(e) => handleInputChange(category, e.target.value)}
+            placeholder={placeholder}
+          />
+        </div>
+
+        <button
+          className={styles.saveBtn}
+          onClick={() => handleSave(category)}
+          disabled={loading[category]}
+        >
+          {loading[category] ? "Saving…" : "Save Data"}
+        </button>
+
+        {messages[category] && (
+          <p className={styles.statusMessage}>{messages[category]}</p>
+        )}
+      </div>
+    );
+  }
+
+  // --------------------------
+  // PAGE UI
+  // --------------------------
   return (
     <div className={styles.container}>
-      <header className={styles.header}>EcoTrack | Manage Data</header>
+      <Header />
 
-      <section className={styles.card}>
-        <h2 className={styles.title}>Enter Monthly Consumption Data</h2>
+      <main className={styles.main}>
+        <div className={styles.contentBox}>
+          <h1 className={styles.title}>Manage Consumption Data</h1>
 
-        <div className={styles.monthSelector}>
-          <label htmlFor="month">Month:</label>
-          <input type="month" id="month" value={month} onChange={(e) => setMonth(e.target.value)} />
+          <section className={styles.dataSection}>
+            {renderCard(
+              "Electricity",
+              "Electricity",
+              "Monthly electricity (kWh):",
+              "Enter kWh"
+            )}
+            {renderCard(
+              "Water",
+              "Water",
+              "Monthly water (m³):",
+              "Enter m³"
+            )}
+            {renderCard("Gas", "Gas", "Monthly gas (m³):", "Enter m³")}
+            {renderCard(
+              "Transportation",
+              "Transportation",
+              "Monthly distance (km):",
+              "Enter km"
+            )}
+            {renderCard(
+              "Waste",
+              "Waste",
+              "Weekly waste (kg):",
+              "Enter kg"
+            )}
+          </section>
         </div>
+      </main>
 
-        <div className={styles.formGrid}>
-          <input name="electricity" type="number" placeholder="Electricity (kWh)" value={formData.electricity} onChange={handleChange} />
-          <input name="water" type="number" placeholder="Water (Liters)" value={formData.water} onChange={handleChange} />
-          <input name="transport" type="number" placeholder="Transportation (KM)" value={formData.transport} onChange={handleChange} />
-          <input name="waste" type="number" placeholder="Waste (KG)" value={formData.waste} onChange={handleChange} />
-        </div>
-
-        <div className={styles.buttons}>
-          <button onClick={handleSave} className={styles.saveBtn}>Save / Update</button>
-        </div>
-
-        {message && <p className={styles.message}>{message}</p>}
-      </section>
-
-      <footer className={styles.footer}>
-        Home | Manage Data | Indicators | Social Sharing | About
-      </footer>
+      <Footer />
     </div>
   );
 }

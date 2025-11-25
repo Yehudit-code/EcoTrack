@@ -1,123 +1,169 @@
+/* src/app/manage-data/page.module.css */
+
 .container {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-color: #ffffff;
-  color: #333333;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+.contentBox {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.header {
   width: 100%;
-  background-color: #2e7d32; /* eco green */
-  color: white;
+  max-width: 1100px;
+}
+
+.title {
+  font-size: 2.6rem;
+  color: #2d5c2d;
+  margin-bottom: 10px;
   text-align: center;
-  font-weight: 600;
-  padding: 1rem 0;
-  font-size: 1.2rem;
 }
 
-.card {
-  width: 100%;
-  max-width: 900px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  margin-top: 2rem;
-}
-
-.title, .subtitle {
+.subtitle {
+  font-size: 1rem;
+  color: #555555;
+  margin-bottom: 40px;
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
+  max-width: 600px;
 }
 
-.monthSelector {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.monthSelector select {
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.4rem 0.7rem;
-}
-
-.formGrid {
+/* GRID OF CARDS */
+.dataSection {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 30px;
+  width: 100%;
 }
 
-.formGrid input {
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
+.dataCard {
+  background-color: #f8fdf8;
+  border: 2px solid #9bc59b;
+  border-radius: 18px;
+  padding: 24px 22px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dataCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.12);
+}
+
+.dataCard h3 {
+  color: #2d5c2d;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.cardDescription {
   font-size: 0.95rem;
+  color: #666666;
+  margin-bottom: 18px;
 }
 
-.formGrid input:focus {
-  outline: 2px solid #2e7d32;
+/* INPUT GROUP */
+.inputGroup {
+  margin-bottom: 20px;
+  text-align: left;
 }
 
-.buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+.inputGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #444444;
 }
 
-.saveBtn {
-  background-color: #2e7d32;
-  color: white;
-  padding: 0.6rem 1.5rem;
-  border: none;
+.inputGroup input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cccccc;
   border-radius: 8px;
-  font-weight: 500;
+  font-size: 1rem;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #9bc59b;
+  box-shadow: 0 0 0 3px rgba(155, 197, 155, 0.35);
+}
+
+/* BUTTONS */
+.saveBtn {
+  background-color: #9bc59b;
+  color: #ffffff;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.98rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background-color 0.15s ease, transform 0.1s ease,
+    box-shadow 0.15s ease;
 }
 
 .saveBtn:hover {
-  background-color: #1b5e20;
+  background-color: #7ba87b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
-.prevBtn {
-  background-color: #e5e7eb;
-  color: #333;
-  padding: 0.6rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s ease;
+.saveBtn:disabled {
+  background-color: #c7ddc7;
+  cursor: default;
+  box-shadow: none;
 }
 
-.prevBtn:hover {
-  background-color: #d1d5db;
+/* MESSAGES */
+.statusMessage {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #305830;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
+.globalMessage {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #b04545;
   text-align: center;
 }
 
-.table th, .table td {
-  border: 1px solid #d1d5db;
-  padding: 0.5rem;
+/* FOOTER (נשלט ע"י הקומפוננטה עצמה, כאן רק רווח קטן מעליו) */
+.footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #faf3dc;
+  border-top: 1px solid #dddddd;
 }
 
-.table th {
-  background-color: #e8f5e9;
-  font-weight: 600;
-}
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .main {
+    padding: 24px 12px;
+  }
 
-.table tr:hover {
-  background-color: #f1f8e9;
-}
+  .title {
+    font-size: 2rem;
+  }
 
+  .dataCard {
+    padding: 20px 16px;
+  }
+}
