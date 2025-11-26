@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import styles from "./ManageData.module.css";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import MonthYearPicker from "./MonthYearPicker";
 
 import {
   fetchUserConsumptionByEmail,
   createConsumption,
   updateConsumption,
-  ConsumptionHabitDto,
   ConsumptionCategory,
+  ConsumptionHabitDto,
 } from "@/app/services/client/consumptionClient";
 
-// ⭐ עכשיו כולל Gas
 type MainCategory =
   | "Electricity"
   | "Water"
@@ -46,8 +46,11 @@ interface LoadingState {
 }
 
 export default function ManageDataPage() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const now = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<FormState>({
     Electricity: "",
     Water: "",
@@ -60,42 +63,52 @@ export default function ManageDataPage() {
   const [messages, setMessages] = useState<MessageState>({});
   const [loading, setLoading] = useState<LoadingState>({});
 
-  // --------------------------
-  // LOAD USER EMAIL FROM LOCALSTORAGE
-  // --------------------------
+  /* ------------------------------ */
+  /* LOAD USER EMAIL                */
+  /* ------------------------------ */
   useEffect(() => {
     const stored = localStorage.getItem("currentUser");
-    let emailFromStorage = null;
+    let email = null;
 
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
-        emailFromStorage = parsed.email || null;
-      } catch {
-        console.error("Failed to parse currentUser");
-      }
+        email = JSON.parse(stored).email || null;
+      } catch {}
     }
 
-    if (emailFromStorage) {
-      setUserEmail(emailFromStorage);
-      loadExistingData(emailFromStorage);
+    if (email) {
+      setUserEmail(email);
+      loadExistingData(email, selectedMonth, selectedYear);
     } else {
       setMessages((prev) => ({
         ...prev,
-        global: "User e-mail is missing. Please sign in again.",
+        global: "User e-mail is missing.",
       }));
     }
   }, []);
 
-  // --------------------------
-  // LOAD EXISTING DATA
-  // --------------------------
-  async function loadExistingData(email: string) {
-    try {
-      const data = await fetchUserConsumptionByEmail(email);
 
-      const newValues = { ...formValues };
-      const newIds = { ...docIds };
+  /* ------------------------------ */
+  /* LOAD DATA FOR SELECTED MONTH   */
+  /* ------------------------------ */
+  async function loadExistingData(email: string, month: number, year: number) {
+    try {
+      const data = await fetchUserConsumptionByEmail(
+        email,
+        undefined,
+        month,
+        year
+      );
+
+      const newValues: FormState = {
+        Electricity: "",
+        Water: "",
+        Gas: "",
+        Transportation: "",
+        Waste: "",
+      };
+
+      const newIds: IdState = {};
 
       (data || []).forEach((item) => {
         if (MAIN_CATEGORIES.includes(item.category as MainCategory)) {
@@ -109,22 +122,22 @@ export default function ManageDataPage() {
     } catch {
       setMessages((prev) => ({
         ...prev,
-        global: "Failed to load existing data.",
+        global: "Failed to load data for this month.",
       }));
     }
   }
 
-  // --------------------------
-  // INPUT CHANGE
-  // --------------------------
+  /* ------------------------------ */
+  /* INPUT HANDLING                 */
+  /* ------------------------------ */
   function handleInputChange(category: MainCategory, value: string) {
     setFormValues((prev) => ({ ...prev, [category]: value }));
     setMessages((prev) => ({ ...prev, [category]: null }));
   }
 
-  // --------------------------
-  // SAVE BUTTON (One category each)
-  // --------------------------
+  /* ------------------------------ */
+  /* SAVE DATA PER CATEGORY         */
+  /* ------------------------------ */
   async function handleSave(category: MainCategory) {
     if (!userEmail) {
       setMessages((prev) => ({
@@ -135,7 +148,6 @@ export default function ManageDataPage() {
     }
 
     const numericValue = Number(formValues[category]);
-
     if (Number.isNaN(numericValue) || numericValue < 0) {
       setMessages((prev) => ({
         ...prev,
@@ -147,23 +159,29 @@ export default function ManageDataPage() {
     setLoading((prev) => ({ ...prev, [category]: true }));
 
     try {
-      const baseInput = {
+      const base = {
         userEmail,
         category: category as ConsumptionCategory,
         value: numericValue,
+        month: selectedMonth,
+        year: selectedYear,
       };
 
       const existingId = docIds[category];
       let saved: ConsumptionHabitDto;
 
       if (existingId) {
-        saved = await updateConsumption({ ...baseInput, _id: existingId });
+        saved = await updateConsumption({ ...base, _id: existingId });
       } else {
-        saved = await createConsumption(baseInput);
+        saved = await createConsumption(base);
       }
 
       setDocIds((prev) => ({ ...prev, [category]: saved._id }));
-      setMessages((prev) => ({ ...prev, [category]: "Saved successfully!" }));
+
+      setMessages((prev) => ({
+        ...prev,
+        [category]: "Saved!",
+      }));
     } catch (err: any) {
       setMessages((prev) => ({
         ...prev,
@@ -174,26 +192,26 @@ export default function ManageDataPage() {
     }
   }
 
-  // --------------------------
-  // RENDER CARD UI
-  // --------------------------
+  /* ------------------------------ */
+  /* CARD RENDER                    */
+  /* ------------------------------ */
   function renderCard(
     category: MainCategory,
     title: string,
-    unit: string,
+    unitLabel: string,
     placeholder: string
   ) {
     return (
       <div className={styles.dataCard}>
         <h3>{title}</h3>
+
         <p className={styles.cardDescription}>
           Enter your monthly {title.toLowerCase()} usage.
         </p>
 
         <div className={styles.inputGroup}>
-          <label htmlFor={category}>{unit}</label>
+          <label>{unitLabel}</label>
           <input
-            id={category}
             type="number"
             value={formValues[category]}
             onChange={(e) => handleInputChange(category, e.target.value)}
@@ -216,9 +234,9 @@ export default function ManageDataPage() {
     );
   }
 
-  // --------------------------
-  // PAGE UI
-  // --------------------------
+  /* ------------------------------ */
+  /* PAGE UI                        */
+  /* ------------------------------ */
   return (
     <div className={styles.container}>
       <Header />
@@ -227,6 +245,18 @@ export default function ManageDataPage() {
         <div className={styles.contentBox}>
           <h1 className={styles.title}>Manage Consumption Data</h1>
 
+          {/* NEW MONTH-YEAR PICKER */}
+          <MonthYearPicker
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onChange={(m, y) => {
+              setSelectedMonth(m);
+              setSelectedYear(y);
+              if (userEmail) loadExistingData(userEmail, m, y);
+            }}
+          />
+
+          {/* CARDS */}
           <section className={styles.dataSection}>
             {renderCard(
               "Electricity",
@@ -234,12 +264,7 @@ export default function ManageDataPage() {
               "Monthly electricity (kWh):",
               "Enter kWh"
             )}
-            {renderCard(
-              "Water",
-              "Water",
-              "Monthly water (m³):",
-              "Enter m³"
-            )}
+            {renderCard("Water", "Water", "Monthly water (m³):", "Enter m³")}
             {renderCard("Gas", "Gas", "Monthly gas (m³):", "Enter m³")}
             {renderCard(
               "Transportation",
@@ -247,12 +272,7 @@ export default function ManageDataPage() {
               "Monthly distance (km):",
               "Enter km"
             )}
-            {renderCard(
-              "Waste",
-              "Waste",
-              "Weekly waste (kg):",
-              "Enter kg"
-            )}
+            {renderCard("Waste", "Waste", "Weekly waste (kg):", "Enter kg")}
           </section>
         </div>
       </main>
