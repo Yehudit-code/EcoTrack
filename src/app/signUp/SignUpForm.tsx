@@ -134,6 +134,10 @@ export default function SignUpForm() {
       <button type="submit" className={styles.signInButton}>
         Sign up
       </button>
+
+      <p className={styles.consentText}>
+        I allow my information to be used in accordance with utility providers in israel
+      </p>
     </form>
   );
 }

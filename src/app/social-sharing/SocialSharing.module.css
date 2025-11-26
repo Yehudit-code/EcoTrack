@@ -1,562 +1,569 @@
-/* ====== LAYOUT כללי ====== */
-
+ 
 .page {
-  min-height: 100vh;
-  background: radial-gradient(circle at top left, #eaf8f0 0, #ffffff 40%, #f0f5ff 100%);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f6fdf8 0%, #ffffff 40%, #f4f8ff 100%);
+    padding-top: 20px;
 }
+
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 16px;
-  display: grid;
-  grid-template-columns: 26% 46% 28%;
-  gap: 24px;
-  box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 16px;
+    display: grid;
+    grid-template-columns: 26% 46% 28%;
+    gap: 24px;
+    box-sizing: border-box;
 }
 
-/* כותרות עמודות */
 
 .columnTitle {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #1f2933;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1f2933;
 }
 
-/* ====== ANIMATIONS ====== */
 
 @keyframes saverFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes cardPop {
-  from {
-    opacity: 0;
-    transform: translateY(6px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @keyframes typingBlink {
-  0%, 80%, 100% {
-    opacity: 0.25;
-    transform: translateY(0);
-  }
-  40% {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.25;
+        transform: translateY(0);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
 }
 
-/* ====== LEFT – SAVERS LEADERBOARD ====== */
 
 .leftColumn {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 22px;
-  padding: 20px;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(200, 220, 200, 0.35);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
 }
 
 .saversList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .saverItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  opacity: 0;
-  animation: saverFadeUp 0.45s ease forwards;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    opacity: 0;
+    animation: saverFadeUp 0.45s ease forwards;
 }
 
 .rankBadge {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-  color: #4b3412;
-  background: linear-gradient(135deg, #ffd666, #ffb347);
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #4b3412;
+    background: linear-gradient(135deg, #ffd666, #ffb347);
 }
 
-/* מדליות */
 .rankBadge.gold {
-  background: linear-gradient(135deg, #ffcf33, #e6ac00);
-  color: #553800;
-  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(135deg, #ffcf33, #e6ac00);
+    color: #553800;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
 }
 
 .rankBadge.silver {
-  background: linear-gradient(135deg, #dcdcdc, #bfbfbf);
-  color: #4a4a4a;
-  box-shadow: 0 0 6px rgba(200, 200, 200, 0.5);
+    background: linear-gradient(135deg, #dcdcdc, #bfbfbf);
+    color: #4a4a4a;
+    box-shadow: 0 0 6px rgba(200, 200, 200, 0.5);
 }
 
 .rankBadge.bronze {
-  background: linear-gradient(135deg, #d9a066, #b8742a);
-  color: #4a2b00;
-  box-shadow: 0 0 6px rgba(180, 120, 60, 0.5);
+    background: linear-gradient(135deg, #d9a066, #b8742a);
+    color: #4a2b00;
+    box-shadow: 0 0 6px rgba(180, 120, 60, 0.5);
 }
 
 
 .saverAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  object-fit: cover;
-  border: 2px solid #cfead3;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 2px solid #cfead3;
 }
 
 .saverInfo {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .saverName {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f2933;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2933;
 }
 
 .saverSaving {
-  font-size: 12px;
-  color: #6b7b8c;
+    font-size: 12px;
+    color: #6b7b8c;
 }
 
-/* ====== CENTER – FACEBOOK-LIKE FEED ====== */
+.saverAvatar,
+.postAvatar,
+.chatAvatar,
+.createAvatar {
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+
 
 .centerColumn {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 22px;
-  padding: 20px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
-  border: 1px solid rgba(224, 232, 245, 0.95);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(224, 232, 245, 0.95);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(14px);
 }
 
-/* Create Post */
 
 .createPostCard {
-  border-radius: 18px;
-  background: #f5f7fb;
-  border: 1px solid #dde6f2;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  animation: cardPop 0.2s ease-out;
+    border-radius: 18px;
+    background: #f5f7fb;
+    border: 1px solid #dde6f2;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: cardPop 0.2s ease-out;
+    backdrop-filter: blur(14px);
 }
 
 .createPostTop {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .createAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  object-fit: cover;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    object-fit: cover;
 }
 
 .postTextarea {
-  flex: 1;
-  resize: none;
-  border-radius: 999px;
-  border: 1px solid #ccd6e6;
-  padding: 10px 14px;
-  font-size: 14px;
-  min-height: 44px;
-  background: #ffffff;
+    flex: 1;
+    resize: none;
+    border-radius: 999px;
+    border: 1px solid #ccd6e6;
+    padding: 10px 14px;
+    font-size: 14px;
+    min-height: 44px;
+    background: #ffffff;
 }
 
 .postTextarea::placeholder {
-  color: #9ca7b8;
+    color: #9ca7b8;
 }
 
 .postTextarea:focus {
-  outline: none;
-  border-color: #3b8f5a;
-  box-shadow: 0 0 0 1px rgba(59, 143, 90, 0.18);
+    outline: none;
+    border-color: #3b8f5a;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
 }
 
 .createPostBottom {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 6px;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
 }
 
 .postButton {
-  border: none;
-  border-radius: 999px;
-  padding: 8px 20px;
-  background: linear-gradient(135deg, #3b8f5a, #58b46f);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(34, 147, 94, 0.3);
+    background: linear-gradient(135deg, #3b8f5a, #4fc77b);
+    box-shadow: 0 4px 14px rgba(38, 148, 87, 0.25);
+    transition: all 0.25s ease;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 20px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .postButton:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+    filter: brightness(1.05);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(38, 148, 87, 0.3);
 }
 
-/* כפתור מצלמה */
 
 .imageUploadBtn {
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7b8c;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7b8c;
 }
 
 .imageUploadBtn:hover {
-  color: #3c7cff;
+    color: #3c7cff;
 }
 
-/* Preview תמונה */
 
 .hiddenFile {
-  display: none;
+    display: none;
 }
 
 .previewWrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  margin-top: 6px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-top: 6px;
 }
 
 .previewImage {
-  width: 100%;
-  max-height: 250px;
-  border-radius: 14px;
-  object-fit: cover;
-  border: 1px solid #d9e3f7;
+    width: 100%;
+    max-height: 250px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid #d9e3f7;
 }
 
 .removeImageBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(255, 77, 77, 0.95);
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 77, 77, 0.95);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-/* Posts List */
 
 .postsList {
-  margin-top: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .postCard {
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid #e4e6eb;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
-  animation: cardPop 0.18s ease-out;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e4e6eb;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    animation: cardPop 0.18s ease-out;
+    backdrop-filter: blur(14px);
 }
 
 .postHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .postAvatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  object-fit: cover;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    object-fit: cover;
 }
 
 .postMeta {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .postUser {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1c1e21;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1e21;
 }
 
 .postTime {
-  font-size: 12px;
-  color: #65676b;
+    font-size: 12px;
+    color: #65676b;
 }
 
 .postContent {
-  font-size: 14px;
-  color: #222a35;
-  margin-top: 4px;
-  white-space: pre-wrap;
+    font-size: 14px;
+    color: #222a35;
+    margin-top: 4px;
+    white-space: pre-wrap;
 }
 
 .postImageWrapper {
-  margin-top: 6px;
-  border-radius: 14px;
-  overflow: hidden;
-  max-height: 280px;
+    margin-top: 6px;
+    border-radius: 14px;
+    overflow: hidden;
+    max-height: 280px;
 }
 
 .postImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .postActions {
-  margin-top: 6px;
-  display: flex;
-  justify-content: space-around;
-  padding-top: 6px;
-  border-top: 1px solid #e4e6eb;
-  font-size: 14px;
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-around;
+    padding-top: 6px;
+    border-top: 1px solid #e4e6eb;
+    font-size: 14px;
 }
 
 .postActions button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #65676b;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #65676b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .postActions button:hover {
-  color: #1877f2;
+    color: #1877f2;
 }
 
-/* ====== RIGHT – TELEGRAM-LIKE CHAT ====== */
 
 .rightColumn {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 22px;
-  padding: 16px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
-  border: 1px solid rgba(224, 232, 245, 0.95);
-  display: flex;
-  flex-direction: column;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 22px;
+    padding: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(224, 232, 245, 0.95);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(14px);
 }
 
 .chatCard {
-  margin-top: 4px;
-  border-radius: 18px;
-  background: #f4f8ff;
-  border: 1px solid #d3e0f7;
-  display: flex;
-  flex-direction: column;
-  height: 380px;
-  overflow: hidden;
+    margin-top: 4px;
+    border-radius: 18px;
+    background: #f4f8ff;
+    border: 1px solid #d3e0f7;
+    display: flex;
+    flex-direction: column;
+    height: 380px;
+    overflow: hidden;
+    backdrop-filter: blur(14px);
 }
 
 .messagesArea {
-  flex: 1;
-  padding: 10px 12px 6px;
-  overflow-y: auto;
+    flex: 1;
+    padding: 10px 12px 6px;
+    overflow-y: auto;
 }
 
-/* שורות הודעה */
 
 .messageRowOther,
 .messageRowMe {
-  display: flex;
-  align-items: flex-end;
-  margin-bottom: 10px;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
 }
 
 .messageRowOther {
-  justify-content: flex-start;
-  gap: 8px;
+    justify-content: flex-start;
+    gap: 8px;
 }
 
 .messageRowMe {
-  justify-content: flex-end;
-  gap: 8px;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .chatAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  object-fit: cover;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    object-fit: cover;
 }
-
-/* בועות – כמו טלגרם */
 
 .messageBubbleOther,
 .messageBubbleMe {
-  max-width: 72%;
-  padding: 8px 12px;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.15);
-  animation: cardPop 0.18s ease-out;
+    max-width: 72%;
+    padding: 8px 12px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    animation: cardPop 0.18s ease-out;
 }
 
 .messageBubbleOther {
-  background: #ffffff;
-  border-radius: 16px 16px 16px 4px;
-  border: 1px solid #d6e0f2;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 4px;
+    border: 1px solid #d6e0f2;
 }
 
 .messageBubbleMe {
-  background: #cbe7ff;
-  border-radius: 16px 16px 4px 16px;
-  border: 1px solid #9ec8f2;
+    background: linear-gradient(135deg, #c0e3ff, #d8f0ff);
+    border-radius: 16px 16px 4px 16px;
+    border: 1px solid #9ec8f2;
 }
 
 .messageName {
-  font-size: 12px;
-  font-weight: 600;
-  color: #36506f;
+    font-size: 12px;
+    font-weight: 600;
+    color: #36506f;
 }
 
 .messageText {
-  font-size: 13px;
-  color: #233044;
+    font-size: 13px;
+    color: #233044;
 }
 
 .messageTime {
-  font-size: 10px;
-  color: #7c8da4;
-  align-self: flex-end;
+    font-size: 10px;
+    color: #7c8da4;
+    align-self: flex-end;
 }
 
-/* typing… */
-
 .typingIndicator {
-  font-size: 11px;
-  color: #6b7a92;
-  font-style: italic;
-  margin: 2px 6px 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    font-size: 11px;
+    color: #6b7a92;
+    font-style: italic;
+    margin: 2px 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .typingDots {
-  display: flex;
-  gap: 3px;
+    display: flex;
+    gap: 3px;
 }
 
 .typingDots span {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #6b7a92;
-  animation: typingBlink 1s infinite ease-in-out;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #6b7a92;
+    animation: typingBlink 1s infinite ease-in-out;
 }
 
 .typingDots span:nth-child(2) {
-  animation-delay: 0.2s;
+    animation-delay: 0.2s;
 }
 
 .typingDots span:nth-child(3) {
-  animation-delay: 0.4s;
+    animation-delay: 0.4s;
 }
 
-/* input שורה תחתונה */
-
 .chatInputRow {
-  border-top: 1px solid #d3e0f7;
-  padding: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: #e9f0ff;
+    border-top: 1px solid #d3e0f7;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: #e9f0ff;
 }
 
 .chatInput {
-  flex: 1;
-  border-radius: 999px;
-  border: 1px solid #c1d2f0;
-  padding: 8px 14px;
-  font-size: 13px;
-  background: #ffffff;
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid #c1d2f0;
+    padding: 8px 14px;
+    font-size: 13px;
+    background: #ffffff;
 }
 
 .chatInput:focus {
-  outline: none;
-  border-color: #82a8ff;
+    outline: none;
+    border-color: #82a8ff;
 }
 
 .chatSendButton {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #3c7cff, #5ea9ff);
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #3c7cff, #5ea9ff);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* ====== טקסט ריק ====== */
 
 .emptyText {
-  font-size: 13px;
-  color: #8a96a7;
-  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+  color: #8aa0b0;
+  opacity: 0.7;
 }
 
-/* ====== RESPONSIVE ====== */
 
 @media (max-width: 1024px) {
-  .container {
-    grid-template-columns: 1fr;
-  }
+    .container {
+        grid-template-columns: 1fr;
+    }
 
-  .leftColumn,
-  .centerColumn,
-  .rightColumn {
-    width: 100%;
-  }
+    .leftColumn,
+    .centerColumn,
+    .rightColumn {
+        width: 100%;
+    }
 }

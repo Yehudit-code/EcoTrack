@@ -154,3 +154,91 @@
   background-color: #2e5b2e;
 }
 
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2ecc71;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  animation: fadeInOut 2s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -10px); }
+  10% { opacity: 1; transform: translate(-50%, 0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+
+/* Modal general */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.modalBox {
+  background: #fff;
+  padding: 24px;
+  width: 330px;
+  border-radius: 14px;
+  text-align: center;
+  animation: popIn .25s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modalButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: center;
+}
+
+.modalButtons button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.acceptBtn {
+  background: #2ecc71;
+  color: white;
+}
+
+.declineBtn {
+  background: #eee;
+  color: #333;
+}
+
+.modalDesc {
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.consentText {
+  font-size: 9px;
+  color: #727272;
+  margin-top: 14px;
+  text-align: left;
+  line-height: 1.4;
+}
+
