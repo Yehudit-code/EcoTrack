@@ -1,0 +1,138 @@
+.chatBubble {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 30px;
+  color: white;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  transition: 0.2s ease;
+  z-index: 9999;
+}
+
+.chatBubble:hover {
+  transform: scale(1.1);
+}
+
+.chatWindow {
+  position: fixed;
+  bottom: 110px;
+  right: 25px;
+  width: 340px;
+  height: 440px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: popup 0.3s ease;
+}
+
+@keyframes popup {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.header {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.userMsg {
+  align-self: flex-end;
+  background: #d1f7c4;
+  color: #222;
+  padding: 10px 14px;
+  border-radius: 14px 14px 0 14px;
+  max-width: 75%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.aiMsg {
+  align-self: flex-start;
+  background: #f1f1f1;
+  color: #333;
+  padding: 10px 14px;
+  border-radius: 14px 14px 14px 0;
+  max-width: 75%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+.inputArea {
+  display: flex;
+  padding: 10px;
+  gap: 5px;
+}
+
+.inputField  {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.sendButton  {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chatBubble {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 55px;
+  height: 55px;
+  background: rgba(34, 197, 94, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  z-index: 99999;
+}
+
+.botIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.chatBubble:hover {
+  transform: scale(1.07);
+}
