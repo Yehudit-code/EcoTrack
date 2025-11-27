@@ -53,7 +53,7 @@ export default function SignUpForm() {
       alert("🎉 נרשמת בהצלחה למערכת EcoTrack!");
 
       // Save user to localStorage
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // Navigate by user type
       if (data.user.role === "company") {
@@ -134,10 +134,6 @@ export default function SignUpForm() {
       <button type="submit" className={styles.signInButton}>
         Sign up
       </button>
-
-      <p className={styles.consentText}>
-        I allow my information to be used in accordance with utility providers in israel
-      </p>
     </form>
   );
 }

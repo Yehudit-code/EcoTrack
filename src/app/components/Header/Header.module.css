@@ -3,14 +3,20 @@
   justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
-  padding: 10px 30px;
+  padding: 10px 60px;
   border-bottom: 1px solid #ddd;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .logoContainer {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.logoIcon {
+  color: #3b6e3b !important;
 }
 
 .nav {
@@ -30,6 +36,27 @@
 
 .nav a:hover {
   color: #3b6e3b;
+}
+
+.nav a span {
+  display: inline;
+}
+
+.nav a svg {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .nav a span {
+    display: none;
+  }
+  .nav a svg {
+    display: inline;
+    font-size: 0.75em;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
 }
 
 /* פרופיל */

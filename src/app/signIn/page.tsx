@@ -1,19 +1,40 @@
 "use client";
 
-import React from "react";
+import { Box, Typography, Paper } from "@mui/material";
 import SignInForm from "./SignInForm";
-import styles from "./SignIn.module.css";
 
 export default function SignInPage() {
   return (
-    <div className={styles.container}>
-      <div className={styles.formWrapper}>
-        <h2>
-          Sign in to <span className={styles.logo}>EcoTrack</span>
-        </h2>
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "linear-gradient(135deg, #eaf4e6, #ffffff)",
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          p: 5,
+          width: 400,
+          borderRadius: 4,
+          textAlign: "center",
+          backdropFilter: "blur(6px)",
+        }}
+      >
+        <Typography variant="h4" fontWeight={700}>
+          Sign in to{" "}
+          <Box component="span" sx={{ color: "green" }}>
+            EcoTrack
+          </Box>
+        </Typography>
 
-        <SignInForm /> 
-      </div>
-    </div>
+        <Box mt={3}>
+          <SignInForm />
+        </Box>
+      </Paper>
+    </Box>
   );
 }
