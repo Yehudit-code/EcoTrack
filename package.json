@@ -19,6 +19,7 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "bcryptjs": "^3.0.3",
+    "emoji-picker-react": "^4.15.2",
     "firebase": "^12.5.0",
     "groq-sdk": "^0.36.0",
     "lucide-react": "^0.554.0",

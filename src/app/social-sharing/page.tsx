@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
 import { io, Socket } from "socket.io-client";
+import EmojiPicker from "emoji-picker-react";
 
-// ⭐ ייבוא כל השירותים בקובץ אחד
 import {
   getSavers,
   getPosts,
@@ -13,7 +13,7 @@ import {
   createPost,
   updatePost,
   sendMessage,
-} from "@/app/services/server/social";
+} from "@/app/services/client/social";
 
 interface Saver {
   name: string;
@@ -70,6 +70,8 @@ export default function SocialSharingPage() {
   const [newMessage, setNewMessage] = useState("");
 
   const [typingUser, setTypingUser] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showPostEmojiPicker, setShowPostEmojiPicker] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -102,35 +104,47 @@ export default function SocialSharingPage() {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-useEffect(() => {
-  const socket = io("http://localhost:4000", {
-    transports: ["websocket"],
-  });
+  useEffect(() => {
+    const socket = io("http://localhost:4000", {
+      transports: ["websocket"],
+    });
 
-  socketRef.current = socket;
+    socketRef.current = socket;
 
-  socket.on("connect", () => {
-    console.log("🔌 Socket connected");
-  });
+    socket.on("connect", () => {
+      console.log("🔌 Socket connected");
+    });
 
-  socket.on("new_message", (msg) => {
-    setMessages((prev) => [...prev, msg]);
-  });
+    socket.on("new_message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
 
-  socket.on("typing", (data) => {
-    setTypingUser(data.userName);
-    setTimeout(() => setTypingUser(null), 2000);
-  });
+    socket.on("typing", (data) => {
+      setTypingUser(data.userName);
+    });
 
-  socket.on("disconnect", () => {
-    console.log("❌ Socket disconnected");
-  });
+    // ⭐⭐ זה המקום – כאן להוסיף!
+    socket.on("typing_stop", () => {
+      setTypingUser(null);
+    });
+    // ⭐⭐ עד כאן
 
-  return () => {
-    socket.disconnect();
-  };
-}, []);
- 
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
 
   const handleCreatePost = async () => {
     if (!currentUser) return;
@@ -148,41 +162,41 @@ useEffect(() => {
 
     setNewPostText("");
     setNewPostImage(null);
+    setShowPostEmojiPicker(false);
   };
 
-const likePost = async (id: string) => {
-  const updated = await updatePost("like", { postId: id });
+  const likePost = async (id: string) => {
+    const updated = await updatePost("like", { postId: id });
 
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
-
-
-const commentPost = async (id: string, text: string) => {
-  const updated = await updatePost("comment", {
-    postId: id,
-    comment: text,
-    userName: currentUser?.name,
-    userPhoto: currentUser?.photo,
-  });
-
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
 
 
-const sharePost = async (id: string) => {
-  const updated = await updatePost("share", { postId: id });
+  const commentPost = async (id: string, text: string) => {
+    const updated = await updatePost("comment", {
+      postId: id,
+      comment: text,
+      userName: currentUser?.name,
+      userPhoto: currentUser?.photo,
+    });
 
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
 
 
-  // ⭐ שליחת הודעה בצ׳אט
+  const sharePost = async (id: string) => {
+    const updated = await updatePost("share", { postId: id });
+
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
+
+
   const handleSendMessage = async () => {
     if (!currentUser) return;
     if (!newMessage.trim()) return;
@@ -196,6 +210,7 @@ const sharePost = async (id: string) => {
 
     setMessages((prev) => [...prev, created]);
     setNewMessage("");
+    setShowEmojiPicker(false);
 
     socketRef.current?.emit("send_message", created);
   };
@@ -262,11 +277,30 @@ const sharePost = async (id: string) => {
               />
 
               <button
+                className={styles.emojiPostButton}
+                onClick={() => setShowPostEmojiPicker((p) => !p)}
+              >
+                😀
+              </button>
+
+
+              <button
                 className={styles.imageUploadBtn}
                 onClick={() => fileInputRef.current?.click()}
               >
                 📷
               </button>
+
+              {showPostEmojiPicker && (
+                <div className={styles.emojiWrapper}>
+                  <EmojiPicker
+                    onEmojiClick={(emoji) =>
+                      setNewPostText((prev) => prev + emoji.emoji)
+                    }
+                  />
+                </div>
+              )}
+
 
               <input
                 type="file"
@@ -398,19 +432,50 @@ const sharePost = async (id: string) => {
             </div>
 
             <div className={styles.chatInputRow}>
+
+              <button
+                className={styles.emojiButton}
+                onClick={() => setShowEmojiPicker((prev) => !prev)}
+              >
+                😀
+              </button>
+
               <input
                 type="text"
                 className={styles.chatInput}
                 placeholder="Write a message…"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+
+                  socketRef.current?.emit("typing", {
+                    userName: currentUser?.name,
+                  });
+
+                  if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+                  typingTimeoutRef.current = window.setTimeout(() => {
+                    socketRef.current?.emit("typing_stop");
+                  }, 2000);
+                }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
 
               <button className={styles.chatSendButton} onClick={handleSendMessage}>
                 ➤
               </button>
+
+              {showEmojiPicker && (
+                <div className={styles.emojiWrapper}>
+                  <EmojiPicker
+                    onEmojiClick={(emoji) =>
+                      setNewMessage((prev) => prev + emoji.emoji)
+                    }
+                  />
+                </div>
+              )}
             </div>
+
 
           </div>
         </div>

@@ -195,3 +195,10 @@
 .signInButton:hover {
   background-color: #2e5b2e;
 }
+
+.consentText {
+  font-size: 12px;
+  text-align: center;
+  margin-top: 12px;
+  color: #5b6570;
+}

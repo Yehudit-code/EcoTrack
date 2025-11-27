@@ -5,18 +5,29 @@ import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import styles from "./SignUp.module.css";
 import SignUpForm from "./SignUpForm";
+import Toast from "@/app/components/Toast/Toast"; 
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  // ✅ התחברות עם Google
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2000);
+  };
+
+  // ⭐ התחברות עם Google
   const handleGoogleSignUp = async () => {
     try {
       setLoading(true);
+
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // Check if user already exists
+      // 🧹 מנקים לוקל סטורג’
+      localStorage.clear();
+
+      // בדיקה אם המשתמש קיים
       const checkResponse = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,13 +36,30 @@ export default function SignUpPage() {
 
       const checkData = await checkResponse.json();
 
+      // משתמש קיים
       if (checkData.exists) {
-        alert("😄 Welcome back!");
-        window.location.href = "/home";
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            role: "user",
+          })
+        );
+
+        localStorage.setItem(
+          "profilePic",
+          user.photoURL || "/images/default-profile.png"
+        );
+
+        showToast("😄 Welcome back!");
+
+        setTimeout(() => (window.location.href = "/home"), 1000);
         return;
       }
 
-      // New user → add to database
+      // משתמש חדש — שמירה במסד
       const saveResponse = await fetch("/api/social-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,22 +67,37 @@ export default function SignUpPage() {
           provider: "google",
           email: user.email,
           name: user.displayName,
-          photo: user.photoURL,
-          role: "user", // אפשר לשנות לפי הצורך
+          photoURL: user.photoURL,
+          role: "user",
         }),
       });
 
       const saveData = await saveResponse.json();
 
       if (saveResponse.ok) {
-        alert("🎉 נרשמת בהצלחה דרך Google!");
-        window.location.href = "/home";
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            role: "user",
+          })
+        );
+
+        localStorage.setItem(
+          "profilePic",
+          user.photoURL || "/images/default-profile.png"
+        );
+
+        showToast("🎉 נרשמת בהצלחה דרך Google!");
+        setTimeout(() => (window.location.href = "/home"), 1000);
       } else {
-        alert(saveData.error || "Registration failed");
+        showToast(saveData.error || "Registration failed");
       }
     } catch (error) {
       console.error("❌ Google signup error:", error);
-      alert("Something went wrong with Google signup.");
+      showToast("Something went wrong with Google signup.");
     } finally {
       setLoading(false);
     }
@@ -62,6 +105,9 @@ export default function SignUpPage() {
 
   return (
     <div className={styles.container}>
+      {/* ⭐ הצגת טוסט */}
+      {toast && <Toast text={toast} />}
+
       <div className={styles.formWrapper}>
         <h2>
           Sign up to <span className={styles.logo}>EcoTrack</span>

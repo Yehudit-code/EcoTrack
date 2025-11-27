@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import styles from "./SignUp.module.css";
+import Toast from "@/app/components/Toast/Toast";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -11,10 +12,15 @@ export default function SignUpForm() {
     photo: "",
   });
 
+  const [toast, setToast] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // 📸 העלאת תמונה
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2000);
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -27,15 +33,14 @@ export default function SignUpForm() {
     }
   };
 
-  const handleProfileClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleProfileClick = () => fileInputRef.current?.click();
 
-  // 💾 שליחת הנתונים
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      localStorage.clear();
+
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,95 +50,90 @@ export default function SignUpForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Registration failed");
+        showToast(data.error || "Registration failed");
         return;
       }
 
-      // ✅ הצגת הודעה ברורה
-      alert("🎉 נרשמת בהצלחה למערכת EcoTrack!");
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      localStorage.setItem(
+        "profilePic",
+        data.user.photoURL || data.user.photo || "/images/default-profile.png"
+      );
 
-      // Save user to localStorage
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Navigate by user type
-      if (data.user.role === "company") {
-        window.location.href = "/company-home";
-      } else {
-        window.location.href = "/home";
-      }
+      showToast("🎉 You have successfully registered!");
+      setTimeout(() => {
+        window.location.href =
+          data.user.role === "company" ? "/company-home" : "/home";
+      }, 1000);
     } catch (err) {
-      console.error("❌ Signup error:", err);
-      alert("Something went wrong. Try again.");
+      console.error("Signup error:", err);
+      showToast("Something went wrong. Try again.");
     }
   };
 
-
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      {/* 📸 תמונת פרופיל יפה */}
-      <div className={styles.profileUpload}>
-        <div className={styles.profileImageContainer} onClick={handleProfileClick}>
-          {photoPreview ? (
-            <img src={photoPreview} alt="Profile" className={styles.profileImage} />
-          ) : (
-            <div className={styles.placeholder}>
-              <span className={styles.cameraIcon}>📷</span>
+    <>
+      {toast && <Toast text={toast} />}
+
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.profileUpload}>
+          <div className={styles.profileImageContainer} onClick={handleProfileClick}>
+            {photoPreview ? (
+              <img src={photoPreview} alt="Profile" className={styles.profileImage} />
+            ) : (
+              <div className={styles.placeholder}>
+                <span className={styles.cameraIcon}>📷</span>
+              </div>
+            )}
+            <div className={styles.overlay}>
+              <span className={styles.changeText}>Change</span>
             </div>
-          )}
-          <div className={styles.overlay}>
-            <span className={styles.changeText}>Change</span>
           </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handlePhotoUpload}
+            className={styles.hiddenInput}
+          />
         </div>
         <input
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoUpload}
-          ref={fileInputRef}
-          className={styles.hiddenInput}
+          type="text"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className={styles.inputField}
+          required
         />
-      </div>
-
-      <input
-        type="text"
-        placeholder="Full Name"
-        value={formData.name}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        className={styles.inputField}
-        required
-      />
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        className={styles.inputField}
-        required
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={(e) =>
-          setFormData({ ...formData, password: e.target.value })
-        }
-        className={styles.inputField}
-        required
-      />
-
-      <select
-        value={formData.role}
-        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-        className={styles.roleSelect}
-      >
-        <option value="user">User</option>
-        <option value="company">Company</option>
-      </select>
-
-      <button type="submit" className={styles.signInButton}>
-        Sign up
-      </button>
-    </form>
+        <input
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          className={styles.inputField}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          className={styles.inputField}
+          required
+        />
+        <select
+          value={formData.role}
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+          className={styles.roleSelect}
+        >
+          <option value="user">User</option>
+          <option value="company">Company</option>
+        </select>
+        <button type="submit" className={styles.signInButton}>Sign up</button>
+        <p className={styles.consentText}>
+          I allow my information to be used in accordance with utility providers in Israel.
+        </p>
+      </form>
+    </>
   );
 }
