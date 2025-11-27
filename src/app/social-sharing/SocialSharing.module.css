@@ -567,3 +567,27 @@
         width: 100%;
     }
 }
+
+.emojiButton {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.emojiWrapper {
+  position: absolute;
+  bottom: 60px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.emojiPostButton {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+

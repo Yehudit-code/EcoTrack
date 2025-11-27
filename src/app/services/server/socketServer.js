@@ -7,16 +7,23 @@ const io = new Server(4000, {
   },
 });
 
-
 io.on("connection", (socket) => {
   console.log("✅ Socket connected:", socket.id);
 
+  // ⭐ קבלת הודעה ושידור לכל המשתמשים
   socket.on("send_message", (msg) => {
-    io.emit("new_message", msg);
+    console.log("📩 New message broadcast:", msg);
+    io.emit("new_message", msg); // משדר לכולם בלי יוצא מן הכלל
   });
 
+  // ⭐ מישהו מקליד
   socket.on("typing", (data) => {
     socket.broadcast.emit("typing", data);
+  });
+
+  // ⭐ מישהו מפסיק להקליד
+  socket.on("typing_stop", () => {
+    socket.broadcast.emit("typing_stop");
   });
 
   socket.on("disconnect", () => {

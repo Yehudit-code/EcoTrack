@@ -5,10 +5,7 @@ import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import styles from "./SignIn.module.css";
 
-/* 🔔 Toast component */
-function Toast({ text }: { text: string }) {
-    return <div className={styles.toast}>{text}</div>;
-}
+import Toast from "@/app/components/Toast/Toast";
 
 export default function SignInForm() {
     const [email, setEmail] = useState("");
@@ -18,19 +15,14 @@ export default function SignInForm() {
     const [toast, setToast] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    /* ⬇️ פונקציה להצגת toast */
     const showToast = (msg: string) => {
         setToast(msg);
         setTimeout(() => setToast(null), 2000);
     };
 
-    /* ---------------------------------------------------- */
-    /* SIGN IN WITH EMAIL */
-    /* ---------------------------------------------------- */
     const handleEmailSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email || !password) return showToast("נא למלא אימייל וסיסמה");
-
+        if (!email || !password) return showToast("Please enter email and password");
         setLoading(true);
         try {
             const res = await fetch("/api/signin", {
@@ -43,27 +35,23 @@ export default function SignInForm() {
 
             if (res.ok) {
                 localStorage.setItem("currentUser", JSON.stringify(data.user));
-                showToast("התחברת בהצלחה!");
+                showToast("Signed in successfully!");
                 setTimeout(() => (window.location.href = "/home"), 900);
             } else {
-                showToast(data.error || "שגיאת התחברות");
+                showToast(data.error || "error signing in");
             }
         } catch {
-            showToast("שגיאה בשרת");
+            showToast("error in server");
         } finally {
             setLoading(false);
         }
     };
 
-    /* ---------------------------------------------------- */
-    /* SIGN IN WITH GOOGLE */
-    /* ---------------------------------------------------- */
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
 
-            // בדיקה אם כבר קיים במאגר
             const checkRes = await fetch("/api/check-user", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -73,40 +61,29 @@ export default function SignInForm() {
             const checkData = await checkRes.json();
 
             if (checkData.exists) {
-                // משתמש קיים → כניסה רגילה
-                localStorage.setItem(
-                    "currentUser",
-                    JSON.stringify(checkData.user)
-                );
-                showToast("ברוך הבא בחזרה! 😊");
+                localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+                showToast("Welcome back! 😊");
                 setTimeout(() => (window.location.href = "/home"), 900);
             } else {
-                // משתמש חדש → שלב 1: בחירת תפקיד
                 setGoogleUser(user);
                 setShowRoleModal(true);
             }
         } catch (err) {
             console.error(err);
-            showToast("שגיאה בהתחברות");
+            showToast("Error signing in with Google");
         }
     };
 
-    /* ---------------------------------------------------- */
-    /* אחרי בחירת ROLE → שואלים על שיתוף מידע */
-    /* ---------------------------------------------------- */
     const handleRoleSelected = (role: "user" | "company") => {
         googleUser.role = role;
         setShowRoleModal(false);
-
     };
-
 
     return (
         <>
-            {/* Toast */}
+            {/* 🟢 Toast כמו בשאר המערכת */}
             {toast && <Toast text={toast} />}
 
-            {/* FORM */}
             <form className={styles.form} onSubmit={handleEmailSignIn}>
                 <label>Email</label>
                 <input
@@ -129,16 +106,14 @@ export default function SignInForm() {
                 />
 
                 <button className={styles.signInButton} disabled={loading}>
-                    {loading ? "מתחבר..." : "Sign in"}
+                    {loading ? "Signing in..." : "Sign in"}
                 </button>
 
                 <p className={styles.consentText}>
                     I allow my information to be used in accordance with utility providers in israel
                 </p>
-
             </form>
 
-            {/* Google Button */}
             <div className={styles.divider}>
                 <span>or continue with</span>
             </div>
@@ -153,23 +128,17 @@ export default function SignInForm() {
                 </button>
             </div>
 
-            {/* ROLE PICKER MODAL */}
             {showRoleModal && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalBox}>
-                        <h3>מה סוג המשתמש שלך?</h3>
+                        <h3>What type of user are you?</h3>
                         <div className={styles.modalButtons}>
-                            <button onClick={() => handleRoleSelected("user")}>
-                                משתמש רגיל
-                            </button>
-                            <button onClick={() => handleRoleSelected("company")}>
-                                חברה
-                            </button>
+                            <button onClick={() => handleRoleSelected("user")}>Regular User</button>
+                            <button onClick={() => handleRoleSelected("company")}>Company User</button>
                         </div>
                     </div>
                 </div>
             )}
-
         </>
     );
 }

@@ -9,15 +9,10 @@ export default function Header() {
   const [profilePic, setProfilePic] = useState<string>('/images/default-profile.png');
 
   useEffect(() => {
-    // נשלף את המשתמש השמור בלוקאל סטורג'
     const userData = localStorage.getItem('currentUser');
     if (userData) {
       const parsed = JSON.parse(userData);
 
-      // סדר עדיפויות לתמונה:
-      // 1. תמונה שהעלה המשתמש
-      // 2. תמונה מגוגל
-      // 3. ברירת מחדל
       const pic =
         parsed.photo ||
         parsed.photoURL ||
@@ -25,20 +20,17 @@ export default function Header() {
 
       setProfilePic(pic);
 
-      // נשמור גם כדי שהheader הבא ידע לקרוא
       localStorage.setItem('profilePic', pic);
     }
   }, []);
 
   return (
     <header className={styles.header}>
-      {/* לוגו */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      {/* ניווט */}
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}>
           <FontAwesomeIcon icon={faHome} />
