@@ -13,7 +13,7 @@ import {
   createPost,
   updatePost,
   sendMessage,
-} from "@/app/services/server/social";
+} from "@/app/services/client/social";
 
 interface Saver {
   name: string;
