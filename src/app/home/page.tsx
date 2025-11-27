@@ -101,10 +101,83 @@ export default function HomePage() {
             </div>
           </div>
 
-           
+          <div className={styles.categoriesSection}>
+            <h2 className={styles.sectionTitle}>What You Can Track</h2>
+            <div className={styles.categoriesGrid}>
+              <div className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>💧</div>
+                <h3>Water Usage</h3>
+                <p>Monitor your daily water consumption and get tips for conservation</p>
+              </div>
+
+              <div className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>⚡</div>
+                <h3>Electricity</h3>
+                <p>Track energy consumption and learn how to reduce your carbon footprint</p>
+              </div>
+
+              <div className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🔥</div>
+                <h3>Gas Usage</h3>
+                <p>Keep track of gas consumption for heating and cooking</p>
+              </div>
+
+              <div className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🚗</div>
+                <h3>Transportation</h3>
+                <p>Log your travel habits and discover eco-friendly alternatives</p>
+              </div>
+
+              <div className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🗑️</div>
+                <h3>Waste Management</h3>
+                <p>Track waste production and learn about recycling and reduction</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.statsAndTipsSection}>
+            <div className={styles.communityStats}>
+              <h2 className={styles.sectionTitle}>Our Community Impact</h2>
+              <div className={styles.statsGrid}>
+                <div className={styles.statCard}>
+                  <div className={styles.statValue}>2,847</div>
+                  <div className={styles.statLabel}>Active Users</div>
+                </div>
+                <div className={styles.statCard}>
+                  <div className={styles.statValue}>18,392</div>
+                  <div className={styles.statLabel}>Liters Saved</div>
+                </div>
+                <div className={styles.statCard}>
+                  <div className={styles.statValue}>1,256 kg</div>
+                  <div className={styles.statLabel}>CO2 Reduced</div>
+                </div>
+                <div className={styles.statCard}>
+                  <div className={styles.statValue}>95%</div>
+                  <div className={styles.statLabel}>User Satisfaction</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.dailyTipSection}>
+            <h2 className={styles.sectionTitle}>Daily Eco Tip</h2>
+            <div className={styles.tipCard}>
+              <div className={styles.tipContent}>
+                <div className={styles.tipIcon}>💡</div>
+                <p className={styles.tipText}>{dailyTips[currentTipIndex]}</p>
+              </div>
+              <div className={styles.tipFooter}>
+                <span className={styles.tipRotation}>New tip every 10 minutes</span>
+              </div>
+            </div>
+          </div>
 
           <div className={styles.featuresSection}>
-           
+            <div className={styles.sectionTitle}>
+              <h2>Our Environmental Solutions</h2>
+              <p>Comprehensive tracking and analytics for sustainable living</p>
+            </div>
 
             <div
               id="feature-water"
@@ -112,14 +185,14 @@ export default function HomePage() {
               ref={createObserverRef}
             >
               <div className={styles.featureImage}>
-                <img src="/images/מים.png" alt="Water Conservation" width={22} height={22} />
+                <img src="/images/מים.png" alt="Water Conservation" />
                 <div className={styles.imageOverlay}>
-                  <h3 className={styles.smallText}>Water Conservation</h3>
+                  <h3>Water Conservation</h3>
                 </div>
               </div>
               <div className={styles.featureContent}>
-                <h3 className={styles.smallText}>Smart Water Management</h3>
-                <p className={styles.smallText}>
+                <h3>Smart Water Management</h3>
+                <p>
                   Advanced monitoring systems help reduce water consumption by up to 40% in residential homes.
                   Our intelligent sensors track usage patterns and provide real-time alerts for leaks or
                   excessive consumption, helping you save both water and money.
@@ -138,8 +211,8 @@ export default function HomePage() {
               ref={createObserverRef}
             >
               <div className={styles.featureContent}>
-                <h3 className={styles.smallText}>Energy Efficiency Analytics</h3>
-                <p className={styles.smallText}>
+                <h3>Energy Efficiency Analytics</h3>
+                <p>
                   Comprehensive analytics provide deep insights into energy usage patterns and optimization
                   opportunities. Track peak consumption hours, identify energy-hungry devices, and receive
                   personalized recommendations to reduce your carbon footprint.
@@ -151,9 +224,9 @@ export default function HomePage() {
                 </ul>
               </div>
               <div className={styles.featureImage}>
-                <img src="/images/חשמל.png" alt="Energy Management" width={22} height={22} />
+                <img src="/images/חשמל.png" alt="Energy Management" />
                 <div className={styles.imageOverlay}>
-                  <h3 className={styles.smallText}>Energy Management</h3>
+                  <h3>Energy Management</h3>
                 </div>
               </div>
             </div>
@@ -164,14 +237,14 @@ export default function HomePage() {
               ref={createObserverRef}
             >
               <div className={styles.featureImage}>
-                <img src="/images/אופניים.png" alt="Sustainable Transportation" width={22} height={22} />
+                <img src="/images/אופניים.png" alt="Sustainable Transportation" />
                 <div className={styles.imageOverlay}>
-                  <h3 className={styles.smallText}>Eco Transportation</h3>
+                  <h3>Eco Transportation</h3>
                 </div>
               </div>
               <div className={styles.featureContent}>
-                <h3 className={styles.smallText}>Sustainable Mobility Tracking</h3>
-                <p className={styles.smallText}>
+                <h3>Sustainable Mobility Tracking</h3>
+                <p>
                   Monitor and encourage eco-friendly transportation choices to significantly reduce your
                   carbon footprint. Track cycling distances, public transport usage, and walking routes
                   while calculating the environmental impact of your daily commute.
@@ -190,8 +263,8 @@ export default function HomePage() {
               ref={createObserverRef}
             >
               <div className={styles.featureContent}>
-                <h3 className={styles.smallText}>Environmental Impact Assessment</h3>
-                <p className={styles.smallText}>
+                <h3>Environmental Impact Assessment</h3>
+                <p>
                   Comprehensive tracking of your complete environmental footprint with actionable
                   recommendations for improvement. Our advanced algorithms analyze your consumption
                   patterns and provide personalized strategies for sustainable living.
@@ -203,9 +276,9 @@ export default function HomePage() {
                 </ul>
               </div>
               <div className={styles.featureImage}>
-                <img src="/images/עלים.png" alt="Environmental Impact" width={22} height={22} />
+                <img src="/images/עלים.png" alt="Environmental Impact" />
                 <div className={styles.imageOverlay}>
-                  <h3 className={styles.smallText}>Environmental Impact</h3>
+                  <h3>Environmental Impact</h3>
                 </div>
               </div>
             </div>

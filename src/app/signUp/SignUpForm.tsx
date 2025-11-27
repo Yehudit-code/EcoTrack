@@ -65,6 +65,7 @@ export default function SignUpForm() {
         window.location.href =
           data.user.role === "company" ? "/company-home" : "/home";
       }, 1000);
+
     } catch (err) {
       console.error("Signup error:", err);
       showToast("Something went wrong. Try again.");
@@ -76,6 +77,7 @@ export default function SignUpForm() {
       {toast && <Toast text={toast} />}
 
       <form className={styles.form} onSubmit={handleSubmit}>
+
         <div className={styles.profileUpload}>
           <div className={styles.profileImageContainer} onClick={handleProfileClick}>
             {photoPreview ? (
@@ -89,6 +91,7 @@ export default function SignUpForm() {
               <span className={styles.changeText}>Change</span>
             </div>
           </div>
+
           <input
             type="file"
             accept="image/*"
@@ -97,6 +100,7 @@ export default function SignUpForm() {
             className={styles.hiddenInput}
           />
         </div>
+
         <input
           type="text"
           placeholder="Full Name"
@@ -105,6 +109,7 @@ export default function SignUpForm() {
           className={styles.inputField}
           required
         />
+
         <input
           type="email"
           placeholder="Email"
@@ -113,6 +118,7 @@ export default function SignUpForm() {
           className={styles.inputField}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -121,6 +127,7 @@ export default function SignUpForm() {
           className={styles.inputField}
           required
         />
+
         <select
           value={formData.role}
           onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -129,7 +136,9 @@ export default function SignUpForm() {
           <option value="user">User</option>
           <option value="company">Company</option>
         </select>
+
         <button type="submit" className={styles.signInButton}>Sign up</button>
+
         <p className={styles.consentText}>
           I allow my information to be used in accordance with utility providers in Israel.
         </p>

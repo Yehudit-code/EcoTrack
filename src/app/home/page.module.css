@@ -143,21 +143,26 @@
 }
 
 .categoryIcon {
-  font-size: 1.2rem;
-  margin-bottom: 7px;
+  font-size: 3rem;
+  margin-bottom: 20px;
   display: block;
 }
 
 .categoryCard h3 {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 7px 0;
+  margin: 0 0 16px 0;
 }
 
 .categoryCard p {
-  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
 }
+
+
 
 /* Stats and Tips Section */
 .statsAndTipsSection {
@@ -833,10 +838,6 @@
 
 .aboutText:last-child {
   margin-bottom: 0;
-}
-
-.smallText {
-  font-size: 0.8rem;
 }
 
 /* Responsive Design */

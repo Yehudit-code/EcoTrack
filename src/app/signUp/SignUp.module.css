@@ -97,7 +97,6 @@
   border-color: #3b6e3b;
 }
 
-/* אזור העלאת תמונה */
 .profileUpload {
   display: flex;
   justify-content: center;
@@ -194,6 +193,60 @@
 
 .signInButton:hover {
   background-color: #2e5b2e;
+}
+
+.consentText {
+  font-size: 9px;
+  color: #727272;
+  margin-top: 14px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalBox {
+  background: #fff;
+  width: 330px;
+  padding: 22px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.modalButtons {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.approveBtn {
+  flex: 1;
+  background: #4caf50;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  flex: 1;
+  background: #ddd;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .consentText {

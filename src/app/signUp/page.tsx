@@ -122,11 +122,6 @@ export default function SignUpPage() {
             <img src="/images/google.png" alt="Google" className={styles.icon} />
             {loading ? "Connecting..." : "Continue with Google"}
           </button>
-
-          <button className={`${styles.providerBtn} ${styles.appleBtn}`}>
-            <img src="/images/apple.png" alt="Apple" className={styles.icon} />
-            Continue with Apple
-          </button>
         </div>
 
         <div className={styles.divider}>
