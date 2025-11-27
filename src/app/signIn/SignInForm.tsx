@@ -1,8 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./SignIn.module.css";
-import Toast from "@/app/components/Toast/Toast";
+import {
+  Box,
+  Button,
+  TextField,
+  Divider,
+  Typography,
+  Modal,
+  Paper,
+  CircularProgress,
+  Snackbar,
+} from "@mui/material";
+
 import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 
@@ -16,12 +26,13 @@ export default function SignInForm() {
 
   const showToast = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2000);
+    setTimeout(() => setToast(null), 2500);
   };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return showToast("Please enter email and password");
+    if (!email || !password) return showToast("נא למלא אימייל וסיסמה");
+
     setLoading(true);
     try {
       const res = await fetch("/api/signin", {
@@ -34,13 +45,13 @@ export default function SignInForm() {
 
       if (res.ok) {
         localStorage.setItem("currentUser", JSON.stringify(data.user));
-        showToast("Signed in successfully!");
+        showToast("התחברת בהצלחה!");
         setTimeout(() => (window.location.href = "/home"), 900);
       } else {
-        showToast(data.error || "error signing in");
+        showToast(data.error || "שגיאת התחברות");
       }
     } catch {
-      showToast("error in server");
+      showToast("שגיאה בשרת");
     } finally {
       setLoading(false);
     }
@@ -59,103 +70,135 @@ export default function SignInForm() {
 
       const checkData = await checkRes.json();
 
-<<<<<<< HEAD
       if (checkData.exists) {
         localStorage.setItem("currentUser", JSON.stringify(checkData.user));
         showToast("ברוך הבא בחזרה! 😊");
         setTimeout(() => (window.location.href = "/home"), 900);
       } else {
-        const checkData = await checkRes.json();
-
-        if (checkData.exists) {
-          localStorage.setItem("currentUser", JSON.stringify(checkData.user));
-          showToast("Welcome back! 😊");
-          setTimeout(() => (window.location.href = "/home"), 900);
-        } else {
-          setGoogleUser(user);
-          setShowRoleModal(true);
-        }
-      } catch (err) {
-        console.error(err);
-        showToast("Error signing in with Google");
+        setGoogleUser(user);
+        setShowRoleModal(true);
       }
-    };
+    } catch (err) {
+      console.error(err);
+      showToast("שגיאה בהתחברות");
+    }
+  };
 
-    const handleRoleSelected = (role: "user" | "company") => {
-      googleUser.role = role;
-      setShowRoleModal(false);
-    };
+  const handleRoleSelected = (role: "user" | "company") => {
+    googleUser.role = role;
+    setShowRoleModal(false);
+  };
 
-    return (
-      <>
-        {/* Toast */}
-        {toast && <Toast text={toast} />}
+  return (
+    <>
+      {/* Toast */}
+      <Snackbar
+        open={Boolean(toast)}
+        message={toast}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      />
 
-        <form className={styles.form} onSubmit={handleEmailSignIn}>
-          <label>Email</label>
-          <input
-            type="email"
-            className={styles.inputField}
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-          />
-          <label>Password</label>
-          <input
-            type="password"
-            className={styles.inputField}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-          />
-          <button className={styles.signInButton} disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-          <p className={styles.consentText}>
-            I allow my information to be used in accordance with utility providers in Israel.
-          </p>
-        </form>
+      {/* FORM */}
+      <Box
+        component="form"
+        onSubmit={handleEmailSignIn}
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+      >
+        <TextField
+          label="Email"
+          type="email"
+          fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
+        />
 
-        <div className={styles.divider}>
-          <span>or continue with</span>
-        </div>
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
 
-        <div className={styles.authButtons}>
-          <button
-            onClick={handleGoogleSignIn}
-            className={`${styles.providerBtn} ${styles.googleBtn}`}
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            bgcolor: "green",
+            "&:hover": { bgcolor: "darkgreen" },
+            height: 45,
+          }}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={26} sx={{ color: "white" }} /> : "Sign in"}
+        </Button>
+
+        <Typography variant="caption" sx={{ color: "#666", textAlign: "left" }}>
+          I allow my information to be used in accordance with utility providers in Israel.
+        </Typography>
+      </Box>
+
+      <Divider sx={{ my: 3 }}>or continue with</Divider>
+
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={handleGoogleSignIn}
+        sx={{
+          py: 1.2,
+          borderRadius: 2,
+          display: "flex",
+          gap: 1.5,
+          textTransform: "none",
+        }}
+      >
+        <img src="/images/google.png" width={22} height={22} />
+        Continue with Google
+      </Button>
+
+      {/* ROLE MODAL */}
+      <Modal open={showRoleModal} onClose={() => setShowRoleModal(false)}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <Paper
+            sx={{
+              p: 4,
+              width: 350,
+              borderRadius: 3,
+              textAlign: "center",
+              animation: "popIn 0.25s ease",
+            }}
           >
-            <img src="/images/google.png" className={styles.icon} />
-            Continue with Google
-          </button>
-        </div>
+            <Typography variant="h6">מה סוג המשתמש שלך?</Typography>
 
-        {showRoleModal && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalBox}>
-              <h3>What type of user are you?</h3>
-              <div className={styles.modalButtons}>
-                <button
-                  className={styles.approveBtn}
-                  onClick={() => handleRoleSelected("user")}
-                >
-                  User
-                </button>
-                <button
-                  className={styles.approveBtn}
-                  onClick={() => handleRoleSelected("company")}
-                >
-                  Company
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    );
-        </>
-    );
->>>>>>> c5ff377b895e0883568f43999d61d3a73affcfd0
+            <Box mt={3} display="flex" gap={2} justifyContent="center">
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "green", "&:hover": { bgcolor: "darkgreen" } }}
+                onClick={() => handleRoleSelected("user")}
+              >
+                משתמש רגיל
+              </Button>
+
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "green", "&:hover": { bgcolor: "darkgreen" } }}
+                onClick={() => handleRoleSelected("company")}
+              >
+                חברה
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
+      </Modal>
+    </>
+  );
 }

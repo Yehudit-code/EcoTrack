@@ -1,283 +1,109 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./ManageData.module.css";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
-import MonthYearPicker from "./MonthYearPicker";
+// import { useSession } from "next-auth/react";
 
-import {
-  fetchUserConsumptionByEmail,
-  createConsumption,
-  updateConsumption,
-  ConsumptionCategory,
-  ConsumptionHabitDto,
-} from "@/app/services/client/consumptionClient";
+// const { data: session } = useSession();
 
-type MainCategory =
-  | "Electricity"
-  | "Water"
-  | "Gas"
-  | "Transportation"
-  | "Waste";
-
-const MAIN_CATEGORIES: MainCategory[] = [
-  "Electricity",
-  "Water",
-  "Gas",
-  "Transportation",
-  "Waste",
-];
-
-interface FormState {
-  [key: string]: string;
-}
-
-interface IdState {
-  [key: string]: string | undefined;
-}
-
-interface MessageState {
-  [key: string]: string | null;
-}
-
-interface LoadingState {
-  [key: string]: boolean;
-}
-
-export default function ManageDataPage() {
-  const now = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [formValues, setFormValues] = useState<FormState>({
-    Electricity: "",
-    Water: "",
-    Gas: "",
-    Transportation: "",
-    Waste: "",
+export default function ManageData() {
+  const [month, setMonth] = useState("");
+  const [formData, setFormData] = useState({
+    electricity: "",
+    water: "",
+    transport: "",
+    waste: "",
   });
+  const [message, setMessage] = useState("");
+  
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  // Save or update consumption data
+  const handleSave = async () => {
+    if (!month) return setMessage("Please select a month.");
+    const [year, monthNum] = month.split("-").map(Number);
+    // const userEmail = session?.user?.email;
+    // const userId = session?.user?.id; // זה מזהה מתוך ה־DB
+    // // const userId = "67654abc1234";
+    // const userEmail = "yehudit59501@gmail.com";
 
-  const [docIds, setDocIds] = useState<IdState>({});
-  const [messages, setMessages] = useState<MessageState>({});
-  const [loading, setLoading] = useState<LoadingState>({});
-
-  /* ------------------------------ */
-  /* LOAD USER EMAIL                */
-  /* ------------------------------ */
-  useEffect(() => {
-    const stored = localStorage.getItem("currentUser");
-    let email = null;
-
-    if (stored) {
-      try {
-        email = JSON.parse(stored).email || null;
-      } catch {}
-    }
-
-    if (email) {
-      setUserEmail(email);
-      loadExistingData(email, selectedMonth, selectedYear);
-    } else {
-      setMessages((prev) => ({
-        ...prev,
-        global: "User e-mail is missing.",
-      }));
-    }
-  }, []);
-
-
-  /* ------------------------------ */
-  /* LOAD DATA FOR SELECTED MONTH   */
-  /* ------------------------------ */
-  async function loadExistingData(email: string, month: number, year: number) {
     try {
-      const data = await fetchUserConsumptionByEmail(
-        email,
-        undefined,
-        month,
-        year
-      );
+      const categories = [
+        { name: "Electricity", key: "electricity" },
+        { name: "Water", key: "water" },
+        { name: "Transportation", key: "transport" },
+        { name: "Waste", key: "waste" },
+      ];
 
-      const newValues: FormState = {
-        Electricity: "",
-        Water: "",
-        Gas: "",
-        Transportation: "",
-        Waste: "",
-      };
+      // Loop through categories and send API requests
+      for (const cat of categories) {
+        const payload = {
+          // userId,
+          // userEmail,
+          category: cat.name,
+          value: Number((formData as any)[cat.key]),
+          month: monthNum,
+          year,
+        };
 
-      const newIds: IdState = {};
+        const res = await fetch("/api/consumption", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
-      (data || []).forEach((item) => {
-        if (MAIN_CATEGORIES.includes(item.category as MainCategory)) {
-          newValues[item.category] = item.value?.toString() ?? "";
-          newIds[item.category] = item._id;
+        // If already exists, update instead
+        if (res.status !== 201) {
+          // const getRes = await fetch(`/api/consumption?userId=${userId}&userEmail=${userEmail}&category=${cat.name}`);
+          // const items = await getRes.json();
+          // const existing = items.find((i: any) => i.month === monthNum && i.year === year);
+          // if (existing?._id) {
+          //   await fetch("/api/consumption", {
+          //     method: "PUT",
+          //     headers: { "Content-Type": "application/json" },
+          //     body: JSON.stringify({ _id: existing._id, ...payload }),
+          //   });
+          // }
         }
-      });
-
-      setFormValues(newValues);
-      setDocIds(newIds);
-    } catch {
-      setMessages((prev) => ({
-        ...prev,
-        global: "Failed to load data for this month.",
-      }));
-    }
-  }
-
-  /* ------------------------------ */
-  /* INPUT HANDLING                 */
-  /* ------------------------------ */
-  function handleInputChange(category: MainCategory, value: string) {
-    setFormValues((prev) => ({ ...prev, [category]: value }));
-    setMessages((prev) => ({ ...prev, [category]: null }));
-  }
-
-  /* ------------------------------ */
-  /* SAVE DATA PER CATEGORY         */
-  /* ------------------------------ */
-  async function handleSave(category: MainCategory) {
-    if (!userEmail) {
-      setMessages((prev) => ({
-        ...prev,
-        [category]: "User e-mail is missing.",
-      }));
-      return;
-    }
-
-    const numericValue = Number(formValues[category]);
-    if (Number.isNaN(numericValue) || numericValue < 0) {
-      setMessages((prev) => ({
-        ...prev,
-        [category]: "Please enter a valid number.",
-      }));
-      return;
-    }
-
-    setLoading((prev) => ({ ...prev, [category]: true }));
-
-    try {
-      const base = {
-        userEmail,
-        category: category as ConsumptionCategory,
-        value: numericValue,
-        month: selectedMonth,
-        year: selectedYear,
-      };
-
-      const existingId = docIds[category];
-      let saved: ConsumptionHabitDto;
-
-      if (existingId) {
-        saved = await updateConsumption({ ...base, _id: existingId });
-      } else {
-        saved = await createConsumption(base);
       }
 
-      setDocIds((prev) => ({ ...prev, [category]: saved._id }));
-
-      setMessages((prev) => ({
-        ...prev,
-        [category]: "Saved!",
-      }));
-    } catch (err: any) {
-      setMessages((prev) => ({
-        ...prev,
-        [category]: err.message || "Failed to save.",
-      }));
-    } finally {
-      setLoading((prev) => ({ ...prev, [category]: false }));
+      setMessage("Data saved successfully!");
+    } catch (err) {
+      setMessage("Error saving data.");
     }
-  }
+  };
 
-  /* ------------------------------ */
-  /* CARD RENDER                    */
-  /* ------------------------------ */
-  function renderCard(
-    category: MainCategory,
-    title: string,
-    unitLabel: string,
-    placeholder: string
-  ) {
-    return (
-      <div className={styles.dataCard}>
-        <h3>{title}</h3>
-
-        <p className={styles.cardDescription}>
-          Enter your monthly {title.toLowerCase()} usage.
-        </p>
-
-        <div className={styles.inputGroup}>
-          <label>{unitLabel}</label>
-          <input
-            type="number"
-            value={formValues[category]}
-            onChange={(e) => handleInputChange(category, e.target.value)}
-            placeholder={placeholder}
-          />
-        </div>
-
-        <button
-          className={styles.saveBtn}
-          onClick={() => handleSave(category)}
-          disabled={loading[category]}
-        >
-          {loading[category] ? "Saving…" : "Save Data"}
-        </button>
-
-        {messages[category] && (
-          <p className={styles.statusMessage}>{messages[category]}</p>
-        )}
-      </div>
-    );
-  }
-
-  /* ------------------------------ */
-  /* PAGE UI                        */
-  /* ------------------------------ */
   return (
     <div className={styles.container}>
-      <Header />
+      <header className={styles.header}>EcoTrack | Manage Data</header>
 
-      <main className={styles.main}>
-        <div className={styles.contentBox}>
-          <h1 className={styles.title}>Manage Consumption Data</h1>
+      <section className={styles.card}>
+        <h2 className={styles.title}>Enter Monthly Consumption Data</h2>
 
-          {/* NEW MONTH-YEAR PICKER */}
-          <MonthYearPicker
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onChange={(m, y) => {
-              setSelectedMonth(m);
-              setSelectedYear(y);
-              if (userEmail) loadExistingData(userEmail, m, y);
-            }}
-          />
-
-          {/* CARDS */}
-          <section className={styles.dataSection}>
-            {renderCard(
-              "Electricity",
-              "Electricity",
-              "Monthly electricity (kWh):",
-              "Enter kWh"
-            )}
-            {renderCard("Water", "Water", "Monthly water (m³):", "Enter m³")}
-            {renderCard("Gas", "Gas", "Monthly gas (m³):", "Enter m³")}
-            {renderCard(
-              "Transportation",
-              "Transportation",
-              "Monthly distance (km):",
-              "Enter km"
-            )}
-            {renderCard("Waste", "Waste", "Weekly waste (kg):", "Enter kg")}
-          </section>
+        <div className={styles.monthSelector}>
+          <label htmlFor="month">Month:</label>
+          <input type="month" id="month" value={month} onChange={(e) => setMonth(e.target.value)} />
         </div>
-      </main>
 
-      <Footer />
+        <div className={styles.formGrid}>
+          <input name="electricity" type="number" placeholder="Electricity (kWh)" value={formData.electricity} onChange={handleChange} />
+          <input name="water" type="number" placeholder="Water (Liters)" value={formData.water} onChange={handleChange} />
+          <input name="transport" type="number" placeholder="Transportation (KM)" value={formData.transport} onChange={handleChange} />
+          <input name="waste" type="number" placeholder="Waste (KG)" value={formData.waste} onChange={handleChange} />
+        </div>
+
+        <div className={styles.buttons}>
+          <button onClick={handleSave} className={styles.saveBtn}>Save / Update</button>
+        </div>
+
+        {message && <p className={styles.message}>{message}</p>}
+      </section>
+
+      <footer className={styles.footer}>
+        Home | Manage Data | Indicators | Social Sharing | About
+      </footer>
     </div>
   );
 }
