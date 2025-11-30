@@ -2,6 +2,10 @@
 import React, { useState, useRef } from "react";
 import styles from "./SignUp.module.css";
 import Toast from "@/app/components/Toast/Toast";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
+import RoleModal from "@/app/components/Modals/RoleModal";
+import CompanyCategoryModal from "@/app/components/Modals/CompanyCategoryModal";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -10,11 +14,17 @@ export default function SignUpForm() {
     password: "",
     role: "user",
     photo: "",
+    companyCategory: "",
   });
 
   const [toast, setToast] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [googleUser, setGoogleUser] = useState<any>(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
+
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -37,6 +47,10 @@ export default function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.role === "company" && !formData.companyCategory) {
+      setShowCategoryModal(true);
+      return;
+    }
 
     try {
       localStorage.clear();
@@ -71,6 +85,76 @@ export default function SignUpForm() {
       showToast("Something went wrong. Try again.");
     }
   };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // בדיקה אם קיים
+      const checkRes = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      const checkData = await checkRes.json();
+
+      if (checkData.exists) {
+        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+        showToast("Welcome back!");
+        setTimeout(() => (window.location.href = "/home"), 900);
+        return;
+      }
+
+      setGoogleUser(user);
+      setShowRoleModal(true);
+
+    } catch (err) {
+      console.error(err);
+      showToast("Google error");
+    }
+  };
+
+  const handleRoleSelected = (role: "user" | "company") => {
+    googleUser.role = role;
+    setShowRoleModal(false);
+
+    if (role === "company") {
+      setShowCategoryModal(true);
+    } else {
+      finishGoogleSignup(null);
+    }
+  };
+
+  const handleCategorySelected = (category: string) => {
+    googleUser.companyCategory = category;
+    setShowCategoryModal(false);
+
+    finishGoogleSignup(category);
+  };
+
+  const finishGoogleSignup = async (category: string | null) => {
+    const res = await fetch("/api/social-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: googleUser.email,
+        name: googleUser.displayName,
+        photoURL: googleUser.photoURL,
+        role: googleUser.role,
+        companyCategory: category,
+      }),
+    });
+
+    const data = await res.json();
+
+    localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+    window.location.href =
+      googleUser.role === "company" ? "/company-home" : "/home";
+  };
+
 
   return (
     <>
@@ -137,12 +221,53 @@ export default function SignUpForm() {
           <option value="company">Company</option>
         </select>
 
+        {formData.role === "company" && (
+          <select
+            value={formData.companyCategory}
+            onChange={(e) =>
+              setFormData({ ...formData, companyCategory: e.target.value })
+            }
+            className={styles.roleSelect}
+            required
+          >
+            <option value="">Select company category</option>
+            <option value="electricity">Electricity</option>
+            <option value="water">Water</option>
+            <option value="transport">Transport</option>
+            <option value="recycling">Recycling</option>
+            <option value="solar">Solar</option>
+          </select>
+        )}
+
+
         <button type="submit" className={styles.signInButton}>Sign up</button>
 
         <p className={styles.consentText}>
           I allow my information to be used in accordance with utility providers in Israel.
         </p>
+
       </form>
+
+      <div className={styles.divider}>
+        <span>or continue with</span>
+      </div>
+
+      <div className={styles.authButtons}>
+        <button
+          onClick={handleGoogleSignIn}
+          className={`${styles.providerBtn} ${styles.googleBtn}`}
+        >
+          <img src="/images/google.png" className={styles.icon} />
+          Continue with Google
+        </button>
+      </div>
+      {showRoleModal && (
+        <RoleModal onSelect={handleRoleSelected} />
+      )}
+
+      {showCategoryModal && (
+        <CompanyCategoryModal onSelect={handleCategorySelected} />
+      )}
     </>
   );
 }

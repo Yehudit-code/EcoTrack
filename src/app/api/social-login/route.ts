@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
-    const { email, name, photo, provider, role } = await req.json(); // Add role here
+    const { email, name, photo, provider, role, companyCategory } = await req.json(); // Add role here
 
     // Basic validation
     if (!email) {
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
         photo,
         password: hashedPassword,
         role: role === "company" ? "company" : "user", // Save by selection
+        companyCategory,
         createdAt: new Date(),
       };
 
