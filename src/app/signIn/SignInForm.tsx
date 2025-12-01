@@ -98,7 +98,7 @@ const finishGoogleSignup = async (category: string | null) => {
   localStorage.setItem("currentUser", JSON.stringify(data.user));
 
   window.location.href =
-    googleUser.role === "company" ? "/company-home" : "/home";
+    googleUser.role === "company" ? "home" : "/home";
 };
 
 

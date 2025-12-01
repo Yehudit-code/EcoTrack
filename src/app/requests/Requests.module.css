@@ -1,0 +1,54 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  width: 420px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.label {
+  font-size: 14px;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  margin-top: 6px;
+}
+
+.textarea {
+  height: 90px;
+}
+
+.btn {
+  width: 100%;
+  margin-top: 20px;
+  background: #16a34a;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
