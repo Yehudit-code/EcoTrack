@@ -1,6 +1,4 @@
-// src/models/Payment.ts
 import { Schema, model, models, Types } from "mongoose";
-import type { PaymentStatus } from "@/app/types/common";
 
 export interface IPayment {
   userId: Types.ObjectId;
@@ -8,24 +6,27 @@ export interface IPayment {
   amount: number;
   ecoTrackFee: number;
   companyRevenue: number;
-  description?: string;
-  status: PaymentStatus; // "pending" | "paid" | "transferred" | "refunded"
+  description: string;
+  status: "pending" | "paid" | "transferred" | "refunded";
   transactionId?: string;
-  paymentGateway?: string; // "Stripe" | "CardCom" | "Tranzila" | ...
+  paymentGateway?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-
 const PaymentSchema = new Schema<IPayment>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    companyId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    companyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
     ecoTrackFee: { type: Number, required: true },
     companyRevenue: { type: Number, required: true },
-    description: { type: String },
-    status: { type: String, enum: ["pending", "paid", "transferred", "refunded"], default: "pending", index: true },
+    description: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "paid", "transferred", "refunded"],
+      default: "pending",
+    },
     transactionId: { type: String },
     paymentGateway: { type: String },
   },
