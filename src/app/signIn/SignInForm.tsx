@@ -44,9 +44,11 @@ export default function SignInForm() {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("currentUser", JSON.stringify(data.user));
+          setTimeout(() => (window.location.href = "/home"), 900);
+        }
         showToast("התחברת בהצלחה!");
-        setTimeout(() => (window.location.href = "/home"), 900);
       } else {
         showToast(data.error || "שגיאת התחברות");
       }
@@ -71,9 +73,11 @@ export default function SignInForm() {
       const checkData = await checkRes.json();
 
       if (checkData.exists) {
-        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+          setTimeout(() => (window.location.href = "/home"), 900);
+        }
         showToast("ברוך הבא בחזרה! 😊");
-        setTimeout(() => (window.location.href = "/home"), 900);
       } else {
         setGoogleUser(user);
         setShowRoleModal(true);
