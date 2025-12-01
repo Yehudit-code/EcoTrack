@@ -1,20 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Divider,
-  Typography,
-  Modal,
-  Paper,
-  CircularProgress,
-  Snackbar,
-} from "@mui/material";
-
 import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
+import styles from "./SignIn.module.css";
+import RoleModal from "@/app/components/Modals/RoleModal";
+import CompanyCategoryModal from "@/app/components/Modals/CompanyCategoryModal";
+
+import Toast from "@/app/components/Toast/Toast";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -23,16 +16,16 @@ export default function SignInForm() {
   const [googleUser, setGoogleUser] = useState<any>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2500);
+    setTimeout(() => setToast(null), 2000);
   };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return showToast("נא למלא אימייל וסיסמה");
-
+    if (!email || !password) return showToast("Please enter email and password");
     setLoading(true);
     try {
       const res = await fetch("/api/signin", {
@@ -45,160 +38,147 @@ export default function SignInForm() {
 
       if (res.ok) {
         localStorage.setItem("currentUser", JSON.stringify(data.user));
-        showToast("התחברת בהצלחה!");
+        showToast("Signed in successfully!");
         setTimeout(() => (window.location.href = "/home"), 900);
       } else {
-        showToast(data.error || "שגיאת התחברות");
+        showToast(data.error || "error signing in");
       }
     } catch {
-      showToast("שגיאה בשרת");
+      showToast("error in server");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+ const handleGoogleSignIn = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
 
-      const checkRes = await fetch("/api/check-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
-      });
+    // בדיקה אם קיים
+    const checkRes = await fetch("/api/check-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email }),
+    });
 
-      const checkData = await checkRes.json();
+    const checkData = await checkRes.json();
 
-      if (checkData.exists) {
-        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
-        showToast("ברוך הבא בחזרה! 😊");
-        setTimeout(() => (window.location.href = "/home"), 900);
-      } else {
-        setGoogleUser(user);
-        setShowRoleModal(true);
-      }
-    } catch (err) {
-      console.error(err);
-      showToast("שגיאה בהתחברות");
+    if (checkData.exists) {
+      localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+      showToast("Welcome back!");
+      setTimeout(() => (window.location.href = "/home"), 900);
+      return;
     }
-  };
 
-  const handleRoleSelected = (role: "user" | "company") => {
-    googleUser.role = role;
-    setShowRoleModal(false);
-  };
+    setGoogleUser(user);
+    setShowRoleModal(true);
 
-  return (
-    <>
-      {/* Toast */}
-      <Snackbar
-        open={Boolean(toast)}
-        message={toast}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+  } catch (err) {
+    console.error(err);
+    showToast("Google error");
+  }
+};
+
+const finishGoogleSignup = async (category: string | null) => {
+  const res = await fetch("/api/social-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: googleUser.email,
+      name: googleUser.displayName,
+      photoURL: googleUser.photoURL,
+      role: googleUser.role,
+      companyCategory: category,
+    }),
+  });
+
+  const data = await res.json();
+
+  localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+  window.location.href =
+    googleUser.role === "company" ? "/company-home" : "/home";
+};
+
+
+ const handleRoleSelected = (role: "user" | "company") => {
+  googleUser.role = role;
+  setShowRoleModal(false);
+
+  if (role === "company") {
+    setShowCategoryModal(true);
+  } else {
+    finishGoogleSignup(null);
+  }
+};
+
+const handleCategorySelected = (category: string) => {
+  googleUser.companyCategory = category;
+  setShowCategoryModal(false);
+
+  finishGoogleSignup(category);
+};
+
+return (
+  <>
+    {/* 🟢 Toast כמו בשאר המערכת */}
+    {toast && <Toast text={toast} />}
+
+    <form className={styles.form} onSubmit={handleEmailSignIn}>
+      <label>Email</label>
+      <input
+        type="email"
+        className={styles.inputField}
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
       />
 
-      {/* FORM */}
-      <Box
-        component="form"
-        onSubmit={handleEmailSignIn}
-        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-      >
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={loading}
-        />
+      <label>Password</label>
+      <input
+        type="password"
+        className={styles.inputField}
+        placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
+      />
 
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-        />
+      <button className={styles.signInButton} disabled={loading}>
+        {loading ? "Signing in..." : "Sign in"}
+      </button>
 
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{
-            bgcolor: "green",
-            "&:hover": { bgcolor: "darkgreen" },
-            height: 45,
-          }}
-          disabled={loading}
-        >
-          {loading ? <CircularProgress size={26} sx={{ color: "white" }} /> : "Sign in"}
-        </Button>
+      <p className={styles.consentText}>
+        I allow my information to be used in accordance with utility providers in israel
+      </p>
+    </form>
 
-        <Typography variant="caption" sx={{ color: "#666", textAlign: "left" }}>
-          I allow my information to be used in accordance with utility providers in Israel.
-        </Typography>
-      </Box>
+    <div className={styles.divider}>
+      <span>or continue with</span>
+    </div>
 
-      <Divider sx={{ my: 3 }}>or continue with</Divider>
-
-      <Button
-        variant="outlined"
-        fullWidth
+    <div className={styles.authButtons}>
+      <button
         onClick={handleGoogleSignIn}
-        sx={{
-          py: 1.2,
-          borderRadius: 2,
-          display: "flex",
-          gap: 1.5,
-          textTransform: "none",
-        }}
+        className={`${styles.providerBtn} ${styles.googleBtn}`}
       >
-        <img src="/images/google.png" width={22} height={22} />
+        <img src="/images/google.png" className={styles.icon} />
         Continue with Google
-      </Button>
+      </button>
+    </div>
 
-      {/* ROLE MODAL */}
-      <Modal open={showRoleModal} onClose={() => setShowRoleModal(false)}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <Paper
-            sx={{
-              p: 4,
-              width: 350,
-              borderRadius: 3,
-              textAlign: "center",
-              animation: "popIn 0.25s ease",
-            }}
-          >
-            <Typography variant="h6">מה סוג המשתמש שלך?</Typography>
+    {/* 🔵 ROLE MODAL */}
+    {showRoleModal && (
+      <RoleModal onSelect={handleRoleSelected} />
+    )}
 
-            <Box mt={3} display="flex" gap={2} justifyContent="center">
-              <Button
-                variant="contained"
-                sx={{ bgcolor: "green", "&:hover": { bgcolor: "darkgreen" } }}
-                onClick={() => handleRoleSelected("user")}
-              >
-                משתמש רגיל
-              </Button>
-
-              <Button
-                variant="contained"
-                sx={{ bgcolor: "green", "&:hover": { bgcolor: "darkgreen" } }}
-                onClick={() => handleRoleSelected("company")}
-              >
-                חברה
-              </Button>
-            </Box>
-          </Paper>
-        </Box>
-      </Modal>
-    </>
-  );
+    {/* 🟣 COMPANY CATEGORY MODAL */}
+    {showCategoryModal && (
+      <CompanyCategoryModal onSelect={handleCategorySelected} />
+    )}
+  </>
+);
+  
 }
