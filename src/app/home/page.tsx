@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Header from '../components/Header/Header';
+import CompanyHeader from '../components/CompanyHeader/CompanyHeader'; // ⭐ חדש
 import Footer from '../components/Footer/Footer';
 import ChatBubble from "../components/AIChat/ChatBubble";
 import ChatWindow from "../components/AIChat/ChatWindow";
@@ -11,6 +12,7 @@ export default function HomePage() {
   const [visibleItems, setVisibleItems] = useState(new Set<string>());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<"user" | "company" | null>(null);
 
   // Intersection Observer for scroll animations
   const intersectionCallback = useCallback((entries: IntersectionObserverEntry[]) => {
@@ -80,10 +82,17 @@ export default function HomePage() {
   }, [dailyTips.length]);
 
 
+  useEffect(() => {
+    const data = localStorage.getItem("currentUser");
+    if (data) {
+      const parsed = JSON.parse(data);
+      setRole(parsed.role);
+    }
+  }, []);
 
   return (
     <>
-      <Header />
+       {role === "company" ? <CompanyHeader /> : <Header />}
       <div className={styles.container}>
         <main className={styles.main}>
           <div className={styles.heroSection}>

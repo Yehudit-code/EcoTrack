@@ -1,11 +1,24 @@
+'use client';
 import Header from '../components/Header/Header';
+import CompanyHeader from '../components/CompanyHeader/CompanyHeader'; 
 import Footer from '../components/Footer/Footer';
 import styles from './page.module.css';
+import { useEffect, useState } from 'react';
 
 export default function AboutPage() {
+  const [role, setRole] = useState<"user" | "company" | null>(null);
+  
+  useEffect(() => {
+    const data = localStorage.getItem("currentUser");
+    if (data) {
+      const parsed = JSON.parse(data);
+      setRole(parsed.role);
+    }
+  }, []);
+
   return (
     <>
-      <Header />
+      {role === "company" ? <CompanyHeader /> : <Header />}
       <div className={styles.pageContainer}>
       <main className={styles.container}>
         <div className={styles.contentWrapper}>
