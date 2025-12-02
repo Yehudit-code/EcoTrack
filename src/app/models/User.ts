@@ -37,7 +37,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-    collection: "Users", // 👈 הבדל קריטי! Mongoose ייגש רק לקולקשן Users
+    collection: "Users", 
   }
 );
 
