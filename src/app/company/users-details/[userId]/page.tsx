@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./details.module.css";
-import SimpleLineChart from "@/app/components/charts/SimpleLineChart"; // את אותו רכיב מה־Indicators
+import SimpleLineChart from "@/app/components/charts/SimpleLineChart";
 
 export default function UserDetailsPage({ params }: { params: { userId: string } }) {
   const { userId } = params;
 
-  const [category, setCategory] = useState("Electricity"); // כאן בהמשך תקבלי מהחברה
   const [consumption, setConsumption] = useState([]);
   const [user, setUser] = useState<any>(null);
+  const [companyCategory, setCompanyCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // שליפת נתוני בסיס של המשתמש
+  // Load selected user basic info
   useEffect(() => {
     const loadUser = async () => {
       const res = await fetch(`/api/users/${userId}`);
@@ -22,70 +21,80 @@ export default function UserDetailsPage({ params }: { params: { userId: string }
     loadUser();
   }, [userId]);
 
-  // שליפת נתוני צריכה לפי קטגוריה
+  // Load filtered consumption by company's category
   useEffect(() => {
     const loadConsumption = async () => {
       setLoading(true);
+
+      const companyEmail = localStorage.getItem("email"); // Logged company user
+      if (!companyEmail) {
+        console.error("No company email found in localStorage");
+        setLoading(false);
+        return;
+      }
+
       try {
+        // Fetch only relevant category (server automatically filters)
         const res = await fetch(
-          `/api/company/user-consumption/${userId}?category=${category}`
+          `/api/user-consumption/${userId}?companyEmail=${companyEmail}`,
+          { cache: "no-store" }
         );
+
         const data = await res.json();
+
         if (data.success) {
+          setCompanyCategory(data.companyCategory); // Set category returned by server
+
+          // Map data for chart
           const mapped = data.data.map((d: any) => ({
             month: `${d.month}/${d.year}`,
             value: d.value,
           }));
+
           setConsumption(mapped);
         }
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error("Failed to load filtered consumption", err);
       }
+
       setLoading(false);
     };
 
     loadConsumption();
-  }, [category, userId]);
+  }, [userId]);
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>User Details</h1>
+    <div>
+      <h1>User Details</h1>
 
+      {/* User info */}
       {user && (
-        <div className={styles.userInfoBox}>
+        <div>
           <p><strong>Name:</strong> {user.name}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Country:</strong> {user.country}</p>
         </div>
       )}
 
-      <div className={styles.categorySelect}>
-        <label>Select category:</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="Water">Water</option>
-          <option value="Electricity">Electricity</option>
-          <option value="Gas">Gas</option>
-          <option value="Transportation">Transportation</option>
-          <option value="Waste">Waste</option>
-        </select>
-      </div>
+      {/* Show company category */}
+      {companyCategory && (
+        <p><strong>Category displayed:</strong> {companyCategory}</p>
+      )}
 
-      <div className={styles.chartCard}>
+      {/* Graph */}
+      <div>
         {loading ? (
           <div>Loading chart...</div>
         ) : (
-          <SimpleLineChart
-            data={consumption}
-            color="#3b6e3b"
-          />
+          <SimpleLineChart data={consumption} color="#3b6e3b" />
         )}
       </div>
 
+      {/* Create offer */}
       <button
-        className={styles.createOfferBtn}
         onClick={() => (window.location.href = `/company/create-offer/${userId}`)}
       >
-        צור הצעת תשלום
+       Create offer payment-----
       </button>
     </div>
   );

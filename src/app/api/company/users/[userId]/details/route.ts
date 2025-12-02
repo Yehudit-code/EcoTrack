@@ -25,7 +25,7 @@ export async function GET(
 
     // Fetch user and cast type clearly for TypeScript
     const user = (await User.findById(userId)
-      .select("email country createdAt")
+      .select("email createdAt")
       .lean()) as { email: string; country?: string; createdAt?: Date } | null;
 
     if (!user) {

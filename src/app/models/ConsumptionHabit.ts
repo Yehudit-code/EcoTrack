@@ -42,4 +42,4 @@ ConsumptionHabitSchema.index({ userEmail: 1, category: 1, year: 1, month: 1 }, {
 
 export const ConsumptionHabit =
   models.ConsumptionHabit ||
-  model<IConsumptionHabit>("ConsumptionHabit", ConsumptionHabitSchema, "Consumptionhabits");
+  model<IConsumptionHabit>("ConsumptionHabit", ConsumptionHabitSchema, "ConsumptionHabits");

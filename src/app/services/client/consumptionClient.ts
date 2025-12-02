@@ -42,7 +42,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 /* ----------------------------------------
-    FETCH by email + optional category + month + year
+    FETCH consumption by email + filters
 ---------------------------------------- */
 export async function fetchUserConsumptionByEmail(
   userEmail: string,
@@ -65,7 +65,7 @@ export async function fetchUserConsumptionByEmail(
 }
 
 /* ----------------------------------------
-    Create new consumption with selected month/year
+    Create new consumption
 ---------------------------------------- */
 export interface ConsumptionUpsertInput {
   _id?: string;
@@ -89,7 +89,7 @@ export async function createConsumption(
 }
 
 /* ----------------------------------------
-    Update existing document
+    Update existing consumption
 ---------------------------------------- */
 export async function updateConsumption(
   input: ConsumptionUpsertInput & { _id: string }
@@ -101,4 +101,32 @@ export async function updateConsumption(
   });
 
   return handleResponse<ConsumptionHabitDto>(res);
+}
+
+/* ----------------------------------------
+    NEW: Fetch consumption filtered by company category
+---------------------------------------- */
+export async function getFilteredConsumption(
+  userId: string,
+  companyEmail: string
+): Promise<{
+  data: ConsumptionHabitDto[];
+  companyCategory: string;
+}> {
+  const res = await fetch(
+    `/api/user-consumption/${userId}?companyEmail=${companyEmail}`,
+    { cache: "no-store" }
+  );
+
+  const json = await res.json();
+
+  if (!res.ok || json.success === false) {
+    const msg = json.message || "Failed to fetch filtered consumption";
+    throw new Error(msg);
+  }
+
+  return {
+    data: json.data,
+    companyCategory: json.companyCategory,
+  };
 }

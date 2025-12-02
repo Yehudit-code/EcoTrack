@@ -1,28 +1,72 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/app/lib/db";
+import { connectDB } from "@/app/services/server/mongodb";
 import { ConsumptionHabit } from "@/app/models/ConsumptionHabit";
-
-export async function GET(req: Request, { params }: { params: { userId: string } }) {
+import { User } from "@/app/models/User";
+import type { IUser } from "@/app/models/User"; 
+export async function GET(
+  req: Request,
+  { params }: { params: { userId: string } }
+) {
   try {
     await connectDB();
 
-    const { searchParams } = new URL(req.url);
-    const category = searchParams.get("category");
+    const userId = params.userId;
 
-    if (!category) {
-      return NextResponse.json({ success: false, message: "Category is required" }, { status: 400 });
+    // Read company email from query
+    const url = new URL(req.url);
+    const companyEmail = url.searchParams.get("companyEmail");
+
+    if (!companyEmail) {
+      return NextResponse.json(
+        { success: false, message: "Missing companyEmail parameter" },
+        { status: 400 }
+      );
     }
 
-    const data = await ConsumptionHabit.find({
-      userId: params.userId,
-      category: category,
-    })
-      .sort({ year: 1, month: 1 }) // oldest → newest
-      .limit(12);
+    // Find company user (the logged-in company)
+    const companyUser = await User.findOne({ email: companyEmail })
+      .lean<IUser | null>(); // Explicit type for TS
 
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    console.error("❌ Error loading user consumption:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    if (!companyUser) {
+      return NextResponse.json(
+        { success: false, message: "Company user not found" },
+        { status: 404 }
+      );
+    }
+
+    // Access company category safely
+    const companyCategory = companyUser.companyCategory;
+
+    if (!companyCategory) {
+      return NextResponse.json(
+        { success: false, message: "Company has no category defined" },
+        { status: 400 }
+      );
+    }
+
+    // Find all consumption records for this user and category
+    const habits = await ConsumptionHabit.find({
+      userId: userId,
+      category: companyCategory,
+    }).lean();
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: habits,
+        companyCategory,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Error fetching filtered user consumption:", err);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch filtered consumption",
+      },
+      { status: 500 }
+    );
   }
 }
