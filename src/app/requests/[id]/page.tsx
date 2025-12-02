@@ -1,29 +1,75 @@
-import { connectDB } from "@/app/services/server/mongodb";
-import { Payment } from "@/app/models/Payment";
+"use client";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await connectDB();
-    const id = params.id;
+import { useEffect, useState, use } from "react";
+import styles from "./CreateRequest.module.css";
+import { useRouter } from "next/navigation";
 
-    const payment = await Payment.findById(id)
-      .populate("requestId")
-      .populate("userId")
-      .populate("companyId");
+export default function CreateRequestPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
 
-    if (!payment) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
+  // חובה! פותח את ה-Promise של params
+  const { id } = use(params);
+
+  const [user, setUser] = useState<any>(null);
+  const [product, setProduct] = useState("");
+  const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      console.log("FETCHING USER:", `/api/users/${id}`);
+
+      const res = await fetch(`/api/users/${id}`);
+      const data = await res.json();
+
+      console.log("USER RESPONSE:", data);
+
+      setUser(data);
+      setLoading(false);
     }
 
-    return Response.json(payment, { status: 200 });
-  } catch (error) {
-    console.error("Error loading payment:", error);
-    return Response.json(
-      { error: "Failed to load payment" },
-      { status: 500 }
-    );
+    loadUser();
+  }, [id]);
+
+  async function handleSend() {
+    if (!product || !price) return alert("נא למלא את כל השדות");
+
+    await fetch("/api/company-requests", {
+      method: "POST",
+      body: JSON.stringify({
+        userId: id,
+        companyId: "123",
+        productName: product,
+        price: Number(price),
+      }),
+    });
+
+    alert("הצעת התשלום נשלחה!");
+    router.push("/company/requests");
   }
+
+  if (loading) return <div>טוען...</div>;
+
+  return (
+    <div className={styles.wrapper}>
+      <h1 className={styles.title}>יצירת הצעת תשלום</h1>
+
+      <div className={styles.card}>
+        <div className={styles.label}>שם משתמש:</div>
+        <div className={styles.value}>{user?.name || "לא נמצא"}</div>
+
+        <div className={styles.inputGroup}>
+          <label>שם מוצר</label>
+          <input value={product} onChange={(e) => setProduct(e.target.value)} />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label>מחיר (ב₪)</label>
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+        </div>
+
+        <button className={styles.btn} onClick={handleSend}>שליחת הצעה</button>
+      </div>
+    </div>
+  );
 }
