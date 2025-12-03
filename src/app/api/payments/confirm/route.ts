@@ -1,4 +1,3 @@
-// src/app/api/payments/confirm/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 import { Payment } from "@/app/models/Payment";
 import { CompanyRequest } from "@/app/models/CompanyRequest";
@@ -18,12 +17,13 @@ export async function POST(req: Request) {
       return Response.json({ error: "Payment not found" }, { status: 404 });
     }
 
-    payment.status = success ? "paid" : "failed";
+    const isSuccess = success === true;
+
+    payment.status = isSuccess ? "paid" : "failed";
     payment.updatedAt = new Date();
     await payment.save();
 
-    if (success) {
-      // מעדכן את CompanyRequest ל"accepted"
+    if (isSuccess) {
       await CompanyRequest.findByIdAndUpdate(payment.requestId, {
         status: "accepted",
       });
@@ -32,6 +32,9 @@ export async function POST(req: Request) {
     return Response.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("❌ Error confirming payment:", error);
-    return Response.json({ error: "Failed to confirm payment" }, { status: 500 });
+    return Response.json(
+      { error: "Failed to confirm payment" },
+      { status: 500 }
+    );
   }
 }
