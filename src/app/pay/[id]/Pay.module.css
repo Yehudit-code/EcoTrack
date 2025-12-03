@@ -101,3 +101,9 @@
 .errorPopup.show {
   top: 20px;
 }
+
+.subValue {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}

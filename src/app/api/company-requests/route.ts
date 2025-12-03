@@ -1,57 +1,173 @@
-// src/app/api/company-requests/route.ts
-import { connectDB } from "@/app/lib/db";
-import { CompanyRequest } from "@/app/models/CompanyRequest";
-import { fail, ok } from "@/app/lib/api-helpers";
+import { connectDB } from "@/app/services/server/mongodb";
+import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 
 export async function GET(req: Request) {
   try {
-    await connectDB();
+    const db = await connectDB();
+    const collection = db.collection("CompanyRequests");
+
     const { searchParams } = new URL(req.url);
     const companyId = searchParams.get("companyId");
     const userId = searchParams.get("userId");
-    const q: any = {};
-    if (companyId) q.companyId = companyId;
-    if (userId) q.userId = userId;
-    const items = await CompanyRequest.find(q).lean();
-    return ok(items);
-  } catch {
-    return fail("Failed to fetch company requests", 500);
+
+    const match: any = {};
+    if (companyId) match.companyId = new ObjectId(companyId);
+    if (userId) match.userId = new ObjectId(userId);
+
+    const pipeline: any[] = [
+      { $match: match },
+      {
+        $lookup: {
+          from: "Users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+      {
+        $project: {
+          productName: 1,
+          price: 1,
+          status: 1,
+          paymentId: 1,
+          createdAt: 1,
+          userId: 1,
+          "userData.name": 1,
+          "userData.email": 1,
+          "userData.phone": 1,
+        },
+      },
+    ];
+
+    const items = await collection.aggregate(pipeline).toArray();
+
+    return NextResponse.json(items, { status: 200 });
+  } catch (e) {
+    console.error("❌ GET /api/company-requests error:", e);
+    return NextResponse.json(
+      { error: "Failed to fetch company requests" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
-    await connectDB();
-    const body = await req.json();
-    const item = await CompanyRequest.create(body);
-    return ok(item, 201);
+    const { userId, companyId, productName, description, price } =
+      await req.json();
+
+    const db = await connectDB();
+
+    const companyRequests = db.collection("CompanyRequests");
+    const payments = db.collection("Payments");
+
+    const userObjectId = new ObjectId(userId);
+    const companyObjectId = new ObjectId(companyId);
+
+    // 1️⃣ Create company request
+    const requestRes = await companyRequests.insertOne({
+      userId: userObjectId,
+      companyId: companyObjectId,
+      productName,
+      description: description || "",
+      price,
+      status: "sent",
+      createdAt: new Date(),
+    });
+
+    const ecoTrackFee = price * 0.1;
+    const companyRevenue = price - ecoTrackFee;
+
+    // 2️⃣ Create payment
+    const paymentRes = await payments.insertOne({
+      userId: userObjectId,
+      companyId: companyObjectId,
+      requestId: requestRes.insertedId,
+      amount: price,
+      ecoTrackFee,
+      companyRevenue,
+      status: "pending",
+      createdAt: new Date(),
+    });
+
+    // 3️⃣ Save paymentId on request
+    await companyRequests.updateOne(
+      { _id: requestRes.insertedId },
+      { $set: { paymentId: paymentRes.insertedId } }
+    );
+
+    return Response.json(
+      {
+        success: true,
+        paymentId: paymentRes.insertedId,
+        requestId: requestRes.insertedId,
+      },
+      { status: 201 }
+    );
   } catch (e) {
-    return fail("Failed to create company request", 500, (e as Error).message);
+    console.error("❌ POST /api/company-requests error:", e);
+    return NextResponse.json(
+      { error: "Failed to create company request" },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(req: Request) {
   try {
-    await connectDB();
+    const db = await connectDB();
+    const collection = db.collection("CompanyRequests");
+
     const body = await req.json();
-    const { _id, ...rest } = body || {};
-    if (!_id) return fail("Missing _id", 400);
-    const updated = await CompanyRequest.findByIdAndUpdate(_id, rest, { new: true });
-    return ok(updated);
-  } catch {
-    return fail("Failed to update company request", 500);
+    const { _id, ...rest } = body;
+
+    if (!_id) {
+      return NextResponse.json({ error: "Missing _id" }, { status: 400 });
+    }
+
+    await collection.updateOne(
+      { _id: new ObjectId(_id) },
+      { $set: rest }
+    );
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (e) {
+    console.error("❌ PUT /api/company-requests error:", e);
+    return NextResponse.json(
+      { error: "Failed to update request" },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-    await connectDB();
+    const db = await connectDB();
+    const collection = db.collection("CompanyRequests");
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    if (!id) return fail("Missing id", 400);
-    await CompanyRequest.findByIdAndDelete(id);
-    return ok({ deleted: true });
-  } catch {
-    return fail("Failed to delete company request", 500);
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
+    await collection.deleteOne({ _id: new ObjectId(id) });
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (e) {
+    console.error("❌ DELETE /api/company-requests error:", e);
+    return NextResponse.json(
+      { error: "Failed to delete request" },
+      { status: 500 }
+    );
   }
 }

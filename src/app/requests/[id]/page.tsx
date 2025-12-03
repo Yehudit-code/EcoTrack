@@ -3,11 +3,15 @@
 import { useEffect, useState, use } from "react";
 import styles from "./CreateRequest.module.css";
 import { useRouter } from "next/navigation";
+import emailjs from "@emailjs/browser";
+import Toast from "@/app/components/Toast/Toast";
 
-export default function CreateRequestPage({ params }: { params: Promise<{ id: string }> }) {
+export default function CreateRequestPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
-
-  // חובה! פותח את ה-Promise של params
   const { id } = use(params);
 
   const [user, setUser] = useState<any>(null);
@@ -15,60 +19,128 @@ export default function CreateRequestPage({ params }: { params: Promise<{ id: st
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [toast, setToast] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showToast = (text: string, type: "success" | "error" = "success") => {
+    setToast({ text, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   useEffect(() => {
     async function loadUser() {
-      console.log("FETCHING USER:", `/api/users/${id}`);
-
       const res = await fetch(`/api/users/${id}`);
       const data = await res.json();
-
-      console.log("USER RESPONSE:", data);
-
-      setUser(data);
+      setUser(data.user);
       setLoading(false);
     }
-
     loadUser();
   }, [id]);
 
   async function handleSend() {
-    if (!product || !price) return alert("נא למלא את כל השדות");
+    if (!product || !price) {
+      showToast("Please fill in all fields", "error");
+      return;
+    }
 
-    await fetch("/api/company-requests", {
+    const currentUser = JSON.parse(
+      localStorage.getItem("currentUser") || "{}"
+    );
+
+    if (!currentUser._id) {
+      showToast("Company information is missing", "error");
+      return;
+    }
+
+    // 1️⃣ Save request + payment in DB
+    const saveRes = await fetch("/api/company-requests", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: id,
-        companyId: "123",
+        companyId: currentUser._id,
+        userEmail: user.email,
         productName: product,
         price: Number(price),
       }),
     });
 
-    alert("הצעת התשלום נשלחה!");
-    router.push("/company/requests");
+    if (!saveRes.ok) {
+      showToast("Error saving request", "error");
+      return;
+    }
+
+    const saveJson = await saveRes.json();
+    const paymentId = saveJson.paymentId;
+
+    // 2️⃣ Send email via EmailJS
+    try {
+      const origin =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : "https://ecotrack.com"; // fallback
+      const paymentLink = `${origin}/pay/${paymentId}`;
+
+      await emailjs.send(
+        "service_qcbkctg",
+        "template_wja8dfk",
+        {
+          user_name: user.name,
+          product_name: product,
+          price: price,
+          user_email: user.email,
+          reply_to: user.email,
+          payment_link: paymentLink,
+        },
+        "t2LJI00RL0e5X0luj"
+      );
+    } catch (err) {
+      console.log(err);
+      showToast("Error sending email", "error");
+      return;
+    }
+
+    showToast("Offer sent successfully!", "success");
+
+    setTimeout(() => {
+      router.push("/requests");
+    }, 1200);
   }
 
-  if (loading) return <div>טוען...</div>;
+  if (loading || !user) return <div>Loading...</div>;
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>יצירת הצעת תשלום</h1>
+      {toast && <Toast text={toast.text} type={toast.type} />}
 
       <div className={styles.card}>
-        <div className={styles.label}>שם משתמש:</div>
-        <div className={styles.value}>{user?.name || "לא נמצא"}</div>
+        <h1 className={styles.title}>Create payment offer</h1>
+
+        <div className={styles.label}>User name</div>
+        <div className={styles.value}>{user?.name || "Not found"}</div>
 
         <div className={styles.inputGroup}>
-          <label>שם מוצר</label>
-          <input value={product} onChange={(e) => setProduct(e.target.value)} />
+          <label>Product name</label>
+          <input
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+          />
         </div>
 
         <div className={styles.inputGroup}>
-          <label>מחיר (ב₪)</label>
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          <label>Price (₪)</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
         </div>
 
-        <button className={styles.btn} onClick={handleSend}>שליחת הצעה</button>
+        <button className={styles.btn} onClick={handleSend}>
+          Send offer
+        </button>
       </div>
     </div>
   );

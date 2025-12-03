@@ -8,19 +8,19 @@ export default function PaymentSuccessPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>התשלום בוצע בהצלחה</h1>
+        <h1 className={styles.title}>Payment completed successfully</h1>
 
         <p className={styles.text}>
-          תודה שבחרת לבצע את התשלום דרך EcoTrack.
+          Thank you for making your payment through EcoTrack.
           <br />
-          החברה תיצור איתך קשר בהקדם להמשך תהליך הטיפול.
+          The company will contact you soon to continue the process.
         </p>
 
         <button
           className={styles.button}
           onClick={() => router.push("/profile")}
         >
-          חזרה לאזור האישי
+          Back to my profile
         </button>
       </div>
     </div>

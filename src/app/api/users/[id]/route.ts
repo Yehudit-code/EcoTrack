@@ -1,22 +1,42 @@
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/app/services/server/mongodb";
-import { User } from "@/app/models/User";
+import { ObjectId } from "mongodb";
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectDB();
-    const { id } = await params;
+    // ⬅️ חובה! מחכים ל־params כי הוא Promise
+    const { id } = await context.params;
 
-    const user = await User.findById(id).select("-password");
+    const db = await connectDB();
+    const users = db.collection("Users");
 
-    if (!user) {
-      return Response.json({ error: "User not found" }, { status: 404 });
+    let user;
+
+    if (ObjectId.isValid(id)) {
+      user = await users.findOne(
+        { _id: new ObjectId(id) },
+        { projection: { password: 0 } }
+      );
+    } else {
+      user = await users.findOne(
+        { email: id },
+        { projection: { password: 0 } }
+      );
     }
 
-    return Response.json(user, { status: 200 });
-  } catch (error) {
-    return Response.json({ error: "Failed to load user" }, { status: 500 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user }, { status: 200 });
+  } catch (err) {
+    console.error("❌ USER API ERROR:", err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

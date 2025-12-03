@@ -1,11 +1,30 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { use, useEffect, useState } from "react";
 import styles from "./Pay.module.css";
 import { useRouter } from "next/navigation";
 
-export default function PayPage({ params }: { params: { id: string } }) {
+interface PaymentDto {
+  _id: string;
+  amount: number;
+  ecoTrackFee?: number;
+  companyRevenue?: number;
+  status: string;
+  productName?: string;
+  companyName?: string;
+}
+
+export default function PayPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // 👇 שימוש נכון ב-use כדי לפתור את ה"שגיאת Promise"
+  const { id } = use(params);
+
   const router = useRouter();
-  const [payment, setPayment] = useState<any>(null);
+
+  const [payment, setPayment] = useState<PaymentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [cardData, setCardData] = useState({
     number: "",
@@ -14,16 +33,15 @@ export default function PayPage({ params }: { params: { id: string } }) {
   });
   const [error, setError] = useState(false);
 
-  // Load payment info
   useEffect(() => {
     async function load() {
-      const res = await fetch(`/api/payments/${params.id}`);
+      const res = await fetch(`/api/payments/${id}`);
       const data = await res.json();
       setPayment(data);
       setLoading(false);
     }
     load();
-  }, [params.id]);
+  }, [id]);
 
   async function handlePayment() {
     if (!cardData.number || !cardData.exp || !cardData.cvv) {
@@ -33,14 +51,14 @@ export default function PayPage({ params }: { params: { id: string } }) {
 
     const res = await fetch("/api/payments/confirm", {
       method: "POST",
-      body: JSON.stringify({ paymentId: params.id, success: true }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentId: id }),
     });
 
     if (res.ok) {
       router.push("/pay/success");
     } else {
       showError();
-      reloadPayment();
     }
   }
 
@@ -49,45 +67,49 @@ export default function PayPage({ params }: { params: { id: string } }) {
     setTimeout(() => setError(false), 2500);
   }
 
-  async function reloadPayment() {
-    const res = await fetch(`/api/payments/${params.id}`);
-    const data = await res.json();
-    setPayment(data);
+  if (loading || !payment) {
+    return <div className={styles.wrapper}>Loading...</div>;
   }
 
-  if (loading || !payment) return <div className={styles.wrapper}>טוען...</div>;
+  const amount = payment.amount || 0;
+  const commission = amount * 0.1;
+  const companyGets = amount - commission;
+
+  const productName = payment.productName || "Unknown";
+  const companyName = payment.companyName || "Unknown company";
 
   return (
     <div className={styles.wrapper}>
-      {/* Error popup */}
       <div className={`${styles.errorPopup} ${error ? styles.show : ""}`}>
-        התשלום נכשל — אנא בדקי את הפרטים ונסי שוב
+        Payment failed — please check details and try again
       </div>
 
       <div className={styles.card}>
-        <h1 className={styles.title}>תשלום עבור רכישה</h1>
+        <h1 className={styles.title}>Complete Your Payment</h1>
 
-        {/* חברה */}
         <div className={styles.section}>
-          <div className={styles.label}>שם החברה:</div>
-          <div className={styles.value}>{payment.companyId?.name}</div>
+          <div className={styles.label}>Company:</div>
+          <div className={styles.value}>{companyName}</div>
         </div>
 
-        {/* מוצר & סכום */}
         <div className={styles.section}>
-          <div className={styles.label}>מוצר:</div>
-          <div className={styles.value}>{payment.requestId?.productName}</div>
+          <div className={styles.label}>Product:</div>
+          <div className={styles.value}>{productName}</div>
 
           <div className={styles.label} style={{ marginTop: "10px" }}>
-            סכום לתשלום:
+            Amount:
           </div>
-          <div className={styles.value}>{payment.amount} ₪</div>
+          <div className={styles.value}>{amount} ₪</div>
+
+          <div className={styles.subValue}>EcoTrack fee: 10%</div>
+          <div className={styles.subValue}>
+            Company receives: {companyGets} ₪
+          </div>
         </div>
 
-        {/* טופס אשראי */}
         <div className={styles.form}>
           <div className={styles.inputGroup}>
-            <label className={styles.label}>מספר כרטיס</label>
+            <label className={styles.label}>Card Number</label>
             <input
               className={styles.input}
               placeholder="xxxx xxxx xxxx xxxx"
@@ -101,7 +123,7 @@ export default function PayPage({ params }: { params: { id: string } }) {
 
           <div className={styles.row}>
             <div className={styles.inputGroup} style={{ flex: 1 }}>
-              <label className={styles.label}>תוקף</label>
+              <label className={styles.label}>Expiry</label>
               <input
                 className={styles.input}
                 placeholder="MM/YY"
@@ -129,7 +151,7 @@ export default function PayPage({ params }: { params: { id: string } }) {
         </div>
 
         <button className={styles.btnPay} onClick={handlePayment}>
-          שלם עכשיו
+          Pay Now
         </button>
       </div>
     </div>

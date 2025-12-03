@@ -7,23 +7,23 @@ export async function POST(req: Request) {
   try {
     const { to, subject, html } = await req.json();
 
-    if (!to || !subject || !html) {
-      return NextResponse.json(
-        { error: "Missing fields (to, subject, html required)" },
-        { status: 400 }
-      );
-    }
+    console.log("📧 Sending email to:", to);
 
-    const result = await resend.emails.send({
-      from: "EcoTrack <onboarding@resend.dev>",
+    const data = await resend.emails.send({
+      from: "EcoTrack <onboarding@resend.dev>",  // ← ← ← חשוב!!!
       to,
       subject,
       html,
     });
 
-    return NextResponse.json({ success: true, result });
-  } catch (error) {
-    console.error("Email error:", error);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    console.log("📨 Resend response:", data);
+
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    console.error("❌ Email error:", err);
+    return NextResponse.json(
+      { error: "Failed to send email", details: String(err) },
+      { status: 500 }
+    );
   }
 }
