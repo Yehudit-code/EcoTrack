@@ -7,13 +7,16 @@ import dynamic from "next/dynamic";
 const ConsumptionGraph = dynamic(() => import("../components/ConsumptionGraph"), { ssr: false });
 
 type User = {
-  _id: string;
+  _id?: string;
   name: string;
   phone?: string;
   email: string;
   photo?: string;
   improvementScore?: number;
   talked?: boolean;
+  value?: number;
+  valuesByMonth?: { month: number; year: number; value: number }[];
+  maxValue?: number;
 };
 
 
@@ -60,14 +63,14 @@ const DisplayUsersPage = () => {
   }, [category]);
 
   // 🔹 Toggle Talked state
-  const toggleTalk = async (id: string) => {
+  const toggleTalk = async (email: string) => {
     try {
-      const res = await fetch(`/api/company/users/${id}/talked`, { method: "PATCH" });
+      const res = await fetch(`/api/company/users/${encodeURIComponent(email)}/talked`, { method: "PATCH" });
       if (!res.ok) throw new Error("Failed to update talk status");
       const data = await res.json();
       setUsers((prev) =>
         prev.map((u) =>
-          u._id === id ? { ...u, talked: data.talked } : u
+          u.email === email ? { ...u, talked: data.talked } : u
         )
       );
     } catch (err: any) {
@@ -100,7 +103,7 @@ const DisplayUsersPage = () => {
         ) : (
           users.map((user) => (
             <div
-              key={user._id}
+              key={user.email}
               className="flex items-center justify-between p-4 bg-white shadow rounded cursor-pointer hover:bg-gray-50"
             >
               <div className="flex items-center gap-4" onClick={() => openModal(user)}>
@@ -108,28 +111,31 @@ const DisplayUsersPage = () => {
                   src={user.photo || "/default-user.png"}
                   alt={user.name}
                   className="w-12 h-12 rounded-full border border-gray-300"
+                  onError={e => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (target.src !== window.location.origin + "/default-user.png") {
+                      target.src = "/default-user.png";
+                    }
+                  }}
                 />
                 <div>
                   <p className="font-semibold text-lg">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.phone}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-sm text-gray-700">צריכה נוכחית: {user.value ?? '—'}</p>
                 </div>
               </div>
 
               <div className="flex flex-col items-center gap-2 min-w-[120px]">
                 {/* גרף צריכה אמיתי - כאן יש להחליף לדאטה אמיתית */}
                 <div className="w-28 h-12 bg-gray-100 rounded flex items-center justify-center">
-                  <ConsumptionGraph data={[
-                    { month: "9", value: user.improvementScore || 0 },
-                    { month: "10", value: (user.improvementScore || 0) + 5 },
-                    { month: "11", value: (user.improvementScore || 0) + 2 }
-                  ]} />
+                  <ConsumptionGraph data={(user.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
                 </div>
                 <button
                   className={`px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
                     user.talked ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
                   }`}
-                  onClick={() => toggleTalk(user._id)}
+                  onClick={() => toggleTalk(user.email)}
                 >
                   {user.talked ? "דיברתי ✓" : "דברתי"}
                 </button>
@@ -152,12 +158,9 @@ const DisplayUsersPage = () => {
             <h2 className="text-xl font-bold mb-2">{selectedUser.name}</h2>
             <p>טלפון: {selectedUser.phone}</p>
             <p>מייל: {selectedUser.email}</p>
+            <p>צריכה נוכחית: {selectedUser.value ?? '—'}</p>
             <div className="mt-4 w-full h-32 bg-gray-100 rounded flex items-center justify-center">
-              <ConsumptionGraph data={[
-                { month: "9", value: selectedUser.improvementScore || 0 },
-                { month: "10", value: (selectedUser.improvementScore || 0) + 5 },
-                { month: "11", value: (selectedUser.improvementScore || 0) + 2 }
-              ]} />
+              <ConsumptionGraph data={(selectedUser.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
             </div>
             <button
               className="mt-4 w-full bg-green-500 text-white py-2 rounded font-semibold"

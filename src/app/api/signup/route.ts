@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, role, photo } = await req.json();
+    const { name, email, password, role, photo, companyCategory, phone } = await req.json();
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -29,6 +29,8 @@ export async function POST(req: Request) {
       password: hashedPassword,
       role,
       photo,
+      companyCategory: companyCategory || null,
+      phone: phone || null,
       createdAt: new Date(),
     };
 
@@ -46,6 +48,9 @@ export async function POST(req: Request) {
           email,
           role,
           photo,
+          companyCategory: newUser.companyCategory,
+          phone: newUser.phone,
+          createdAt: newUser.createdAt,
         },
       }),
       {
