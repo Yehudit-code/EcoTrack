@@ -2,17 +2,28 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/app/services/server/mongodb";
 import { ConsumptionHabit } from "@/app/models/ConsumptionHabit";
 import { User } from "@/app/models/User";
-import type { IUser } from "@/app/models/User"; 
+import type { IUser } from "@/app/models/User";
+import { Types } from "mongoose";
+
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string } }
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectDB();
 
-    const userId = params.userId;
+    // Unwrap params Promise (Next.js 16)
+    const { userId } = await context.params;
 
-    // Read company email from query
+    // Validate ObjectId
+    if (!Types.ObjectId.isValid(userId)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid userId" },
+        { status: 400 }
+      );
+    }
+
+    // Extract company email from query string
     const url = new URL(req.url);
     const companyEmail = url.searchParams.get("companyEmail");
 
@@ -23,9 +34,10 @@ export async function GET(
       );
     }
 
-    // Find company user (the logged-in company)
-    const companyUser = await User.findOne({ email: companyEmail })
-      .lean<IUser | null>(); // Explicit type for TS
+    // Find the company user
+    const companyUser = (await User.findOne({ email: companyEmail }).lean()) as
+      | IUser
+      | null;
 
     if (!companyUser) {
       return NextResponse.json(
@@ -34,9 +46,8 @@ export async function GET(
       );
     }
 
-    // Access company category safely
+    // Validate company category
     const companyCategory = companyUser.companyCategory;
-
     if (!companyCategory) {
       return NextResponse.json(
         { success: false, message: "Company has no category defined" },
@@ -44,9 +55,9 @@ export async function GET(
       );
     }
 
-    // Find all consumption records for this user and category
+    // Fetch consumption data for this user and category
     const habits = await ConsumptionHabit.find({
-      userId: userId,
+      userId: new Types.ObjectId(userId),
       category: companyCategory,
     }).lean();
 
