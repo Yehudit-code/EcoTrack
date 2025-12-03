@@ -143,7 +143,7 @@ export async function fetchCompanyFilteredUserDetails(
   companyCategory: string;
 }> {
   const res = await fetch(
-    `/api/company/users/${userId}/details?companyEmail=${companyEmail}`,
+    `/api/company/user-details/${userId}?companyEmail=${companyEmail}`,
     { cache: "no-store" }
   );
 
