@@ -1,40 +1,115 @@
-.page {
-  padding: 30px;
-  background: #f1f5f9;
+.wrapper {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  background: #f5f7fa;
 }
 
 .title {
   font-size: 26px;
   font-weight: 700;
-  margin-bottom: 25px;
-}
-
-.list {
-  display: grid;
-  gap: 20px;
+  margin-bottom: 20px;
+  text-align: right;
+  color: #111827;
 }
 
 .card {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  padding: 24px 22px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 460px;
 }
 
-.row {
+.label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.value {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #111827;
+}
+
+.inputGroup {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.inputGroup input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  outline: none;
+}
+
+.inputGroup input:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25);
 }
 
 .btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 14px;
+  margin-top: 8px;
+  width: 100%;
+  padding: 12px;
   background: #22c55e;
   color: white;
-  border-radius: 8px;
-  text-decoration: none;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background: #16a34a;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* טוסט הצלחה */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #16a34a;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
 }

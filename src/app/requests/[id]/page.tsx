@@ -1,60 +1,51 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, use } from "react";
 import styles from "./CreateRequest.module.css";
 import { useRouter } from "next/navigation";
 
-export default function CreateRequestPage({ params }: { params: { id: string } }) {
+export default function CreateRequestPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+
+  // חובה! פותח את ה-Promise של params
+  const { id } = use(params);
+
   const [user, setUser] = useState<any>(null);
   const [product, setProduct] = useState("");
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     async function loadUser() {
-      const res = await fetch(`/api/users/${params.id}`);
+      console.log("FETCHING USER:", `/api/users/${id}`);
+
+      const res = await fetch(`/api/users/${id}`);
       const data = await res.json();
+
+      console.log("USER RESPONSE:", data);
+
       setUser(data);
       setLoading(false);
     }
+
     loadUser();
-  }, [params.id]);
+  }, [id]);
 
   async function handleSend() {
     if (!product || !price) return alert("נא למלא את כל השדות");
 
-    const res = await fetch("/api/company-requests", {
+    await fetch("/api/company-requests", {
       method: "POST",
       body: JSON.stringify({
-        userId: params.id,
-        companyId: "123", // מהלוגין של החברה
+        userId: id,
+        companyId: "123",
         productName: product,
         price: Number(price),
       }),
     });
 
-    const data = await res.json();
-
-    if (data?.success) {
-      // שולחים מייל
-      await fetch("/api/send-email", {
-        method: "POST",
-        body: JSON.stringify({
-          to: user.email,
-          subject: "הצעת תשלום חדשה מאת EcoTrack",
-          html: `
-            <h2>שלום ${user.name}</h2>
-            <p>קיבלת הצעת תשלום עבור: <b>${product}</b></p>
-            <p>סכום: ${price} ₪</p>
-            <a href="https://your-site.com/pay/${data.paymentId}">
-              לחץ כאן לתשלום
-            </a>
-          `,
-        }),
-      });
-
-      router.push("/company/requests/sent");
-    }
+    alert("הצעת התשלום נשלחה!");
+    router.push("/company/requests");
   }
 
   if (loading) return <div>טוען...</div>;
@@ -63,23 +54,21 @@ export default function CreateRequestPage({ params }: { params: { id: string } }
     <div className={styles.wrapper}>
       <h1 className={styles.title}>יצירת הצעת תשלום</h1>
 
-      <div className={styles.box}>
+      <div className={styles.card}>
         <div className={styles.label}>שם משתמש:</div>
-        <div className={styles.value}>{user.name}</div>
+        <div className={styles.value}>{user?.name || "לא נמצא"}</div>
 
         <div className={styles.inputGroup}>
           <label>שם מוצר</label>
-          <input value={product} onChange={e => setProduct(e.target.value)} />
+          <input value={product} onChange={(e) => setProduct(e.target.value)} />
         </div>
 
         <div className={styles.inputGroup}>
-          <label>מחיר</label>
-          <input type="number" value={price} onChange={e => setPrice(e.target.value)} />
+          <label>מחיר (ב₪)</label>
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
 
-        <button className={styles.btnSend} onClick={handleSend}>
-          שליחת הצעה
-        </button>
+        <button className={styles.btn} onClick={handleSend}>שליחת הצעה</button>
       </div>
     </div>
   );
