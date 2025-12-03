@@ -130,3 +130,33 @@ export async function getFilteredConsumption(
     companyCategory: json.companyCategory,
   };
 }
+
+// ----------------------------------------
+// Fetch filtered user details for company dashboard
+// ----------------------------------------
+export async function fetchCompanyFilteredUserDetails(
+  userId: string,
+  companyEmail: string
+): Promise<{
+  user: any;
+  consumption: any;
+  companyCategory: string;
+}> {
+  const res = await fetch(
+    `/api/company/users/${userId}/details?companyEmail=${companyEmail}`,
+    { cache: "no-store" }
+  );
+
+  const json = await res.json();
+
+  if (!res.ok || json.success === false) {
+    const msg = json.message || "Failed to fetch filtered user details";
+    throw new Error(msg);
+  }
+
+  return {
+    user: json.data.user,
+    consumption: json.data.consumption,
+    companyCategory: json.data.companyCategory,
+  };
+}

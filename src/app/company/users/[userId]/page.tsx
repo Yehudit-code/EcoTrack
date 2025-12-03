@@ -1,93 +1,91 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { fetchUserDetails } from "@/app/services/client/company";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { fetchCompanyFilteredUserDetails } from "@/app/services/client/consumptionClient";
+import styles from "./page.module.css";
 
-export default function UserDetailsPage() {
-  const params = useParams();
-  const userId = params.userId as string;
+export default function UserDetailsPage({ params }: { params: Promise<{ userId: string }> }) {
+  const router = useRouter();
+  const { userId } = use(params);
 
-  const [user, setUser] = useState<any>(null);
-  const [consumption, setConsumption] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [companyCategory, setCompanyCategory] = useState<string>("");
+  const [records, setRecords] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!userId) return;
-
     async function load() {
       try {
-        const result = await fetchUserDetails(userId);
-        setUser(result.user);
-        setConsumption(result.consumption);
-      } catch (error) {
-        console.error("Failed to load user details:", error);
+        const stored = localStorage.getItem("currentUser");
+        if (!stored) {
+          router.push("/signIn");
+          return;
+        }
+
+        const currentUser = JSON.parse(stored);
+
+        const response = await fetchCompanyFilteredUserDetails(
+          userId,
+          currentUser.email
+        );
+
+        setUser(response.user);
+        setCompanyCategory(response.companyCategory);
+        setRecords(response.consumption || []);
+      } catch (err) {
+        console.error("Error loading details:", err);
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [userId]);
+  }, [userId, router]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className={styles.container}>Loading...</div>;
 
   return (
-    <main className="min-h-screen px-10 py-8 bg-[#fdfbf4]">
-      <h1 className="text-2xl font-bold mb-6 text-emerald-800">
-        User Details
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>User Details</h1>
 
-      {/* User Info */}
-      <section className="mb-8 rounded-xl bg-white shadow p-6 flex flex-col gap-2">
-        <h2 className="text-lg font-semibold text-emerald-900">
-          Basic Information
-        </h2>
-        <p><strong>Email:</strong> {user.email}</p>
-        {user.country && <p><strong>Country:</strong> {user.country}</p>}
-      </section>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>Basic Information</h2>
+        <p><strong>Email:</strong> {user?.email}</p>
+      </div>
 
-      {/* Consumption */}
-      <section className="mb-8 rounded-xl bg-white shadow p-6">
-        <h2 className="text-lg font-semibold text-emerald-900 mb-4">
-          Consumption Summary
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>
+          Consumption — {companyCategory}
         </h2>
 
-        {consumption.length === 0 ? (
-          <p>No consumption data yet.</p>
+        {records.length === 0 ? (
+          <p>No data available for this category.</p>
         ) : (
-          <table className="w-full text-left border-collapse">
+          <table className={styles.table}>
             <thead>
-              <tr className="border-b">
-                <th className="py-2">Category</th>
-                <th className="py-2">Total</th>
-                <th className="py-2">Average</th>
+              <tr>
+                <th className={styles.th}>Month</th>
+                <th className={styles.th}>Year</th>
+                <th className={styles.th}>Value</th>
               </tr>
             </thead>
             <tbody>
-              {consumption.map((item) => (
-                <tr key={item.category} className="border-b">
-                  <td className="py-2">{item.category}</td>
-                  <td className="py-2">{item.totalValue}</td>
-                  <td className="py-2">
-                    {item.avgValue.toFixed(2)}
-                  </td>
+              {records.map((rec, index) => (
+                <tr key={index}>
+                  <td className={styles.td}>{rec.month}</td>
+                  <td className={styles.td}>{rec.year}</td>
+                  <td className={styles.td}>{rec.value}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-      </section>
+      </div>
 
-      {/* Offer button */}
-      <section className="flex justify-end">
-        <a
-          href={`/company/offers/create?userId=${userId}`}
-          className="px-6 py-3 rounded-full bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition"
-        >
-          Create Payment Offer
-        </a>
-      </section>
-    </main>
+      <div className={styles.btnContainer}>
+        <button className={styles.button}>Create Payment Offer</button>
+      </div>
+    </div>
   );
 }
