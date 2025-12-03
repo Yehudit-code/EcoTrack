@@ -33,7 +33,8 @@ const UserSchema = new Schema({
   country: String,
   birthDate: Date,
   companyCategory: String,
-  improvementScore: Number
+  improvementScore: Number,
+  talked: { type: Boolean, default: false },
 });
 
 export const User = models.User || model("User", UserSchema);

@@ -48,6 +48,7 @@ export async function GET(req: Request) {
           improvementScore: userDoc?.improvementScore || 0,
           valuesByMonth: sorted.map((r: any) => ({ month: r.month, year: r.year, value: r.value })),
           maxValue: maxValueRecord ? maxValueRecord.value : 0,
+          talked: userDoc?.talked || false,
         };
       }));
       // מיין את כל המשתמשים לפי value המקסימלי בסדר יורד, קח 3 ראשונים

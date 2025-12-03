@@ -67,12 +67,14 @@ const DisplayUsersPage = () => {
     try {
       const res = await fetch(`/api/company/users/${encodeURIComponent(email)}/talked`, { method: "PATCH" });
       if (!res.ok) throw new Error("Failed to update talk status");
-      const data = await res.json();
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.email === email ? { ...u, talked: data.talked } : u
-        )
-      );
+      // אחרי עדכון, רענן את רשימת המשתמשים מהשרת כדי לקבל את הערך החדש
+      if (category) {
+        const usersRes = await fetch(`/api/company/users?category=${category}`);
+        if (usersRes.ok) {
+          const data = await usersRes.json();
+          setUsers(data.users?.slice(0, 3) || []);
+        }
+      }
     } catch (err: any) {
       alert(err.message);
     }
@@ -97,20 +99,20 @@ const DisplayUsersPage = () => {
       <h1 className="text-2xl font-bold mb-4">המשתמשים המובילים בקטגוריה: {category}</h1>
 
       {/* רשימת משתמשים */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-8 items-center w-full max-w-2xl mx-auto">
         {users.length === 0 ? (
-          <p>לא נמצאו משתמשים בקטגוריה זו.</p>
+          <p className="w-full text-center">לא נמצאו משתמשים בקטגוריה זו.</p>
         ) : (
           users.map((user) => (
             <div
               key={user.email}
-              className="flex items-center justify-between p-4 bg-white shadow rounded cursor-pointer hover:bg-gray-50"
+              className="flex flex-col w-full bg-white shadow rounded-xl p-6 cursor-pointer hover:bg-gray-50 transition-all border border-gray-100"
             >
-              <div className="flex items-center gap-4" onClick={() => openModal(user)}>
+              <div className="flex items-center gap-4 mb-4" onClick={() => openModal(user)}>
                 <img
                   src={user.photo || "/default-user.png"}
                   alt={user.name}
-                  className="w-12 h-12 rounded-full border border-gray-300"
+                  className="w-16 h-16 rounded-full border border-gray-300"
                   onError={e => {
                     const target = e.currentTarget as HTMLImageElement;
                     if (target.src !== window.location.origin + "/default-user.png") {
@@ -125,19 +127,19 @@ const DisplayUsersPage = () => {
                   <p className="text-sm text-gray-700">צריכה נוכחית: {user.value ?? '—'}</p>
                 </div>
               </div>
-
-              <div className="flex flex-col items-center gap-2 min-w-[120px]">
-                {/* גרף צריכה אמיתי - כאן יש להחליף לדאטה אמיתית */}
-                <div className="w-28 h-12 bg-gray-100 rounded flex items-center justify-center">
-                  <ConsumptionGraph data={(user.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
+              <div className="flex flex-col items-center gap-2 mt-2">
+                <div className="w-full flex items-center justify-center">
+                  <div className="w-40 h-16 flex items-center justify-center">
+                    <ConsumptionGraph data={(user.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
+                  </div>
                 </div>
                 <button
-                  className={`px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
+                  className={`mt-2 px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
                     user.talked ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
                   }`}
                   onClick={() => toggleTalk(user.email)}
                 >
-                  {user.talked ? "דיברתי ✓" : "דברתי"}
+                  {user.talked ? "Talked ✓" : "Mark as Talked"}
                 </button>
               </div>
             </div>
