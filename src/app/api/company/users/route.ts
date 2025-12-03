@@ -26,22 +26,21 @@ export async function GET(req: Request) {
   }
 }
 
-// PATCH /api/company/users/:id/talked
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request) {
   try {
     await connectDB();
-    const userId = params.id;
 
-    if (!ObjectId.isValid(userId)) {
+    const { id } = await req.json(); // מקבלים id מתוך body
+
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid user id" }, { status: 400 });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // אם השדה לא קיים, יוצרים אותו. אחרת הופכים את הערך
     const currentTalked = user.get("talked") || false;
     user.set("talked", !currentTalked);
     await user.save();
@@ -52,3 +51,4 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ error: "Failed to update talk status" }, { status: 500 });
   }
 }
+
