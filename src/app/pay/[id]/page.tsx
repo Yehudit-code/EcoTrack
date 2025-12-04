@@ -7,11 +7,12 @@ import { useRouter } from "next/navigation";
 interface PaymentDto {
   _id: string;
   amount: number;
-  ecoTrackFee?: number;
-  companyRevenue?: number;
   status: string;
-  productName?: string;
-  companyName?: string;
+  productName: string;
+  companyName: string;
+  userName: string;
+  userEmail: string;
+  userId: string;
 }
 
 export default function PayPage({
@@ -19,9 +20,7 @@ export default function PayPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // 👇 שימוש נכון ב-use כדי לפתור את ה"שגיאת Promise"
   const { id } = use(params);
-
   const router = useRouter();
 
   const [payment, setPayment] = useState<PaymentDto | null>(null);
@@ -33,18 +32,68 @@ export default function PayPage({
   });
   const [error, setError] = useState(false);
 
+  // ───────────────────────────────────────────────
+  // 1️⃣ טוען פרטי תשלום ואם כבר שולם → שולח ישר ל-success
+  // ───────────────────────────────────────────────
   useEffect(() => {
     async function load() {
       const res = await fetch(`/api/payments/${id}`);
       const data = await res.json();
+
+      // עדכון currentUser
+      if (data.fullUser) {
+        localStorage.setItem("currentUser", JSON.stringify(data.fullUser));
+      }
+
       setPayment(data);
+
+      // אם כבר שולם → הפניה מיידית ל-success
+      if (data.status === "paid") {
+        router.push(`/pay/success?userId=${data.userId}`);
+        return;
+      }
+
       setLoading(false);
     }
-    load();
-  }, [id]);
 
+    load();
+  }, [id, router]);
+
+  // ───────────────────────────────────────────────
+  // 🛡️ בדיקות תקינות לשדות כרטיס
+  // ───────────────────────────────────────────────
+  function isValidCardNumber(num: string) {
+    const digits = num.replace(/\s+/g, "");
+    return /^\d{16}$/.test(digits);
+  }
+
+  function isValidExp(exp: string) {
+    if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
+
+    const [mm, yy] = exp.split("/").map((v) => parseInt(v, 10));
+    if (mm < 1 || mm > 12) return false;
+
+    const now = new Date();
+    const year = 2000 + yy;
+    const expDate = new Date(year, mm);
+
+    return expDate > now; // תוקף עתידי
+  }
+
+  function isValidCVV(cvv: string) {
+    return /^\d{3}$/.test(cvv);
+  }
+
+  // ───────────────────────────────────────────────
+  // 2️⃣ שליחת תשלום
+  // ───────────────────────────────────────────────
   async function handlePayment() {
-    if (!cardData.number || !cardData.exp || !cardData.cvv) {
+    // בדיקות תקינות:
+    if (
+      !isValidCardNumber(cardData.number) ||
+      !isValidExp(cardData.exp) ||
+      !isValidCVV(cardData.cvv)
+    ) {
       showError();
       return;
     }
@@ -56,7 +105,7 @@ export default function PayPage({
     });
 
     if (res.ok) {
-      router.push("/pay/success");
+      router.push(`/pay/success?userId=${payment!.userId}`);
     } else {
       showError();
     }
@@ -75,26 +124,30 @@ export default function PayPage({
   const commission = amount * 0.1;
   const companyGets = amount - commission;
 
-  const productName = payment.productName || "Unknown";
-  const companyName = payment.companyName || "Unknown company";
-
   return (
     <div className={styles.wrapper}>
       <div className={`${styles.errorPopup} ${error ? styles.show : ""}`}>
-        Payment failed — please check details and try again
+        Invalid credit card details — please check and try again
       </div>
 
       <div className={styles.card}>
         <h1 className={styles.title}>Complete Your Payment</h1>
 
+        {/* User Info */}
         <div className={styles.section}>
-          <div className={styles.label}>Company:</div>
-          <div className={styles.value}>{companyName}</div>
+          <div className={styles.label}>Customer:</div>
+          <div className={styles.value}>{payment.userName}</div>
+
+          <div className={styles.label} style={{ marginTop: "6px" }}>
+            Email:
+          </div>
+          <div className={styles.value}>{payment.userEmail}</div>
         </div>
 
+        {/* Product */}
         <div className={styles.section}>
           <div className={styles.label}>Product:</div>
-          <div className={styles.value}>{productName}</div>
+          <div className={styles.value}>{payment.productName}</div>
 
           <div className={styles.label} style={{ marginTop: "10px" }}>
             Amount:
@@ -107,6 +160,13 @@ export default function PayPage({
           </div>
         </div>
 
+        {/* Company */}
+        <div className={styles.section}>
+          <div className={styles.label}>Company:</div>
+          <div className={styles.value}>{payment.companyName}</div>
+        </div>
+
+        {/* Payment form */}
         <div className={styles.form}>
           <div className={styles.inputGroup}>
             <label className={styles.label}>Card Number</label>

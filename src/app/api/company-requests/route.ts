@@ -107,8 +107,8 @@ export async function POST(req: Request) {
     return Response.json(
       {
         success: true,
-        paymentId: paymentRes.insertedId,
-        requestId: requestRes.insertedId,
+        paymentId: paymentRes.insertedId.toString(),
+        requestId: requestRes.insertedId.toString(),
       },
       { status: 201 }
     );
