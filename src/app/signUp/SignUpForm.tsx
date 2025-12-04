@@ -77,7 +77,7 @@ export default function SignUpForm() {
       showToast("🎉 You have successfully registered!");
       setTimeout(() => {
         window.location.href =
-          data.user.role === "company" ? "/displa-user" : "/home";
+          data.user.role === "company" ? "/home" : "/home";
       }, 1000);
 
     } catch (err) {
@@ -104,11 +104,7 @@ export default function SignUpForm() {
         localStorage.setItem("currentUser", JSON.stringify(checkData.user));
         showToast("Welcome back!");
         setTimeout(() => {
-          if (checkData.user.role === "company") {
-            window.location.href = "/displa-user";
-          } else {
-            window.location.href = "/home";
-          }
+          window.location.href = "/home";
         }, 900);
         return;
       }

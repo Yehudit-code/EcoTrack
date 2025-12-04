@@ -62,21 +62,25 @@ export async function GET(req: Request) {
 }
 
 // PATCH /api/company/users/:email/talked
-export async function PATCH(req: Request, { params }: { params: { email: string } }) {
+import { NextRequest } from "next/server";
+
+export async function PATCH(req: NextRequest, context: { params: Promise<{}> }) {
   try {
     await connectDB();
-    const userEmail = decodeURIComponent(params.email);
-
+    // extract email from url
+    const url = new URL(req.url);
+    const match = url.pathname.match(/\/api\/company\/users\/(.+)\/talked/);
+    const userEmail = match ? decodeURIComponent(match[1]) : null;
+    if (!userEmail) {
+      return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
+    }
     const user = await User.findOne({ email: userEmail });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    // אם השדה לא קיים, יוצרים אותו. אחרת הופכים את הערך
     const currentTalked = user.get("talked") || false;
     user.set("talked", !currentTalked);
     await user.save();
-
     return NextResponse.json({ success: true, talked: user.get("talked") });
   } catch (err) {
     console.error(err);

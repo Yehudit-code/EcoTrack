@@ -43,7 +43,7 @@ const DisplayUsersPage = () => {
     }
   }, []);
 
-  // הבאת המשתמשים עם הערך הגבוה ביותר בקטגוריה שנבחרה
+  // Fetch top users by value in selected category
   useEffect(() => {
     if (!category) return;
     const fetchUsers = async () => {
@@ -90,18 +90,18 @@ const DisplayUsersPage = () => {
     setModalOpen(false);
   };
 
-  if (loading) return <p>טוען משתמשים...</p>;
-  if (error) return <p>שגיאה: {error}</p>;
-  if (!category) return <p>לא נבחרה קטגוריה עבור החברה שלך.</p>;
+  if (loading) return <p>Loading users...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!category) return <p>No category selected for your company.</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">המשתמשים המובילים בקטגוריה: {category}</h1>
+      <h1 className="text-2xl font-bold mb-4">Top users in category: {category}</h1>
 
       {/* רשימת משתמשים */}
       <div className="flex flex-col gap-8 items-center w-full max-w-2xl mx-auto">
         {users.length === 0 ? (
-          <p className="w-full text-center">לא נמצאו משתמשים בקטגוריה זו.</p>
+          <p className="w-full text-center">No users found in this category.</p>
         ) : (
           users.map((user) => (
             <div
@@ -124,7 +124,7 @@ const DisplayUsersPage = () => {
                   <p className="font-semibold text-lg">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.phone}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-sm text-gray-700">צריכה נוכחית: {user.value ?? '—'}</p>
+                  <p className="text-sm text-gray-700">Current consumption: {user.value ?? '—'}</p>
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2 mt-2">
@@ -158,23 +158,23 @@ const DisplayUsersPage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold mb-2">{selectedUser.name}</h2>
-            <p>טלפון: {selectedUser.phone}</p>
-            <p>מייל: {selectedUser.email}</p>
-            <p>צריכה נוכחית: {selectedUser.value ?? '—'}</p>
+            <p>Phone: {selectedUser.phone}</p>
+            <p>Email: {selectedUser.email}</p>
+            <p>Current consumption: {selectedUser.value ?? '—'}</p>
             <div className="mt-4 w-full h-32 bg-gray-100 rounded flex items-center justify-center">
               <ConsumptionGraph data={(selectedUser.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
             </div>
             <button
               className="mt-4 w-full bg-green-500 text-white py-2 rounded font-semibold"
-              onClick={() => alert("מעבר לדף יצירת הצעה")}
+              onClick={() => alert("Go to create proposal page")}
             >
-              צור הצעת תשלום
+              Create Payment Proposal
             </button>
             <button
               className="mt-2 w-full bg-gray-300 text-black py-2 rounded"
               onClick={closeModal}
             >
-              סגור
+              Close
             </button>
           </div>
         </div>

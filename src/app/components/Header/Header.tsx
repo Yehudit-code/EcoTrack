@@ -2,18 +2,21 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { ShoppingCart } from 'lucide-react';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [profilePic, setProfilePic] = useState<string>('/images/default-profile.png');
+  const [proposalsCount, setProposalsCount] = useState<number>(0);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     // נשלף את המשתמש השמור בלוקאל סטורג'
     const userData = localStorage.getItem('currentUser');
     if (userData) {
       const parsed = JSON.parse(userData);
-
+      setUserRole(parsed.role);
       // סדר עדיפויות לתמונה:
       // 1. תמונה שהעלה המשתמש
       // 2. תמונה מגוגל
@@ -22,11 +25,15 @@ export default function Header() {
         parsed.photo ||
         parsed.photoURL ||
         '/images/default-profile.png';
-
       setProfilePic(pic);
-
-      // נשמור גם כדי שהheader הבא ידע לקרוא
       localStorage.setItem('profilePic', pic);
+      // אם המשתמש הוא לקוח, נביא את מספר ההצעות
+      if (parsed.role === 'user') {
+        fetch(`/api/company-requests?userId=${parsed._id}`)
+          .then(res => res.json())
+          .then(data => setProposalsCount(Array.isArray(data) ? data.length : (data?.length || 0)))
+          .catch(() => setProposalsCount(0));
+      }
     }
   }, []);
 
@@ -60,9 +67,36 @@ export default function Header() {
           <FontAwesomeIcon icon={faInfoCircle} />
           <span>About</span>
         </Link>
+        {userRole === 'company' && (
+          <Link href="/displa-user" className={styles.navLink}>
+            <FontAwesomeIcon icon={faUser} />
+            <span>Display Users</span>
+          </Link>
+        )}
       </nav>
 
       <div className={styles.userSection}>
+        {userRole === 'user' && (
+          <Link href="/proposals-inbox" className={styles.cartLink} style={{ position: 'relative', marginRight: 18 }} title="Proposals Inbox">
+            <FontAwesomeIcon icon={faShoppingCart} size="lg" color="#2e7d32" />
+            {proposalsCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: -6,
+                right: -10,
+                background: '#e53935',
+                color: '#fff',
+                borderRadius: '50%',
+                padding: '2px 7px',
+                fontSize: 13,
+                fontWeight: 700,
+                minWidth: 22,
+                textAlign: 'center',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.12)'
+              }}>{proposalsCount}</span>
+            )}
+          </Link>
+        )}
         <Link href="/profile" className={styles.profileLink}>
           {profilePic ? (
             <div className={styles.profileContainer}>

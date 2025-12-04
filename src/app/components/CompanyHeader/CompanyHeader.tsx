@@ -36,7 +36,7 @@ export default function Header() {
           <FontAwesomeIcon icon={faHome} />
           <span>Home</span>
         </Link>
-        <Link href="/manage-data" className={styles.navLink}>
+        <Link href="/displa-user" className={styles.navLink}>
           <FontAwesomeIcon icon={faDatabase} />
           <span>Display Users</span>
         </Link>
