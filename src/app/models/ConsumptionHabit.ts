@@ -1,4 +1,3 @@
-// src/models/ConsumptionHabit.ts
 import { Schema, model, models, Types } from "mongoose";
 import type { ConsumptionCategory } from "@/app/types/common";
 

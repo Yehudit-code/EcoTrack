@@ -4,7 +4,6 @@ export interface ICompanyRequest {
   companyId: Types.ObjectId;
   userId: Types.ObjectId;
   productName: string;
-  description?: string;
   price: number;
   status: "sent" | "accepted" | "declined";
   paymentId?: Types.ObjectId | null;
@@ -16,7 +15,6 @@ const CompanyRequestSchema = new Schema<ICompanyRequest>(
     companyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     productName: { type: String, required: true },
-    description: { type: String },
     price: { type: Number, required: true },
     status: {
       type: String,
@@ -27,6 +25,7 @@ const CompanyRequestSchema = new Schema<ICompanyRequest>(
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );
+
 
 export const CompanyRequest =
   models.CompanyRequest || model<ICompanyRequest>("CompanyRequest", CompanyRequestSchema);

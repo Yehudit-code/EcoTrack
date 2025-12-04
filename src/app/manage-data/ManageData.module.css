@@ -1,250 +1,123 @@
-/* src/app/manage-data/page.module.css */
-
 .container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   background-color: #ffffff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-}
-
-/* MAIN CONTENT */
-.main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-}
-
-.contentBox {
+  color: #333333;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.header {
   width: 100%;
-  max-width: 1100px;
-}
-
-.title {
-  font-size: 2.6rem;
-  color: #2d5c2d;
-  margin-bottom: 10px;
+  background-color: #2e7d32; /* eco green */
+  color: white;
   text-align: center;
+  font-weight: 600;
+  padding: 1rem 0;
+  font-size: 1.2rem;
 }
 
-.subtitle {
-  font-size: 1rem;
-  color: #555555;
-  margin-bottom: 40px;
+.card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.title, .subtitle {
   text-align: center;
-  max-width: 600px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
-/* GRID OF CARDS */
-.dataSection {
+.monthSelector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.monthSelector select {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+}
+
+.formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 30px;
-  width: 100%;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.dataCard {
-  background-color: #f8fdf8;
-  border: 2px solid #9bc59b;
-  border-radius: 18px;
-  padding: 24px 22px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.dataCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.12);
-}
-
-.dataCard h3 {
-  color: #2d5c2d;
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-}
-
-.cardDescription {
-  font-size: 0.95rem;
-  color: #666666;
-  margin-bottom: 18px;
-}
-
-/* INPUT GROUP */
-.inputGroup {
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.inputGroup label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #444444;
-}
-
-.inputGroup input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #cccccc;
+.formGrid input {
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 1rem;
-  text-align: center;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
 }
 
-.inputGroup input:focus {
-  outline: none;
-  border-color: #9bc59b;
-  box-shadow: 0 0 0 3px rgba(155, 197, 155, 0.35);
+.formGrid input:focus {
+  outline: 2px solid #2e7d32;
 }
 
-/* BUTTONS */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .saveBtn {
-  background-color: #9bc59b;
-  color: #ffffff;
-  padding: 10px 22px;
+  background-color: #2e7d32;
+  color: white;
+  padding: 0.6rem 1.5rem;
   border: none;
-  border-radius: 999px;
-  font-size: 0.98rem;
-  font-weight: 600;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease,
-    box-shadow 0.15s ease;
+  transition: 0.2s ease;
 }
 
 .saveBtn:hover {
-  background-color: #7ba87b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  background-color: #1b5e20;
 }
 
-.saveBtn:disabled {
-  background-color: #c7ddc7;
-  cursor: default;
-  box-shadow: none;
-}
-
-/* MESSAGES */
-.statusMessage {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: #305830;
-}
-
-.globalMessage {
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-  color: #b04545;
-  text-align: center;
-}
-
-/* FOOTER (נשלט ע"י הקומפוננטה עצמה, כאן רק רווח קטן מעליו) */
-.footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #faf3dc;
-  border-top: 1px solid #dddddd;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .main {
-    padding: 24px 12px;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .dataCard {
-    padding: 20px 16px;
-  }
-}
-
-/* ----------------------- */
-/* Month / Year Picker      */
-/* ----------------------- */
-
-.pickerContainer {
-  position: relative;
-}
-
-.pickerButton {
-  background: #ffffff;
-  border: 2px solid #9bc59b;
-  border-radius: 10px;
-  padding: 10px 16px;
+.prevBtn {
+  background-color: #e5e7eb;
+  color: #333;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1.1rem;
-  color: #2d5c2d;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
-.pickerButton:hover {
-  background: #f0faf0;
+.prevBtn:hover {
+  background-color: #d1d5db;
 }
 
-.pickerPopup {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  background: #ffffff;
-  border: 2px solid #9bc59b;
-  border-radius: 12px;
-  padding: 15px;
-  width: 260px;
-  z-index: 100;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
 }
 
-.yearRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+.table th, .table td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+}
+
+.table th {
+  background-color: #e8f5e9;
   font-weight: 600;
 }
 
-.yearRow button {
-  background: #e6f4e6;
-  border: 1px solid #9bc59b;
-  padding: 4px 8px;
-  border-radius: 6px;
-  cursor: pointer;
+.table tr:hover {
+  background-color: #f1f8e9;
 }
 
-.monthGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.monthItem {
-  background: #f7fdf7;
-  border: 1px solid #9bc59b;
-  padding: 8px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-  color: #2d5c2d;
-}
-
-.monthItem:hover {
-  background: #e5f3e5;
-}
-
-.activeMonth {
-  background: #9bc59b !important;
-  color: #fff;
-  border-color: #7da67d;
-}

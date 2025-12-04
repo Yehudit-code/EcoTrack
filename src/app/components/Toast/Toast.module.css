@@ -1,25 +1,42 @@
 .toast {
   position: fixed;
   top: 20px;
-  left: 50%;                 /* 🟢 ממורכז */
-  transform: translateX(-50%); /* 🟢 מושך חזרה למרכז */
-  background: #2e7d32;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-  z-index: 9999;
+  right: 50%;
+  transform: translateX(50%);
+  padding: 14px 22px;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: 600;
-  animation: fadeIn 0.3s ease forwards, fadeOut 0.3s ease 1.8s forwards;
+  z-index: 999999;
+  animation: fadeInUp 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
 }
 
+/* Success Toast */
+.success {
+  background: #22c55e;
+  color: white;
+}
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+/* Error Toast */
+.error {
+  background: #ef4444;
+  color: white;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; transform: translate(-50%, 0); }
-  to { opacity: 0; transform: translate(-50%, -10px); }
+  to {
+    opacity: 0;
+    transform: translateX(50%) translateY(-10px);
+  }
 }

@@ -81,15 +81,18 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.profilePage}>
+      {/* חזרה */}
       <button onClick={() => router.back()} className={styles.backBtn}>
         <ArrowLeft size={20} /> Back
       </button>
 
+      {/* לוגאאוט */}
       <button onClick={handleLogout} className={styles.logoutBtn}>
         <LogOut size={18} /> Logout
       </button>
 
       <div className={styles.profileCard}>
+        {/* כותרת */}
         <div className={styles.headerSection}>
           <img
             src={user.photo || "/images/default-profile.png"}
