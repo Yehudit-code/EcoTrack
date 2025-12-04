@@ -7,13 +7,16 @@ import dynamic from "next/dynamic";
 const ConsumptionGraph = dynamic(() => import("../components/ConsumptionGraph"), { ssr: false });
 
 type User = {
-  _id: string;
+  _id?: string;
   name: string;
   phone?: string;
   email: string;
   photo?: string;
   improvementScore?: number;
   talked?: boolean;
+  value?: number;
+  valuesByMonth?: { month: number; year: number; value: number }[];
+  maxValue?: number;
 };
 
 
@@ -40,7 +43,7 @@ const DisplayUsersPage = () => {
     }
   }, []);
 
-  // הבאת המשתמשים עם הערך הגבוה ביותר בקטגוריה שנבחרה
+  // Fetch top users by value in selected category
   useEffect(() => {
     if (!category) return;
     const fetchUsers = async () => {
@@ -60,16 +63,18 @@ const DisplayUsersPage = () => {
   }, [category]);
 
   // 🔹 Toggle Talked state
-  const toggleTalk = async (id: string) => {
+  const toggleTalk = async (email: string) => {
     try {
-      const res = await fetch(`/api/company/users/${id}/talked`, { method: "PATCH" });
+      const res = await fetch(`/api/company/users/${encodeURIComponent(email)}/talked`, { method: "PATCH" });
       if (!res.ok) throw new Error("Failed to update talk status");
-      const data = await res.json();
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === id ? { ...u, talked: data.talked } : u
-        )
-      );
+      // אחרי עדכון, רענן את רשימת המשתמשים מהשרת כדי לקבל את הערך החדש
+      if (category) {
+        const usersRes = await fetch(`/api/company/users?category=${category}`);
+        if (usersRes.ok) {
+          const data = await usersRes.json();
+          setUsers(data.users?.slice(0, 3) || []);
+        }
+      }
     } catch (err: any) {
       alert(err.message);
     }
@@ -85,53 +90,56 @@ const DisplayUsersPage = () => {
     setModalOpen(false);
   };
 
-  if (loading) return <p>טוען משתמשים...</p>;
-  if (error) return <p>שגיאה: {error}</p>;
-  if (!category) return <p>לא נבחרה קטגוריה עבור החברה שלך.</p>;
+  if (loading) return <p>Loading users...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!category) return <p>No category selected for your company.</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">המשתמשים המובילים בקטגוריה: {category}</h1>
+      <h1 className="text-2xl font-bold mb-4">Top users in category: {category}</h1>
 
       {/* רשימת משתמשים */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-8 items-center w-full max-w-2xl mx-auto">
         {users.length === 0 ? (
-          <p>לא נמצאו משתמשים בקטגוריה זו.</p>
+          <p className="w-full text-center">No users found in this category.</p>
         ) : (
           users.map((user) => (
             <div
-              key={user._id}
-              className="flex items-center justify-between p-4 bg-white shadow rounded cursor-pointer hover:bg-gray-50"
+              key={user.email}
+              className="flex flex-col w-full bg-white shadow rounded-xl p-6 cursor-pointer hover:bg-gray-50 transition-all border border-gray-100"
             >
-              <div className="flex items-center gap-4" onClick={() => openModal(user)}>
+              <div className="flex items-center gap-4 mb-4" onClick={() => openModal(user)}>
                 <img
                   src={user.photo || "/default-user.png"}
                   alt={user.name}
-                  className="w-12 h-12 rounded-full border border-gray-300"
+                  className="w-16 h-16 rounded-full border border-gray-300"
+                  onError={e => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (target.src !== window.location.origin + "/default-user.png") {
+                      target.src = "/default-user.png";
+                    }
+                  }}
                 />
                 <div>
                   <p className="font-semibold text-lg">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.phone}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-sm text-gray-700">Current consumption: {user.value ?? '—'}</p>
                 </div>
               </div>
-
-              <div className="flex flex-col items-center gap-2 min-w-[120px]">
-                {/* גרף צריכה אמיתי - כאן יש להחליף לדאטה אמיתית */}
-                <div className="w-28 h-12 bg-gray-100 rounded flex items-center justify-center">
-                  <ConsumptionGraph data={[
-                    { month: "9", value: user.improvementScore || 0 },
-                    { month: "10", value: (user.improvementScore || 0) + 5 },
-                    { month: "11", value: (user.improvementScore || 0) + 2 }
-                  ]} />
+              <div className="flex flex-col items-center gap-2 mt-2">
+                <div className="w-full flex items-center justify-center">
+                  <div className="w-40 h-16 flex items-center justify-center">
+                    <ConsumptionGraph data={(user.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
+                  </div>
                 </div>
                 <button
-                  className={`px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
+                  className={`mt-2 px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
                     user.talked ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
                   }`}
-                  onClick={() => toggleTalk(user._id)}
+                  onClick={() => toggleTalk(user.email)}
                 >
-                  {user.talked ? "דיברתי ✓" : "דברתי"}
+                  {user.talked ? "Talked ✓" : "Mark as Talked"}
                 </button>
               </div>
             </div>
@@ -150,26 +158,23 @@ const DisplayUsersPage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold mb-2">{selectedUser.name}</h2>
-            <p>טלפון: {selectedUser.phone}</p>
-            <p>מייל: {selectedUser.email}</p>
+            <p>Phone: {selectedUser.phone}</p>
+            <p>Email: {selectedUser.email}</p>
+            <p>Current consumption: {selectedUser.value ?? '—'}</p>
             <div className="mt-4 w-full h-32 bg-gray-100 rounded flex items-center justify-center">
-              <ConsumptionGraph data={[
-                { month: "9", value: selectedUser.improvementScore || 0 },
-                { month: "10", value: (selectedUser.improvementScore || 0) + 5 },
-                { month: "11", value: (selectedUser.improvementScore || 0) + 2 }
-              ]} />
+              <ConsumptionGraph data={(selectedUser.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
             </div>
             <button
               className="mt-4 w-full bg-green-500 text-white py-2 rounded font-semibold"
-              onClick={() => alert("מעבר לדף יצירת הצעה")}
+              onClick={() => alert("Go to create proposal page")}
             >
-              צור הצעת תשלום
+              Create Payment Proposal
             </button>
             <button
               className="mt-2 w-full bg-gray-300 text-black py-2 rounded"
               onClick={closeModal}
             >
-              סגור
+              Close
             </button>
           </div>
         </div>

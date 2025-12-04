@@ -40,5 +40,4 @@ const ConsumptionHabitSchema = new Schema<IConsumptionHabit>(
 ConsumptionHabitSchema.index({ userEmail: 1, category: 1, year: 1, month: 1 }, { unique: true });
 
 export const ConsumptionHabit =
-  models.ConsumptionHabit ||
-  model<IConsumptionHabit>("ConsumptionHabit", ConsumptionHabitSchema, "ConsumptionHabits");
+  models.ConsumptionHabit || model<IConsumptionHabit>("ConsumptionHabit", ConsumptionHabitSchema, "ConsumptionHabits");

@@ -19,6 +19,7 @@ import {
   Bus,
   Recycle,
   Sun,
+  ShoppingCart,
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -26,6 +27,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<any>({});
+  const [proposalsCount, setProposalsCount] = useState<number>(0);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("currentUser");
@@ -42,6 +44,13 @@ export default function ProfilePage() {
           solar: "",
         },
       });
+      // Fetch proposals count if user
+      if (parsed.role === "user") {
+        fetch(`/api/company-requests?userId=${parsed._id}`)
+          .then(res => res.json())
+          .then(data => setProposalsCount(Array.isArray(data) ? data.length : (data?.length || 0)))
+          .catch(() => setProposalsCount(0));
+      }
     }
   }, []);
 
@@ -94,19 +103,39 @@ export default function ProfilePage() {
       <div className={styles.profileCard}>
         {/* כותרת */}
         <div className={styles.headerSection}>
-          <img
-            src={user.photo || "/images/default-profile.png"}
-            alt="Profile"
-            className={styles.profileImg}
-          />
-
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <img
+              src={user.photo || "/images/default-profile.png"}
+              alt="Profile"
+              className={styles.profileImg}
+            />
+            {user.role === "user" && (
+              <div style={{ position: 'relative', marginLeft: 8, cursor: 'pointer' }} title="Proposals Inbox">
+                <ShoppingCart size={32} color="#2e7d32" />
+                {proposalsCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: -6,
+                    background: '#e53935',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    padding: '2px 7px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    minWidth: 22,
+                    textAlign: 'center',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.12)'
+                  }}>{proposalsCount}</span>
+                )}
+              </div>
+            )}
+          </div>
           <div className={styles.userInfo}>
             <h2>{user.name}</h2>
-
             <p className={styles.email}>
               <Mail size={16} /> {user.email}
             </p>
-
             <p className={styles.role}>
               <User size={16} />
               {user.role === "company" ? " Company Account" : " Individual User"}

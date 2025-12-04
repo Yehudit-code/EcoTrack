@@ -22,23 +22,18 @@ export interface IUser {
   updatedAt?: Date;
 }
 
-const UserSchema = new Schema(
-  {
-    name: String,
-    email: { type: String, required: true, unique: true },
-    password: String,
-    photo: String,
-    provider: String,
-    role: String,
-    country: String,
-    birthDate: Date,
-    companyCategory: String,
-    improvementScore: Number,
-  },
-  {
-    timestamps: true,
-    collection: "Users", 
-  }
-);
+const UserSchema = new Schema({
+  name: String,
+  email: { type: String, required: true, unique: true },
+  password: String,
+  photo: String,
+  provider: String,
+  role: String,
+  country: String,
+  birthDate: Date,
+  companyCategory: String,
+  improvementScore: Number,
+  talked: { type: Boolean, default: false },
+});
 
 export const User = models.User || model("User", UserSchema);

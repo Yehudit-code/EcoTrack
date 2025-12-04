@@ -77,7 +77,7 @@ export default function SignUpForm() {
       showToast("🎉 You have successfully registered!");
       setTimeout(() => {
         window.location.href =
-          data.user.role === "company" ? "/company-home" : "/home";
+          data.user.role === "company" ? "/home" : "/home";
       }, 1000);
 
     } catch (err) {
@@ -103,7 +103,9 @@ export default function SignUpForm() {
       if (checkData.exists) {
         localStorage.setItem("currentUser", JSON.stringify(checkData.user));
         showToast("Welcome back!");
-        setTimeout(() => (window.location.href = "/home"), 900);
+        setTimeout(() => {
+          window.location.href = "/home";
+        }, 900);
         return;
       }
 
@@ -128,13 +130,18 @@ export default function SignUpForm() {
   };
 
   const handleCategorySelected = (category: string) => {
+    googleUser.role = "company";
     googleUser.companyCategory = category;
     setShowCategoryModal(false);
-
     finishGoogleSignup(category);
   };
 
   const finishGoogleSignup = async (category: string | null) => {
+    // ודא שהערכים נשמרים נכון
+    if (category) {
+      googleUser.role = "company";
+      googleUser.companyCategory = category;
+    }
     const res = await fetch("/api/social-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -143,7 +150,7 @@ export default function SignUpForm() {
         name: googleUser.displayName,
         photoURL: googleUser.photoURL,
         role: googleUser.role,
-        companyCategory: category,
+        companyCategory: googleUser.companyCategory,
       }),
     });
 
@@ -151,8 +158,12 @@ export default function SignUpForm() {
 
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 
+    // לוג לפני הניווט
+    console.log("role:", googleUser.role, "category:", googleUser.companyCategory);
+
+    // ניווט אוטומטי לעמוד התצוגה אחרי הרשמה מוצלחת עם גוגל
     window.location.href =
-      googleUser.role === "company" ? "/company-home" : "/home";
+      googleUser.role === "company" ? "/displa-user" : "/home";
   };
 
 
