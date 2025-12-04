@@ -7,7 +7,7 @@ interface CompanyRequestItem {
   _id: string;
   productName: string;
   price: number;
-  status: "sent" | "accepted" | "declined";
+  status: "sent" | "paid" | "declined";
   userId: string;
   userData?: {
     name?: string;
@@ -81,13 +81,13 @@ export default function CompanyRequestsPage() {
                   className={`${styles.status} ${
                     req.status === "sent"
                       ? styles.statusPending
-                      : req.status === "accepted"
+                      : req.status === "paid"
                       ? styles.statusSuccess
                       : styles.statusDeclined
                   }`}
                 >
                   {req.status === "sent" && "Pending payment"}
-                  {req.status === "accepted" && "Paid"}
+                  {req.status === "paid" && "Paid"}
                   {req.status === "declined" && "Declined"}
                 </span>
               </div>

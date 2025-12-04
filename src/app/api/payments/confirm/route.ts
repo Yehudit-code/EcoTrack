@@ -1,38 +1,59 @@
+// src/app/api/payments/confirm/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
-import { Payment } from "@/app/models/Payment";
-import { CompanyRequest } from "@/app/models/CompanyRequest";
+import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 
 export async function POST(req: Request) {
   try {
-    await connectDB();
-    const { paymentId, success } = await req.json();
+    const { paymentId } = await req.json();
 
-    if (!paymentId) {
-      return Response.json({ error: "Missing paymentId" }, { status: 400 });
+    if (!paymentId || !ObjectId.isValid(paymentId)) {
+      console.error("❌ Invalid paymentId:", paymentId);
+      return NextResponse.json({ error: "Invalid paymentId" }, { status: 400 });
     }
 
-    const payment = await Payment.findById(paymentId);
+    const db = await connectDB();
+    const paymentsCol = db.collection("Payments");
+    const requestsCol = db.collection("CompanyRequests");
+
+    // שליפת התשלום עצמו
+    const payment = await paymentsCol.findOne({
+      _id: new ObjectId(paymentId),
+    });
 
     if (!payment) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
+      console.error("❌ Payment not found");
+      return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }
 
-    const isSuccess = success === true;
+    // 1️⃣ עדכון התשלום ל-Paid
+    await paymentsCol.updateOne(
+      { _id: new ObjectId(paymentId) },
+      {
+        $set: {
+          status: "paid",
+          paidAt: new Date(),
+        },
+      }
+    );
 
-    payment.status = isSuccess ? "paid" : "failed";
-    payment.updatedAt = new Date();
-    await payment.save();
-
-    if (isSuccess) {
-      await CompanyRequest.findByIdAndUpdate(payment.requestId, {
-        status: "accepted",
-      });
+    // 2️⃣ עדכון CompanyRequests לפי requestId
+    if (payment.requestId && ObjectId.isValid(payment.requestId)) {
+      await requestsCol.updateOne(
+        { _id: new ObjectId(payment.requestId) },
+        {
+          $set: {
+            status: "paid",
+            paidAt: new Date(),
+          },
+        }
+      );
     }
 
-    return Response.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error("❌ Error confirming payment:", error);
-    return Response.json(
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (err) {
+    console.error("❌ Error confirming payment:", err);
+    return NextResponse.json(
       { error: "Failed to confirm payment" },
       { status: 500 }
     );
