@@ -1,47 +1,44 @@
+import { NextResponse } from "next/server";
 import { connectDB } from "@/app/services/server/mongodb";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-
-    // Connect to database
     const db = await connectDB();
     const usersCollection = db.collection("Users");
 
-    // Check if user exists
     const user = await usersCollection.findOne({ email });
 
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    let isPasswordValid = false;
-
-    // 🔹 If password is stored encrypted
-    if (user.password && user.password.startsWith("$2b$")) {
-      isPasswordValid = await bcrypt.compare(password, user.password);
-    } else {
-      // 🔹 If password is stored as plain text
-      isPasswordValid = password === user.password;
-    }
+    const isPasswordValid =
+      user.password.startsWith("$2b$")
+        ? await bcrypt.compare(password, user.password)
+        : password === user.password;
 
     if (!isPasswordValid) {
-      return new Response(JSON.stringify({ error: "Invalid password" }), { status: 401 });
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    // Success
-    console.log("✅ User signed in:", user.email);
-    return new Response(
-      JSON.stringify({ message: "Sign-in successful", user }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+    // ⭐ יצירת cookie כמו שצריך
+    const res = NextResponse.json(
+      { message: "Sign-in successful", user },
+      { status: 200 }
     );
 
+    res.cookies.set("auth", user.email, {
+      path: "/",
+      maxAge: 60 * 60 * 24,
+      sameSite: "lax",
+    });
+
+    return res;
+
   } catch (error) {
-    console.error("❌ Sign-in API error:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    console.error("Signin error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

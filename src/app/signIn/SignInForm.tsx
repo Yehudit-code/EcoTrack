@@ -32,6 +32,7 @@ export default function SignInForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -50,135 +51,155 @@ export default function SignInForm() {
     }
   };
 
- const handleGoogleSignIn = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-    // בדיקה אם קיים
-    const checkRes = await fetch("/api/check-user", {
+      // 1️⃣ בדיקה אם משתמש כבר קיים במערכת
+      const checkRes = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+        credentials: "include",
+      });
+
+      const checkData = await checkRes.json();
+
+      if (checkData.exists) {
+        // 🔁 משתמש קיים – נעדכן אותו עם נתוני גוגל (בלי מודאל תפקיד)
+        const res = await fetch("/api/social-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL,
+            role: checkData.user.role, // שומרים את התפקיד הקיים (user / company)
+            companyCategory: checkData.user.companyCategory ?? null,
+          }),
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        showToast("Welcome back!");
+        setTimeout(() => (window.location.href = "/home"), 900);
+        return;
+      }
+
+      // 🆕 משתמש חדש – ממשיכים כרגיל ל־RoleModal
+      setGoogleUser(user);
+      setShowRoleModal(true);
+
+    } catch (err) {
+      console.error(err);
+      showToast("Google error");
+    }
+  };
+
+
+  const finishGoogleSignup = async (category: string | null) => {
+    const res = await fetch("/api/social-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email }),
+      body: JSON.stringify({
+        email: googleUser.email,
+        name: googleUser.displayName,
+        photo: googleUser.photoURL,
+        photoURL: googleUser.photoURL,
+        provider: "google",
+        companyCategory: category,
+      }),
+      credentials: "include",
     });
 
-    const checkData = await checkRes.json();
+    const data = await res.json();
 
-    if (checkData.exists) {
-      localStorage.setItem("currentUser", JSON.stringify(checkData.user));
-      showToast("Welcome back!");
-      setTimeout(() => (window.location.href = "/home"), 900);
-      return;
+    localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+    window.location.href =
+      googleUser.role === "company" ? "home" : "/home";
+  };
+
+
+  const handleRoleSelected = (role: "user" | "company") => {
+    googleUser.role = role;
+    setShowRoleModal(false);
+
+    if (role === "company") {
+      setShowCategoryModal(true);
+    } else {
+      finishGoogleSignup(null);
     }
+  };
 
-    setGoogleUser(user);
-    setShowRoleModal(true);
+  const handleCategorySelected = (category: string) => {
+    googleUser.companyCategory = category;
+    setShowCategoryModal(false);
 
-  } catch (err) {
-    console.error(err);
-    showToast("Google error");
-  }
-};
+    finishGoogleSignup(category);
+  };
 
-const finishGoogleSignup = async (category: string | null) => {
-  const res = await fetch("/api/social-login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: googleUser.email,
-      name: googleUser.displayName,
-      photoURL: googleUser.photoURL,
-      role: googleUser.role,
-      companyCategory: category,
-    }),
-  });
+  return (
+    <>
+      {/* 🟢 Toast כמו בשאר המערכת */}
+      {toast && <Toast text={toast} />}
 
-  const data = await res.json();
+      <form className={styles.form} onSubmit={handleEmailSignIn}>
+        <label>Email</label>
+        <input
+          type="email"
+          className={styles.inputField}
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
+        />
 
-  localStorage.setItem("currentUser", JSON.stringify(data.user));
+        <label>Password</label>
+        <input
+          type="password"
+          className={styles.inputField}
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
 
-  window.location.href =
-    googleUser.role === "company" ? "home" : "/home";
-};
+        <button className={styles.signInButton} disabled={loading}>
+          {loading ? "Signing in..." : "Sign in"}
+        </button>
 
+        <p className={styles.consentText}>
+          I allow my information to be used in accordance with utility providers in israel
+        </p>
+      </form>
 
- const handleRoleSelected = (role: "user" | "company") => {
-  googleUser.role = role;
-  setShowRoleModal(false);
+      <div className={styles.divider}>
+        <span>or continue with</span>
+      </div>
 
-  if (role === "company") {
-    setShowCategoryModal(true);
-  } else {
-    finishGoogleSignup(null);
-  }
-};
+      <div className={styles.authButtons}>
+        <button
+          onClick={handleGoogleSignIn}
+          className={`${styles.providerBtn} ${styles.googleBtn}`}
+        >
+          <img src="/images/google.png" className={styles.icon} />
+          Continue with Google
+        </button>
+      </div>
 
-const handleCategorySelected = (category: string) => {
-  googleUser.companyCategory = category;
-  setShowCategoryModal(false);
+      {/* 🔵 ROLE MODAL */}
+      {showRoleModal && (
+        <RoleModal onSelect={handleRoleSelected} />
+      )}
 
-  finishGoogleSignup(category);
-};
+      {/* 🟣 COMPANY CATEGORY MODAL */}
+      {showCategoryModal && (
+        <CompanyCategoryModal onSelect={handleCategorySelected} />
+      )}
+    </>
+  );
 
-return (
-  <>
-    {/* 🟢 Toast כמו בשאר המערכת */}
-    {toast && <Toast text={toast} />}
-
-    <form className={styles.form} onSubmit={handleEmailSignIn}>
-      <label>Email</label>
-      <input
-        type="email"
-        className={styles.inputField}
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={loading}
-      />
-
-      <label>Password</label>
-      <input
-        type="password"
-        className={styles.inputField}
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        disabled={loading}
-      />
-
-      <button className={styles.signInButton} disabled={loading}>
-        {loading ? "Signing in..." : "Sign in"}
-      </button>
-
-      <p className={styles.consentText}>
-        I allow my information to be used in accordance with utility providers in israel
-      </p>
-    </form>
-
-    <div className={styles.divider}>
-      <span>or continue with</span>
-    </div>
-
-    <div className={styles.authButtons}>
-      <button
-        onClick={handleGoogleSignIn}
-        className={`${styles.providerBtn} ${styles.googleBtn}`}
-      >
-        <img src="/images/google.png" className={styles.icon} />
-        Continue with Google
-      </button>
-    </div>
-
-    {/* 🔵 ROLE MODAL */}
-    {showRoleModal && (
-      <RoleModal onSelect={handleRoleSelected} />
-    )}
-
-    {/* 🟣 COMPANY CATEGORY MODAL */}
-    {showCategoryModal && (
-      <CompanyCategoryModal onSelect={handleCategorySelected} />
-    )}
-  </>
-);
-  
 }

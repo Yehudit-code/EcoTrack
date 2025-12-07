@@ -1,32 +1,30 @@
-'use client';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
-import styles from './Header.module.css';
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLeaf,
+  faHome,
+  faChartBar,
+  faDatabase,
+  faInfoCircle,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+
+import { getProfileImage } from "@/app/lib/getProfileImage";
+
+import styles from "./Header.module.css";
 
 export default function Header() {
-  const [profilePic, setProfilePic] = useState<string>('/images/default-profile.png');
+  const [profilePic, setProfilePic] = useState<string>("/images/default-profile.png");
 
   useEffect(() => {
-    // נשלף את המשתמש השמור בלוקאל סטורג'
-    const userData = localStorage.getItem('currentUser');
+    const userData = localStorage.getItem("currentUser");
     if (userData) {
       const parsed = JSON.parse(userData);
-
-      // סדר עדיפויות לתמונה:
-      // 1. תמונה שהעלה המשתמש
-      // 2. תמונה מגוגל
-      // 3. ברירת מחדל
-      const pic =
-        parsed.photo ||
-        parsed.photoURL ||
-        '/images/default-profile.png';
-
+      const pic = getProfileImage(parsed);
       setProfilePic(pic);
-
-      // נשמור גם כדי שהheader הבא ידע לקרוא
-      localStorage.setItem('profilePic', pic);
     }
   }, []);
 
@@ -64,15 +62,13 @@ export default function Header() {
 
       <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
-          {profilePic ? (
-            <div className={styles.profileContainer}>
-              <img src={profilePic} alt="User Profile" className={styles.profileImg} />
-            </div>
-          ) : (
-            <div className={styles.defaultProfile}>
-              <FontAwesomeIcon icon={faUser} />
-            </div>
-          )}
+          <div className={styles.profileContainer}>
+            <img
+              src={profilePic}
+              alt="User Profile"
+              className={styles.profileImg}
+            />
+          </div>
         </Link>
       </div>
     </header>
