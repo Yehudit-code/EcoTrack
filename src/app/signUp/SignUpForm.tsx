@@ -59,6 +59,7 @@ export default function SignUpForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -91,17 +92,33 @@ export default function SignUpForm() {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // בדיקה אם קיים
+      // 1️⃣ בדיקה אם משתמש כבר קיים במערכת
       const checkRes = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
+        credentials: "include",
       });
 
       const checkData = await checkRes.json();
 
       if (checkData.exists) {
-        localStorage.setItem("currentUser", JSON.stringify(checkData.user));
+        // 🔁 משתמש קיים – נעדכן אותו עם נתוני גוגל (בלי מודאל תפקיד)
+        const res = await fetch("/api/social-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL,
+            role: checkData.user.role, // שומרים את התפקיד הקיים (user / company)
+            companyCategory: checkData.user.companyCategory ?? null,
+          }),
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
         showToast("Welcome back!");
         setTimeout(() => {
           window.location.href = "/home";
@@ -109,6 +126,7 @@ export default function SignUpForm() {
         return;
       }
 
+      // 🆕 משתמש חדש – ממשיכים כרגיל ל־RoleModal
       setGoogleUser(user);
       setShowRoleModal(true);
 
@@ -117,6 +135,7 @@ export default function SignUpForm() {
       showToast("Google error");
     }
   };
+
 
   const handleRoleSelected = (role: "user" | "company") => {
     googleUser.role = role;
@@ -148,10 +167,12 @@ export default function SignUpForm() {
       body: JSON.stringify({
         email: googleUser.email,
         name: googleUser.displayName,
+        photo: googleUser.photoURL,
         photoURL: googleUser.photoURL,
-        role: googleUser.role,
-        companyCategory: googleUser.companyCategory,
+        provider: "google", role: googleUser.role,
+        companyCategory: category,
       }),
+      credentials: "include",
     });
 
     const data = await res.json();

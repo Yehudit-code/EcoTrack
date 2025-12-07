@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./Profile.module.css";
 
-// אייקונים מקצועיים
+// פונקציה שמחליטה איזו תמונה להציג
+import { getProfileImage } from "@/app/lib/getProfileImage";
+
 import {
   ArrowLeft,
   LogOut,
@@ -12,7 +14,6 @@ import {
   Phone,
   User,
   Calendar,
-  Building2,
   Edit3,
   Factory,
   Droplet,
@@ -26,7 +27,22 @@ export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<any>({});
+  const [editData, setEditData] = useState<any>({
+    name: "",
+    phone: "",
+    birthDate: "",
+    companies: {
+      electricity: "",
+      water: "",
+      transport: "",
+      recycling: "",
+      solar: "",
+    },
+  });
+
+  /* ----------------------------------------------------
+      טוענים משתמש מה־localStorage ומכינים מערך עריכה
+  ---------------------------------------------------- */
   const [proposalsCount, setProposalsCount] = useState<number>(0);
 
   useEffect(() => {
@@ -34,8 +50,11 @@ export default function ProfilePage() {
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setUser(parsed);
+
       setEditData({
-        ...parsed,
+        name: parsed.name || "",
+        phone: parsed.phone || "",
+        birthDate: parsed.birthDate || "",
         companies: parsed.companies || {
           electricity: "",
           water: "",
@@ -54,14 +73,29 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    router.push("/");
+  /* ----------------------------------------------------
+      התנתקות
+  ---------------------------------------------------- */
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      localStorage.clear();
+      router.push("/");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
+  /* ----------------------------------------------------
+      שמירת עריכה
+  ---------------------------------------------------- */
   const handleSave = async () => {
     try {
-      const updatedUser = { ...user, ...editData };
+      const updatedUser = {
+        ...user,
+        ...editData,
+        companies: { ...editData.companies },
+      };
 
       const response = await fetch("/api/update-profile", {
         method: "PUT",
@@ -79,7 +113,7 @@ export default function ProfilePage() {
       } else {
         alert("Failed to update: " + data.error);
       }
-    } catch (error) {
+    } catch {
       alert("Error updating profile");
     }
   };
@@ -90,19 +124,22 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.profilePage}>
-      {/* חזרה */}
       <button onClick={() => router.back()} className={styles.backBtn}>
         <ArrowLeft size={20} /> Back
       </button>
 
-      {/* לוגאאוט */}
       <button onClick={handleLogout} className={styles.logoutBtn}>
         <LogOut size={18} /> Logout
       </button>
 
       <div className={styles.profileCard}>
-        {/* כותרת */}
         <div className={styles.headerSection}>
+          <img
+            src={getProfileImage(user)}
+            alt="Profile"
+            className={styles.profileImg}
+          />
+
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12 }}>
             <img
               src={user.photo || "/images/default-profile.png"}
@@ -143,7 +180,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* תוכן */}
+        {/* -------- תוכן -------- */}
         <div className={styles.content}>
           {/* פרטים אישיים */}
           <div className={styles.section}>
@@ -207,7 +244,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* מודאל עריכה — יישאר שלך */}
       {isEditing && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalBox}>
@@ -225,7 +261,7 @@ export default function ProfilePage() {
             <label>Phone</label>
             <input
               type="text"
-              value={editData.phone || ""}
+              value={editData.phone}
               onChange={(e) =>
                 setEditData({ ...editData, phone: e.target.value })
               }
@@ -234,7 +270,7 @@ export default function ProfilePage() {
             <label>Birth Date</label>
             <input
               type="date"
-              value={editData.birthDate || ""}
+              value={editData.birthDate}
               onChange={(e) =>
                 setEditData({ ...editData, birthDate: e.target.value })
               }
@@ -245,11 +281,14 @@ export default function ProfilePage() {
             <label>Electricity</label>
             <input
               type="text"
-              value={editData.companies?.electricity || ""}
+              value={editData.companies.electricity}
               onChange={(e) =>
                 setEditData({
                   ...editData,
-                  companies: { ...editData.companies, electricity: e.target.value },
+                  companies: {
+                    ...editData.companies,
+                    electricity: e.target.value,
+                  },
                 })
               }
             />
@@ -257,11 +296,14 @@ export default function ProfilePage() {
             <label>Water</label>
             <input
               type="text"
-              value={editData.companies?.water || ""}
+              value={editData.companies.water}
               onChange={(e) =>
                 setEditData({
                   ...editData,
-                  companies: { ...editData.companies, water: e.target.value },
+                  companies: {
+                    ...editData.companies,
+                    water: e.target.value,
+                  },
                 })
               }
             />
@@ -269,11 +311,14 @@ export default function ProfilePage() {
             <label>Transport</label>
             <input
               type="text"
-              value={editData.companies?.transport || ""}
+              value={editData.companies.transport}
               onChange={(e) =>
                 setEditData({
                   ...editData,
-                  companies: { ...editData.companies, transport: e.target.value },
+                  companies: {
+                    ...editData.companies,
+                    transport: e.target.value,
+                  },
                 })
               }
             />
@@ -281,11 +326,14 @@ export default function ProfilePage() {
             <label>Recycling</label>
             <input
               type="text"
-              value={editData.companies?.recycling || ""}
+              value={editData.companies.recycling}
               onChange={(e) =>
                 setEditData({
                   ...editData,
-                  companies: { ...editData.companies, recycling: e.target.value },
+                  companies: {
+                    ...editData.companies,
+                    recycling: e.target.value,
+                  },
                 })
               }
             />
@@ -293,11 +341,14 @@ export default function ProfilePage() {
             <label>Solar</label>
             <input
               type="text"
-              value={editData.companies?.solar || ""}
+              value={editData.companies.solar}
               onChange={(e) =>
                 setEditData({
                   ...editData,
-                  companies: { ...editData.companies, solar: e.target.value },
+                  companies: {
+                    ...editData.companies,
+                    solar: e.target.value,
+                  },
                 })
               }
             />

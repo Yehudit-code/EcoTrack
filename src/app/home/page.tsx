@@ -98,95 +98,11 @@ export default function HomePage() {
           <div className={styles.heroSection}>
             <div className={styles.heroContent}>
               <h1 className={styles.mainTitle}>Welcome to EcoTrack</h1>
-              <p className={styles.subtitle}>Your personal environmental companion for sustainable living</p>
-              <p className={styles.heroDescription}>
-                Join thousands of users who are already making a positive impact on the environment.
-                Track your consumption, get personalized tips, and see your progress towards a greener lifestyle.
-              </p>
-              <div className={styles.heroActions}>
-                <button className={styles.ctaButton}>Start Tracking Now</button>
-                <button className={styles.learnMoreButton}>Learn More</button>
-              </div>
-            </div>
+             </div> 
           </div>
 
-          <div className={styles.categoriesSection}>
-            <h2 className={styles.sectionTitle}>What You Can Track</h2>
-            <div className={styles.categoriesGrid}>
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>💧</div>
-                <h3>Water Usage</h3>
-                <p>Monitor your daily water consumption and get tips for conservation</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>⚡</div>
-                <h3>Electricity</h3>
-                <p>Track energy consumption and learn how to reduce your carbon footprint</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🔥</div>
-                <h3>Gas Usage</h3>
-                <p>Keep track of gas consumption for heating and cooking</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🚗</div>
-                <h3>Transportation</h3>
-                <p>Log your travel habits and discover eco-friendly alternatives</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🗑️</div>
-                <h3>Waste Management</h3>
-                <p>Track waste production and learn about recycling and reduction</p>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.statsAndTipsSection}>
-            <div className={styles.communityStats}>
-              <h2 className={styles.sectionTitle}>Our Community Impact</h2>
-              <div className={styles.statsGrid}>
-                <div className={styles.statCard}>
-                  <div className={styles.statValue}>2,847</div>
-                  <div className={styles.statLabel}>Active Users</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statValue}>18,392</div>
-                  <div className={styles.statLabel}>Liters Saved</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statValue}>1,256 kg</div>
-                  <div className={styles.statLabel}>CO2 Reduced</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statValue}>95%</div>
-                  <div className={styles.statLabel}>User Satisfaction</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.dailyTipSection}>
-            <h2 className={styles.sectionTitle}>Daily Eco Tip</h2>
-            <div className={styles.tipCard}>
-              <div className={styles.tipContent}>
-                <div className={styles.tipIcon}>💡</div>
-                <p className={styles.tipText}>{dailyTips[currentTipIndex]}</p>
-              </div>
-              <div className={styles.tipFooter}>
-                <span className={styles.tipRotation}>New tip every 10 minutes</span>
-              </div>
-            </div>
-          </div>
 
           <div className={styles.featuresSection}>
-            <div className={styles.sectionTitle}>
-              <h2>Our Environmental Solutions</h2>
-              <p>Comprehensive tracking and analytics for sustainable living</p>
-            </div>
 
             <div
               id="feature-water"
