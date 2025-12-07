@@ -1,6 +1,11 @@
+
 "use client";
+import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SocialSharing.module.css";
 import dynamic from "next/dynamic";
 
@@ -62,12 +67,16 @@ const DisplayUsersPage = () => {
     fetchUsers();
   }, [category]);
 
-  // 🔹 Toggle Talked state
-  const toggleTalk = async (email: string) => {
+  // 🔹 Toggle Talked state (update in DB)
+  const toggleTalk = async (email: string, currentTalked?: boolean) => {
     try {
-      const res = await fetch(`/api/company/users/${encodeURIComponent(email)}/talked`, { method: "PATCH" });
+      const res = await fetch(`/api/users/${encodeURIComponent(email)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ talked: !currentTalked })
+      });
       if (!res.ok) throw new Error("Failed to update talk status");
-      // אחרי עדכון, רענן את רשימת המשתמשים מהשרת כדי לקבל את הערך החדש
+      // רענון רשימת המשתמשים
       if (category) {
         const usersRes = await fetch(`/api/company/users?category=${category}`);
         if (usersRes.ok) {
@@ -95,7 +104,15 @@ const DisplayUsersPage = () => {
   if (!category) return <p>No category selected for your company.</p>;
 
   return (
-    <div className="p-6">
+    <>
+      <CompanyHeader />
+      <div className="p-6">
+        {/* אייקון פרטים בראש העמוד */}
+        <div className="flex justify-end mb-4">
+          <Link href="/requests">
+            <FontAwesomeIcon icon={faInfoCircle} size="2x" className="text-blue-600 cursor-pointer hover:text-blue-800" title="פרטים" />
+          </Link>
+        </div>
       <h1 className="text-2xl font-bold mb-4">Top users in category: {category}</h1>
 
       {/* רשימת משתמשים */}
@@ -124,7 +141,7 @@ const DisplayUsersPage = () => {
                   <p className="font-semibold text-lg">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.phone}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-sm text-gray-700">Current consumption: {user.value ?? '—'}</p>
+                  {/* Current consumption removed as requested */}
                 </div>
               </div>
               <div className="flex flex-col items-center gap-2 mt-2">
@@ -137,9 +154,9 @@ const DisplayUsersPage = () => {
                   className={`mt-2 px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
                     user.talked ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
                   }`}
-                  onClick={() => toggleTalk(user.email)}
+                  onClick={() => toggleTalk(user.email, user.talked)}
                 >
-                  {user.talked ? "Talked ✓" : "Mark as Talked"}
+                  {user.talked ? "Contacted" : "Not Contacted"}
                 </button>
               </div>
             </div>
@@ -160,7 +177,7 @@ const DisplayUsersPage = () => {
             <h2 className="text-xl font-bold mb-2">{selectedUser.name}</h2>
             <p>Phone: {selectedUser.phone}</p>
             <p>Email: {selectedUser.email}</p>
-            <p>Current consumption: {selectedUser.value ?? '—'}</p>
+            {/* Current consumption removed as requested */}
             <div className="mt-4 w-full h-32 bg-gray-100 rounded flex items-center justify-center">
               <ConsumptionGraph data={(selectedUser.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
             </div>
@@ -179,7 +196,8 @@ const DisplayUsersPage = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 
