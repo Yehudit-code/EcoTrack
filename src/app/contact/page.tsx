@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
+import styles from "./Contact.module.css";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -9,79 +10,83 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
-  // הבאת שם ומייל מהמשתמש המחובר
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userStr = localStorage.getItem("currentUser");
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          setName(user.name || "");
-          setEmail(user.email || "");
-        } catch {}
-      }
+    const userStr = localStorage.getItem("currentUser");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setName(user.name || "");
+        setEmail(user.email || "");
+      } catch { }
     }
   }, []);
 
   const formRef = useRef<HTMLFormElement>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       await emailjs.send(
-        "service_eo7p18q", // service ID
-        "template_yh50ja8", // template ID
+        "service_eo7p18q",
+        "template_vq7szdb",
         {
-          message: message
+          company_name: name,
+          company_email: email,
+          message: message,
         },
-        "zvFzq-RxRb_BxCEqg" // public key
+        "zvFzq-RxRb_BxCEqg"
       );
+
       setSent(true);
+      setMessage("");
+
+      setTimeout(() => setSent(false), 3000); // ההודעה תעלם אחרי 3 שניות
+
     } catch (err: any) {
-      alert("Failed to send message. Error: " + (err?.text || err?.message || JSON.stringify(err)));
-      console.error("EmailJS error:", err);
+      alert("Error sending message: " + (err?.text || err?.message));
     }
+
   };
 
   return (
     <>
       <CompanyHeader />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <div className="bg-white p-8 rounded shadow-md w-full max-w-md mt-8">
-          <h1 className="text-2xl font-bold mb-4 text-center">Contact Us</h1>
-          <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <h1 className={styles.title}>Contact Ecotrack</h1>
+
+          <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
             <input
               type="text"
-              placeholder="Name"
               value={name}
               disabled
-              className="border rounded px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-              required
+              className={styles.disabledInput}
             />
+
             <input
               type="email"
-              placeholder="Email"
               value={email}
               disabled
-              className="border rounded px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-              required
+              className={styles.disabledInput}
             />
+
             <textarea
-              placeholder="Message"
+              placeholder="Write your message here..."
               value={message}
-              onChange={e => setMessage(e.target.value)}
-              className="border rounded px-3 py-2"
-              rows={4}
+              onChange={(e) => setMessage(e.target.value)}
+              className={styles.textarea}
               required
             />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700"
-            >
+
+            <button type="submit" className={styles.button}>
               Send
             </button>
           </form>
+
           {sent && (
-            <p className="mt-4 text-green-600 text-center">Message sent! Thank you for contacting us.</p>
+            <p className={styles.success}>Message sent successfully!</p>
           )}
         </div>
       </div>
