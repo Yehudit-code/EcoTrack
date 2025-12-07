@@ -40,4 +40,4 @@ const UserSchema = new Schema({
   talked: { type: Boolean, default: false },
 });
 
-export const User = models.User || model("User", UserSchema);
+export const User = models.User || model("User", UserSchema, "Users");
