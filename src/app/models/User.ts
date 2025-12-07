@@ -1,14 +1,18 @@
 // src/models/User.ts
-import { Schema, model, models } from "mongoose";
+import { Schema, Types, model, models } from "mongoose";
 import type { UserRole } from "@/app/types/common";
 
 export interface IUser {
+  _id: string | Types.ObjectId;
+  name?: string;
   email: string;
   password: string;
   role: UserRole; // "user" | "company"
   companyCategory?: string;
   country?: string;
   phone?: string;
+  improvementScore?: number;
+  talked?: boolean;
   birthDate?: Date;
   photo?: string;
   companies?: {
