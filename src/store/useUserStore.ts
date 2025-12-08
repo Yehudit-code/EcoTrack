@@ -1,4 +1,3 @@
-// src/store/useUserStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -8,12 +7,23 @@ export interface UserProfile {
   email: string;
   role: "user" | "company";
   companyCategory?: string;
+  phone?: string;
+  birthDate?: string;
   photo?: string;
+  createdAt?: string;
+  companies?: {
+    electricity?: string;
+    water?: string;
+    transport?: string;
+    recycling?: string;
+    solar?: string;
+  };
 }
 
 interface UserState {
   user: UserProfile | null;
   isLoggedIn: boolean;
+  _hasHydrated: boolean;
   setUser: (user: UserProfile | null) => void;
   logout: () => void;
 }
@@ -23,11 +33,14 @@ export const useUserStore = create<UserState>()(
     (set) => ({
       user: null,
       isLoggedIn: false,
+      _hasHydrated: false,
+
       setUser: (user) =>
         set({
           user,
           isLoggedIn: !!user,
         }),
+
       logout: () =>
         set({
           user: null,
@@ -36,6 +49,9 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: "ecotrack-user",
+      onRehydrateStorage: () => (state) => {
+        if (state) state._hasHydrated = true;
+      },
     }
   )
 );
