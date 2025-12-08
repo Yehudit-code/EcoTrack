@@ -72,60 +72,9 @@ export default function HomePage() {
           <div className={styles.heroSection}>
             <div className={styles.heroContent}>
               <h1 className={styles.mainTitle}>Welcome to EcoTrack</h1>
-              <p className={styles.subtitle}>Your personal environmental companion</p>
-              <p className={styles.heroDescription}>
-                Track your consumption, get personalized tips, and see your environmental impact.
-              </p>
-
-              <div className={styles.heroActions}>
-                <button className={styles.ctaButton}>Start Tracking Now</button>
-                <button className={styles.learnMoreButton}>Learn More</button>
-              </div>
-            </div>
+             </div> 
           </div>
 
-          <div className={styles.categoriesSection}>
-            <h2 className={styles.sectionTitle}>What You Can Track</h2>
-
-            <div className={styles.categoriesGrid}>
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>💧</div>
-                <h3>Water Usage</h3>
-                <p>Monitor your water consumption.</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>⚡</div>
-                <h3>Electricity</h3>
-                <p>Track and reduce your energy footprint.</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🔥</div>
-                <h3>Gas Usage</h3>
-                <p>Monitor gas consumption.</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🚗</div>
-                <h3>Transportation</h3>
-                <p>Track travel habits and emissions.</p>
-              </div>
-
-              <div className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🗑️</div>
-                <h3>Waste</h3>
-                <p>Improve recycling and reduce waste.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.dailyTipSection}>
-            <h2 className={styles.sectionTitle}>Daily Eco Tip</h2>
-            <div className={styles.tipCard}>
-              <p className={styles.tipText}>{dailyTips[currentTipIndex]}</p>
-            </div>
-          </div>
 
           {/* Features */}
           <div className={styles.featuresSection}>

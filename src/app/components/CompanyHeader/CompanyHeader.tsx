@@ -40,7 +40,7 @@ export default function Header() {
           <FontAwesomeIcon icon={faDatabase} />
           <span>Display Users</span>
         </Link>
-        <Link href="/indicators" className={styles.navLink}>
+        <Link href="/contact" className={styles.navLink}>
           <FontAwesomeIcon icon={faChartBar} />
           <span>Contact</span>
         </Link>

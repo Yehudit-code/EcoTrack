@@ -53,6 +53,9 @@ export default function ProfilePage() {
   if (!currentUser)
     return <p className={styles.loading}>No user data.</p>;
 
+  /* ----------------------------------------------------
+      שמירת עריכה
+  ---------------------------------------------------- */
   const handleSave = async () => {
     try {
       const updatedUser = { ...currentUser, ...editData };

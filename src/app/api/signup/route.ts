@@ -1,14 +1,21 @@
+<<<<<<< HEAD
 // src/app/api/signup/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/app/lib/db";
 import { User } from "@/app/models/User";
 import { signJwt } from "@/app/lib/auth/jwt";
+=======
+import { NextResponse } from "next/server";
+import { connectDB } from "@/app/services/server/mongodb";
+import bcrypt from "bcryptjs";
+>>>>>>> 909fb81e7e3b5ceec1ff457d2524774abe6985d8
 
 export async function POST(req: Request) {
   try {
     await connectDB();
 
+<<<<<<< HEAD
     const body = await req.json();
     const { name, email, password, role, photo, companyCategory } = body || {};
 
@@ -25,6 +32,15 @@ export async function POST(req: Request) {
         { error: "User with this email already exists" },
         { status: 400 }
       );
+=======
+    const db = await connectDB();
+    const users = db.collection("Users");
+
+    const exists = await users.findOne({ email });
+
+    if (exists) {
+      return NextResponse.json({ error: "User already exists" }, { status: 409 });
+>>>>>>> 909fb81e7e3b5ceec1ff457d2524774abe6985d8
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -34,6 +50,7 @@ export async function POST(req: Request) {
       email,
       password: hashed,
       role,
+<<<<<<< HEAD
       companyCategory: role === "company" ? companyCategory : undefined,
       photo,
     });
@@ -71,6 +88,33 @@ export async function POST(req: Request) {
     console.error("Sign-up error:", err);
     return NextResponse.json(
       { error: "Failed to sign up" },
+=======
+      photo: photo || null,
+      companyCategory: role === "company" ? companyCategory : null,
+      provider: "email",
+    };
+
+    await users.insertOne(newUser);
+
+    const res = NextResponse.json(
+      { message: "User registered", user: newUser },
+      { status: 201 }
+    );
+
+    // ⭐ יצירת cookie
+    res.cookies.set("auth", email, {
+      path: "/",
+      maxAge: 60 * 60 * 24,
+      sameSite: "lax",
+    });
+
+    return res;
+
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Server error" },
+>>>>>>> 909fb81e7e3b5ceec1ff457d2524774abe6985d8
       { status: 500 }
     );
   }

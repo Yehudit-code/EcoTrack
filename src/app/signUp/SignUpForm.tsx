@@ -60,6 +60,7 @@ export default function SignUpForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -87,6 +88,7 @@ export default function SignUpForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
+        credentials: "include",
       });
 
       const checkData = await checkRes.json();
@@ -97,6 +99,7 @@ export default function SignUpForm() {
         return;
       }
 
+      // 🆕 משתמש חדש – ממשיכים כרגיל ל־RoleModal
       setGoogleUser(user);
       setShowRoleModal(true);
     } catch (err) {
@@ -104,6 +107,7 @@ export default function SignUpForm() {
       showToast("Google error");
     }
   };
+
 
   const handleRoleSelected = (role: "user" | "company") => {
     googleUser.role = role;
@@ -135,10 +139,12 @@ export default function SignUpForm() {
       body: JSON.stringify({
         email: googleUser.email,
         name: googleUser.displayName,
+        photo: googleUser.photoURL,
         photoURL: googleUser.photoURL,
-        role: googleUser.role,
-        companyCategory: googleUser.companyCategory,
+        provider: "google", role: googleUser.role,
+        companyCategory: category,
       }),
+      credentials: "include",
     });
 
     const data = await res.json();

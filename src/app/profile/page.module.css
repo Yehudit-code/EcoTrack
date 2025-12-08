@@ -264,3 +264,40 @@
     align-items: start;
   }
 }
+
+
+/* --------------------------
+   Shopping Cart Styles
+--------------------------- */
+
+.cartWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.cartIcon {
+  width: 32px;
+  height: 32px;
+  color: #2e7d32; /* ירוק מקצועי */
+}
+
+/* התווית האדומה */
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #e53935;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 22px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  user-select: none;
+}
