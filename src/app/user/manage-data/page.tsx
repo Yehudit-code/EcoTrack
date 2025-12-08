@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import styles from "./ManageData.module.css";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 import MonthYearPicker from "./MonthYearPicker";
 
 import {

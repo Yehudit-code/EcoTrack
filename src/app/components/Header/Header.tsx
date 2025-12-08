@@ -45,30 +45,28 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      {/* לוגו */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      {/* ניווט */}
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}>
           <FontAwesomeIcon icon={faHome} />
           <span>Home</span>
         </Link>
 
-        <Link href="/manage-data" className={styles.navLink}>
+        <Link href="/user/manage-data" className={styles.navLink}>
           <FontAwesomeIcon icon={faDatabase} />
           <span>Manage Data</span>
         </Link>
 
-        <Link href="/indicators" className={styles.navLink}>
+        <Link href="/user/indicators" className={styles.navLink}>
           <FontAwesomeIcon icon={faChartBar} />
           <span>Analytics</span>
         </Link>
 
-        <Link href="/social-sharing" className={styles.navLink}>
+        <Link href="/user/social-sharing" className={styles.navLink}>
           <FontAwesomeIcon icon={faUser} />
           <span>Social Sharing</span>
         </Link>
@@ -79,14 +77,13 @@ export default function Header() {
         </Link>
 
         {userRole === "company" && (
-          <Link href="/display-user" className={styles.navLink}>
+          <Link href="/company/display-user" className={styles.navLink}>
             <FontAwesomeIcon icon={faUser} />
             <span>Display Users</span>
           </Link>
         )}
       </nav>
 
-      {/* אזור משתמש */}
       <div className={styles.userSection}>
         {userRole === "user" && (
           <Link
@@ -104,7 +101,7 @@ export default function Header() {
 
         <Link href="/profile" className={styles.profileLink}>
           <div className={styles.profileContainer}>
-            <img src={profilePic} alt="User Profile" className={styles.profileImg} />
+            <img src={profilePic} alt="Profile" className={styles.profileImg} />
           </div>
         </Link>
       </div>
