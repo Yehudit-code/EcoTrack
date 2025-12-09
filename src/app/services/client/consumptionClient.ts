@@ -135,22 +135,22 @@ export async function getFilteredConsumption(
 // Fetch filtered user details for company dashboard
 // ----------------------------------------
 export async function fetchCompanyFilteredUserDetails(
-  userId: string,
-  companyEmail: string
+  userId: string
 ): Promise<{
   user: any;
-  consumption: any;
+  consumption: any[];
   companyCategory: string;
 }> {
-  const res = await fetch(
-    `/api/company/user-details/${userId}?companyEmail=${companyEmail}`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(`/api/company/user-details/${userId}`, {
+    method: "GET",
+    credentials: "include", // חשוב ל-cookie ב-Vercel / דפדפן
+    cache: "no-store",
+  });
 
   const json = await res.json();
 
   if (!res.ok || json.success === false) {
-    const msg = json.message || "Failed to fetch filtered user details";
+    const msg = json.message || "Failed to fetch user details";
     throw new Error(msg);
   }
 
