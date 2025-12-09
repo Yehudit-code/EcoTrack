@@ -1,569 +1,697 @@
- 
+/* ==================== PAGE ==================== */
 .page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f6fdf8 0%, #ffffff 40%, #f4f8ff 100%);
-    padding-top: 20px;
+  min-height: 100vh;
+  background: #f0f2f5;
+  padding-top: 0;
 }
-
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 16px;
-    display: grid;
-    grid-template-columns: 26% 46% 28%;
-    gap: 24px;
-    box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: grid;
+  grid-template-columns: 300px 1fr 360px;
+  gap: 40px;
+  padding-top: 120px;
+  align-items: flex-start;
 }
-
 
 .columnTitle {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: #1f2933;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #050505;
+  letter-spacing: -0.3px;
 }
 
-
-@keyframes saverFadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes cardPop {
-    from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes typingBlink {
-
-    0%,
-    80%,
-    100% {
-        opacity: 0.25;
-        transform: translateY(0);
-    }
-
-    40% {
-        opacity: 1;
-        transform: translateY(-2px);
-    }
-}
-
-
+/* ==================== LEFT COLUMN ==================== */
 .leftColumn {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(200, 220, 200, 0.35);
-    border-radius: 22px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  top: 100px;
+  height: fit-content;
 }
 
 .saversList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .saverItem {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    opacity: 0;
-    animation: saverFadeUp 0.45s ease forwards;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.saverItem:hover {
+  background-color: #f2f3f5;
 }
 
 .rankBadge {
-    width: 30px;
-    height: 30px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-    color: #4b3412;
-    background: linear-gradient(135deg, #ffd666, #ffb347);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
-.rankBadge.gold {
-    background: linear-gradient(135deg, #ffcf33, #e6ac00);
-    color: #553800;
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+.rank1 {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
 }
 
-.rankBadge.silver {
-    background: linear-gradient(135deg, #dcdcdc, #bfbfbf);
-    color: #4a4a4a;
-    box-shadow: 0 0 6px rgba(200, 200, 200, 0.5);
+.rank2 {
+  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+  color: #000;
+  box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
 }
 
-.rankBadge.bronze {
-    background: linear-gradient(135deg, #d9a066, #b8742a);
-    color: #4a2b00;
-    box-shadow: 0 0 6px rgba(180, 120, 60, 0.5);
+.rank3 {
+  background: linear-gradient(135deg, #cd7f32, #e8a87c);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
 }
 
+.rankOther {
+  background: #e4e6eb;
+  color: #65676b;
+}
 
 .saverAvatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    object-fit: cover;
-    border: 2px solid #cfead3;
-}
-
-.saverInfo {
-    display: flex;
-    flex-direction: column;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  flex-shrink: 0;
 }
 
 .saverName {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1f2933;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  line-height: 1.3;
 }
 
 .saverSaving {
-    font-size: 12px;
-    color: #6b7b8c;
+  font-size: 12px;
+  color: #65676b;
+  line-height: 1.3;
 }
 
-.saverAvatar,
-.postAvatar,
-.chatAvatar,
-.createAvatar {
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-
-
+/* ==================== CENTER COLUMN ==================== */
 .centerColumn {
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 22px;
-    padding: 20px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(224, 232, 245, 0.95);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 600px;
 }
-
 
 .createPostCard {
-    border-radius: 18px;
-    background: #f5f7fb;
-    border: 1px solid #dde6f2;
-    padding: 12px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: cardPop 0.2s ease-out;
-    backdrop-filter: blur(14px);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: -19px;
 }
 
+/* יצירת פוסט */
 .createPostTop {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .createAvatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    object-fit: cover;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* קונטיינר של הטקסט+כפתורים */
+.postInputWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0f2f5;
+  border-radius: 24px;
+  padding: 8px 14px;
+  position: relative;
 }
 
 .postTextarea {
-    flex: 1;
-    resize: none;
-    border-radius: 999px;
-    border: 1px solid #ccd6e6;
-    padding: 10px 14px;
-    font-size: 14px;
-    min-height: 44px;
-    background: #ffffff;
-}
-
-.postTextarea::placeholder {
-    color: #9ca7b8;
+  flex: 1;
+  border: none;
+  background: transparent !important;
+  resize: none;
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 0;
+  min-height: 32px;
 }
 
 .postTextarea:focus {
-    outline: none;
-    border-color: #3b8f5a;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-}
-
-.createPostBottom {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 6px;
-}
-
-.postButton {
-    background: linear-gradient(135deg, #3b8f5a, #4fc77b);
-    box-shadow: 0 4px 14px rgba(38, 148, 87, 0.25);
-    transition: all 0.25s ease;
-    border: none;
-    border-radius: 999px;
-    padding: 8px 20px;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.postButton:hover {
-    filter: brightness(1.05);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 18px rgba(38, 148, 87, 0.3);
+  outline: none;
 }
 
 
+.postTextarea::placeholder {
+  color: #65676b;
+}
+
+/* שורת כפתורים ליד יצירת פוסט */
+.postActionsRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.emojiBtn,
 .imageUploadBtn {
-    border: none;
-    background: transparent;
-    font-size: 22px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7b8c;
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  font-size: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
+.emojiBtn:hover,
 .imageUploadBtn:hover {
-    color: #3c7cff;
+  transform: scale(1.08);
+  background: #f3f3f3;
 }
 
-
-.hiddenFile {
-    display: none;
+@keyframes fadeEmoji {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+/* תמונת תצוגה */
 .previewWrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    margin-top: 6px;
+  position: relative;
+  margin-top: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
 }
 
 .previewImage {
-    width: 100%;
-    max-height: 250px;
-    border-radius: 14px;
-    object-fit: cover;
-    border: 1px solid #d9e3f7;
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
 }
 
 .removeImageBtn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(255, 77, 77, 0.95);
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.removeImageBtn:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+.postButton {
+  margin-top: 12px;
+  width: 100%;
+  background: #1877f2;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.postButton:hover {
+  background: #166fe5;
+}
+
+.postInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.postIcons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hiddenFile {
+  display: none !important;
 }
 
 
+/* ==================== POSTS ==================== */
+
 .postsList {
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .postCard {
-    border-radius: 18px;
-    background: #ffffff;
-    border: 1px solid #e4e6eb;
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-    animation: cardPop 0.18s ease-out;
-    backdrop-filter: blur(14px);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
 }
 
 .postHeader {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .postAvatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    object-fit: cover;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-.postMeta {
-    display: flex;
-    flex-direction: column;
-}
-
-.postUser {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1c1e21;
-}
-
-.postTime {
-    font-size: 12px;
-    color: #65676b;
-}
-
+/* טקסט פוסט */
 .postContent {
-    font-size: 14px;
-    color: #222a35;
-    margin-top: 4px;
-    white-space: pre-wrap;
+  font-size: 15px;
+  margin-bottom: 14px;
 }
 
+/* תמונה */
 .postImageWrapper {
-    margin-top: 6px;
-    border-radius: 14px;
-    overflow: hidden;
-    max-height: 280px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f2f5;
 }
 
 .postImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  object-fit: contain;
 }
 
+/* פעולות */
 .postActions {
-    margin-top: 6px;
-    display: flex;
-    justify-content: space-around;
-    padding-top: 6px;
-    border-top: 1px solid #e4e6eb;
-    font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid #e4e6eb;
+  gap: 8px;
 }
 
 .postActions button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #65676b;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  flex: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #65676b;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
 }
 
 .postActions button:hover {
-    color: #1877f2;
+  background: #f0f2f5;
+}
+
+/* לייק כחול */
+.likedBtn {
+  color: #1877f2 !important;
+}
+
+/* מידע על המשתמש (שם + תאריך) */
+.postMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.postUser {
+  font-size: 15px;
+  font-weight: 600;
+  color: #050505;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.postTime {
+  font-size: 13px;
+  color: #65676b;
+  line-height: 1.2;
+  margin-top: 2px;
 }
 
 
+/* ==================== COMMENTS SECTION ==================== */
+
+.commentsBox {
+  margin-top: 12px;
+  background: #f7f8fa;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #e4e6eb;
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: cmtFade 0.15s ease-out;
+}
+
+@keyframes cmtFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.commentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.commentUser {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.commentText {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  max-width: 85%;
+}
+
+.emptyComments {
+  text-align: center;
+  padding: 10px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* כתיבת תגובה */
+.commentInputRow {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.commentInput {
+  flex: 1;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 20px;
+  background: #e9ebee;
+  font-size: 14px;
+}
+
+.commentInput:focus {
+  outline: none;
+  background: #dfe1e6;
+}
+
+.sendCommentBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #1877f2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==================== RIGHT COLUMN (CHAT) ==================== */
+
 .rightColumn {
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 22px;
-    padding: 16px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(224, 232, 245, 0.95);
-    display: flex;
-    flex-direction: column;
-    backdrop-filter: blur(14px);
+  position: sticky;
+  top: 100px;
+  height: fit-content;
 }
 
 .chatCard {
-    margin-top: 4px;
-    border-radius: 18px;
-    background: #f4f8ff;
-    border: 1px solid #d3e0f7;
-    display: flex;
-    flex-direction: column;
-    height: 380px;
-    overflow: hidden;
-    backdrop-filter: blur(14px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+  max-height: 700px;
+  overflow: hidden;
 }
 
 .messagesArea {
-    flex: 1;
-    padding: 10px 12px 6px;
-    overflow-y: auto;
+  flex: 1;
+  padding: 20px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
-
 
 .messageRowOther,
 .messageRowMe {
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: messageSlideIn 0.2s ease-out;
 }
 
-.messageRowOther {
-    justify-content: flex-start;
-    gap: 8px;
+@keyframes messageSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .messageRowMe {
-    justify-content: flex-end;
-    gap: 8px;
+  justify-content: flex-end;
 }
 
 .chatAvatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
-    object-fit: cover;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
 }
 
+/* בועות צ'אט */
 .messageBubbleOther,
 .messageBubbleMe {
-    max-width: 72%;
-    padding: 8px 12px;
-    font-size: 13px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-    animation: cardPop 0.18s ease-out;
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .messageBubbleOther {
-    background: #ffffff;
-    border-radius: 16px 16px 16px 4px;
-    border: 1px solid #d6e0f2;
+  background: #e4e6eb;
+  color: #000;
 }
 
 .messageBubbleMe {
-    background: linear-gradient(135deg, #c0e3ff, #d8f0ff);
-    border-radius: 16px 16px 4px 16px;
-    border: 1px solid #9ec8f2;
+  background: #0084ff;
+  color: #fff;
 }
 
 .messageName {
-    font-size: 12px;
-    font-weight: 600;
-    color: #36506f;
-}
-
-.messageText {
-    font-size: 13px;
-    color: #233044;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .messageTime {
-    font-size: 10px;
-    color: #7c8da4;
-    align-self: flex-end;
-}
-
-.typingIndicator {
-    font-size: 11px;
-    color: #6b7a92;
-    font-style: italic;
-    margin: 2px 6px 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.typingDots {
-    display: flex;
-    gap: 3px;
-}
-
-.typingDots span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #6b7a92;
-    animation: typingBlink 1s infinite ease-in-out;
-}
-
-.typingDots span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typingDots span:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-.chatInputRow {
-    border-top: 1px solid #d3e0f7;
-    padding: 8px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: #e9f0ff;
-}
-
-.chatInput {
-    flex: 1;
-    border-radius: 999px;
-    border: 1px solid #c1d2f0;
-    padding: 8px 14px;
-    font-size: 13px;
-    background: #ffffff;
-}
-
-.chatInput:focus {
-    outline: none;
-    border-color: #82a8ff;
-}
-
-.chatSendButton {
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(135deg, #3c7cff, #5ea9ff);
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
-.emptyText {
-  font-size: 14px;
-  text-align: center;
-  padding: 20px;
-  color: #8aa0b0;
+  margin-top: 4px;
+  font-size: 11px;
   opacity: 0.7;
 }
 
-
-@media (max-width: 1024px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
-
-    .leftColumn,
-    .centerColumn,
-    .rightColumn {
-        width: 100%;
-    }
+.typingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.typingDots span {
+  width: 6px;
+  height: 6px;
+  background: #65676b;
+  border-radius: 50%;
+  animation: typingBounce 1s infinite;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { opacity: 0.5; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-6px); }
+}
+
+/* שורת כתיבה בצ'אט */
+.chatInputRow {
+  border-top: 1px solid #e4e6eb;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  position: relative;
+}
+
+.chatInput {
+  flex: 1;
+  border: none;
+  padding: 8px 14px;
+  background: #f0f2f5;
+  border-radius: 20px;
+  font-size: 15px;
+}
+
+.chatInput:focus {
+  background: #e4e6eb;
+}
+
+.chatSendButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0084ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* רספונסיביות */
+@media (max-width: 1024px) {
+  .container { grid-template-columns: 1fr; }
+  .rightColumn, .leftColumn { position: static; }
+}
+
+/* ====== CUSTOM SMALL EMOJI PICKER ====== */
+
+/* ====== EMOJI PICKER לפוסט – מתחת לאייקון ====== */
+.emojiPickerPost {
+  position: absolute;
+  z-index: 9999;
+
+  top: 42px;        /* מתחת לשורת האייקונים */
+  right: 0;         /* צמוד לאייקון האמוג'י (שנמצא בצד ימין) */
+
+  transform: scale(0.75);
+  transform-origin: top right;
+
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+/* ====== EMOJI PICKER בצ'אט – כמו שעבד לך ====== */
+.emojiPickerChat {
+  position: absolute;
+  z-index: 9999;
+
+  bottom: 45px;
+  left: 0;
+
+  transform: scale(0.70);
+  transform-origin: bottom left;
+
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+/* החלק הפנימי (ספריית EmojiPickerReact) */
+.emojiPickerPost .EmojiPickerReact,
+.emojiPickerChat .EmojiPickerReact {
+  width: 250px !important;
+  max-height: 300px !important;
+  transform: scale(0.85);
+  transform-origin: top left;
+  overflow: hidden !important;
+}
+
+
+/* תיבת החיפוש */
+.EmojiPickerReact .epr-search-container {
+  transform: scale(0.9);
+  transform-origin: top left;
+}
+
+/* גריד האמוג'ים */
+.EmojiPickerReact .epr-emoji-category-content {
+  max-height: 180px !important;
+  overflow-y: auto !important;
+}
+
+/* גלילה צרה */
+.EmojiPickerReact ::-webkit-scrollbar {
+  width: 6px;
+}
+.EmojiPickerReact ::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+

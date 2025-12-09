@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
 import { io, Socket } from "socket.io-client";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
-// ⭐ ייבוא כל השירותים בקובץ אחד
 import {
   getSavers,
   getPosts,
@@ -38,7 +38,8 @@ interface Post {
   imageUrl?: string | null;
   createdAt?: string;
 
-  likes: number;
+  // יכול להיות או מספר (ישן) או מערך userIds (חדש)
+  likes: number | string[];
   comments: CommentObj[];
   shares: number;
 }
@@ -71,6 +72,14 @@ export default function SocialSharingPage() {
 
   const [typingUser, setTypingUser] = useState<string | null>(null);
 
+  // 🎯 אמוג'י פוסט + צ'אט
+  const [showPostEmoji, setShowPostEmoji] = useState(false);
+  const [showChatEmoji, setShowChatEmoji] = useState(false);
+
+  // 💬 תגובות לפוסט
+  const [openCommentsPostId, setOpenCommentsPostId] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<number | null>(null);
@@ -102,36 +111,37 @@ export default function SocialSharingPage() {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-useEffect(() => {
-  const socket = io("http://localhost:4000", {
-    transports: ["websocket"],
-  });
+  useEffect(() => {
+    const socket = io("http://localhost:4000", {
+      transports: ["websocket", "polling"],
+      autoConnect: true,
+    });
 
-  socketRef.current = socket;
+    socketRef.current = socket;
 
-  socket.on("connect", () => {
-    console.log("🔌 Socket connected");
-  });
+    socket.on("connect", () => {
+      console.log("🔌 Socket connected");
+    });
 
-  socket.on("new_message", (msg) => {
-    setMessages((prev) => [...prev, msg]);
-  });
+    socket.on("new_message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
 
-  socket.on("typing", (data) => {
-    setTypingUser(data.userName);
-    setTimeout(() => setTypingUser(null), 2000);
-  });
+    socket.on("typing", (data) => {
+      setTypingUser(data.userName);
+      setTimeout(() => setTypingUser(null), 2000);
+    });
 
-  socket.on("disconnect", () => {
-    console.log("❌ Socket disconnected");
-  });
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
 
-  return () => {
-    socket.disconnect();
-  };
-}, []);
- 
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
+  // ⭐ יצירת פוסט
   const handleCreatePost = async () => {
     if (!currentUser) return;
     if (!newPostText.trim() && !newPostImage) return;
@@ -148,39 +158,65 @@ useEffect(() => {
 
     setNewPostText("");
     setNewPostImage(null);
+    setShowPostEmoji(false);
   };
 
-const likePost = async (id: string) => {
-  const updated = await updatePost("like", { postId: id });
+  // ⭐ לייק לפי משתמש אחד
+  const likePost = async (id: string) => {
+    if (!currentUser) return;
 
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
+    const updated = await updatePost("like", {
+      postId: id,
+      userId: currentUser._id,
+    });
 
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
 
-const commentPost = async (id: string, text: string) => {
-  const updated = await updatePost("comment", {
-    postId: id,
-    comment: text,
-    userName: currentUser?.name,
-    userPhoto: currentUser?.photo,
-  });
+  // ⭐ תגובה לפוסט
+  const commentPost = async (id: string, text: string) => {
+    if (!currentUser) return;
+    if (!text.trim()) return;
 
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
+    const updated = await updatePost("comment", {
+      postId: id,
+      comment: text,
+      userName: currentUser?.name,
+      userPhoto: currentUser?.photo,
+    });
 
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
 
-const sharePost = async (id: string) => {
-  const updated = await updatePost("share", { postId: id });
+  // ⭐ שיתוף אמיתי
+  const sharePost = async (id: string) => {
+    const shareUrl = `${window.location.origin}/social-sharing?post=${id}`;
 
-  setPosts((prev) =>
-    prev.map((p) => (p._id === updated._id ? updated : p))
-  );
-};
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "EcoTrack – Community post",
+          text: "Check out this eco-saving post on EcoTrack 🌱",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Post link copied to clipboard");
+      }
+    } catch (err) {
+      console.log("Share cancelled or failed:", err);
+    }
 
+    const updated = await updatePost("share", { postId: id });
+
+    setPosts((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+    );
+  };
 
   // ⭐ שליחת הודעה בצ׳אט
   const handleSendMessage = async () => {
@@ -196,6 +232,7 @@ const sharePost = async (id: string) => {
 
     setMessages((prev) => [...prev, created]);
     setNewMessage("");
+    setShowChatEmoji(false);
 
     socketRef.current?.emit("send_message", created);
   };
@@ -212,6 +249,14 @@ const sharePost = async (id: string) => {
     });
   };
 
+  const handlePostEmojiClick = (emojiData: EmojiClickData) => {
+    setNewPostText((prev) => prev + emojiData.emoji);
+  };
+
+  const handleChatEmojiClick = (emojiData: EmojiClickData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+  };
+
   return (
     <div className={styles.page}>
       <Header />
@@ -222,24 +267,45 @@ const sharePost = async (id: string) => {
         <div className={styles.leftColumn}>
           <h3 className={styles.columnTitle}>The best savers 🏆</h3>
 
-          <ul className={styles.saversList}>
-            {savers.map((u, i) => (
-              <li key={i} className={styles.saverItem}>
-                <span className={styles.rankBadge}>{i + 1}</span>
-                <img src={u.photo || "/images/default-profile.png"} className={styles.saverAvatar} />
-                <div>
-                  <div className={styles.saverName}>{u.name}</div>
-                  <div className={styles.saverSaving}>
-                    Saved {u.avgSaving}% on average
-                  </div>
-                </div>
-              </li>
-            ))}
+          <div className={styles.card}>
+            <ul className={styles.saversList}>
+              {savers.map((u, i) => (
+                <li key={i} className={styles.saverItem}>
+                  <span
+                    className={`
+                      ${styles.rankBadge}
+                      ${i === 0
+                        ? styles.rank1
+                        : i === 1
+                          ? styles.rank2
+                          : i === 2
+                            ? styles.rank3
+                            : styles.rankOther
+                      }
+                    `}
+                  >
+                    {i + 1}
+                  </span>
 
-            {savers.length === 0 && (
-              <li className={styles.emptyText}>No data yet…</li>
-            )}
-          </ul>
+                  <img
+                    src={u.photo || "/images/default-profile.png"}
+                    className={styles.saverAvatar}
+                  />
+
+                  <div>
+                    <div className={styles.saverName}>{u.name}</div>
+                    <div className={styles.saverSaving}>
+                      Saved {u.avgSaving}% on average
+                    </div>
+                  </div>
+                </li>
+              ))}
+
+              {savers.length === 0 && (
+                <li className={styles.emptyText}>No data yet…</li>
+              )}
+            </ul>
+          </div>
         </div>
 
         {/* ---------------- CENTER ---------------- */}
@@ -254,34 +320,54 @@ const sharePost = async (id: string) => {
                 className={styles.createAvatar}
               />
 
-              <textarea
-                className={styles.postTextarea}
-                placeholder="Share your eco achievement… 💡"
-                value={newPostText}
-                onChange={(e) => setNewPostText(e.target.value)}
-              />
+              <div className={styles.postInputWrapper}>
+                <textarea
+                  className={styles.postTextarea}
+                  placeholder="Share your eco achievement… 💡"
+                  value={newPostText}
+                  onChange={(e) => setNewPostText(e.target.value)}
+                />
 
-              <button
-                className={styles.imageUploadBtn}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                📷
-              </button>
+                <div className={styles.postIcons}>
+                  <button
+                    type="button"
+                    className={styles.emojiBtn}
+                    onClick={() => setShowPostEmoji((prev) => !prev)}
+                  >
+                    😀
+                  </button>
 
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                className={styles.hiddenFile}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onloadend = () =>
-                    setNewPostImage(reader.result as string);
-                  reader.readAsDataURL(file);
-                }}
-              />
+                  <button
+                    type="button"
+                    className={styles.imageUploadBtn}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    📷
+                  </button>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    className={styles.hiddenFile}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () =>
+                        setNewPostImage(reader.result as string);
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </div>
+
+
+                {showPostEmoji && (
+                  <div className={styles.emojiPickerPost}>
+                    <EmojiPicker onEmojiClick={handlePostEmojiClick} />
+                  </div>
+                )}
+              </div>
             </div>
 
             {newPostImage && (
@@ -303,43 +389,119 @@ const sharePost = async (id: string) => {
 
           {/* פוסטים */}
           <div className={styles.postsList}>
-            {posts.map((post) => (
-              <div key={post._id} className={styles.postCard}>
-                <div className={styles.postHeader}>
-                  <img
-                    src={post.userPhoto || "/images/default-profile.png"}
-                    className={styles.postAvatar}
-                  />
-                  <div className={styles.postMeta}>
-                    <span className={styles.postUser}>{post.userName}</span>
-                    <span className={styles.postTime}>
-                      {formatTime(post.createdAt)}
-                    </span>
+            {posts.map((post) => {
+              const likesCount = Array.isArray(post.likes)
+                ? post.likes.length
+                : post.likes ?? 0;
+
+              const isLiked =
+                currentUser &&
+                Array.isArray(post.likes) &&
+                post.likes.includes(currentUser._id);
+
+              return (
+                <div key={post._id} className={styles.postCard}>
+                  <div className={styles.postHeader}>
+                    <img
+                      src={post.userPhoto || "/images/default-profile.png"}
+                      className={styles.postAvatar}
+                    />
+                    <div className={styles.postMeta}>
+                      <div className={styles.postUser}>{post.userName}</div>
+                      <div className={styles.postTime}>{formatTime(post.createdAt)}</div>
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.postContent}>{post.content}</div>
+                  <div className={styles.postContent}>{post.content}</div>
 
-                {post.imageUrl && (
-                  <div className={styles.postImageWrapper}>
-                    <img src={post.imageUrl} className={styles.postImage} />
+                  {post.imageUrl && (
+                    <div className={styles.postImageWrapper}>
+                      <img src={post.imageUrl} className={styles.postImage} />
+                    </div>
+                  )}
+
+                  <div className={styles.postActions}>
+                    <button
+                      onClick={() => likePost(post._id!)}
+                      className={isLiked ? styles.likedBtn : undefined}
+                    >
+                      {isLiked ? "💙 Liked" : "👍 Like"} ({likesCount})
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setOpenCommentsPostId(
+                          openCommentsPostId === post._id ? null : post._id!
+                        )
+                      }
+                    >
+                      💬 Comment ({post.comments?.length ?? 0})
+                    </button>
+
+                    <button onClick={() => sharePost(post._id!)}>
+                      ↗ Share ({post.shares ?? 0})
+                    </button>
                   </div>
-                )}
 
-                <div className={styles.postActions}>
-                  <button onClick={() => likePost(post._id!)}>👍 Like ({post.likes ?? 0})</button>
-                  <button
-                    onClick={() => {
-                      const text = prompt("Write a comment");
-                      if (text?.trim()) commentPost(post._id!, text);
-                    }}
-                  >
-                    💬 Comment ({post.comments?.length ?? 0})
-                  </button>
-                  <button onClick={() => sharePost(post._id!)}>↗ Share ({post.shares ?? 0})</button>
+                  {/* קופסת תגובות */}
+                  {openCommentsPostId === post._id && (
+                    <div className={styles.commentsBox}>
+                      <div className={styles.commentsList}>
+                        {post.comments.map((c, i) => (
+                          <div key={i} className={styles.commentItem}>
+                            <img
+                              src={
+                                c.userPhoto || "/images/default-profile.png"
+                              }
+                              className={styles.commentAvatar}
+                            />
+                            <div>
+                              <div className={styles.commentUser}>
+                                {c.userName}
+                              </div>
+                              <div className={styles.commentText}>
+                                {c.text}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                        {(!post.comments || post.comments.length === 0) && (
+                          <div className={styles.emptyComments}>
+                            No comments yet…
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={styles.commentInputRow}>
+                        <input
+                          type="text"
+                          className={styles.commentInput}
+                          placeholder="Write a comment…"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              commentPost(post._id!, commentText);
+                              setCommentText("");
+                            }
+                          }}
+                        />
+                        <button
+                          className={styles.sendCommentBtn}
+                          onClick={() => {
+                            commentPost(post._id!, commentText);
+                            setCommentText("");
+                          }}
+                        >
+                          ➤
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {posts.length === 0 && (
               <div className={styles.emptyText}>No posts yet…</div>
@@ -352,7 +514,6 @@ const sharePost = async (id: string) => {
           <h3 className={styles.columnTitle}>Community chat 💬</h3>
 
           <div className={styles.chatCard}>
-
             <div className={styles.messagesArea}>
               {messages.map((m) => {
                 const isMe = currentUser?._id === m.userId;
@@ -360,7 +521,9 @@ const sharePost = async (id: string) => {
                 return (
                   <div
                     key={m._id}
-                    className={isMe ? styles.messageRowMe : styles.messageRowOther}
+                    className={
+                      isMe ? styles.messageRowMe : styles.messageRowOther
+                    }
                   >
                     {!isMe && (
                       <img
@@ -369,10 +532,22 @@ const sharePost = async (id: string) => {
                       />
                     )}
 
-                    <div className={isMe ? styles.messageBubbleMe : styles.messageBubbleOther}>
-                      {!isMe && <div className={styles.messageName}>{m.userName}</div>}
+                    <div
+                      className={
+                        isMe
+                          ? styles.messageBubbleMe
+                          : styles.messageBubbleOther
+                      }
+                    >
+                      {!isMe && (
+                        <div className={styles.messageName}>
+                          {m.userName}
+                        </div>
+                      )}
                       <div className={styles.messageText}>{m.message}</div>
-                      <div className={styles.messageTime}>{formatTime(m.createdAt)}</div>
+                      <div className={styles.messageTime}>
+                        {formatTime(m.createdAt)}
+                      </div>
                     </div>
 
                     {isMe && (
@@ -389,7 +564,9 @@ const sharePost = async (id: string) => {
                 <div className={styles.typingIndicator}>
                   <span>{typingUser} is typing</span>
                   <div className={styles.typingDots}>
-                    <span></span><span></span><span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                   </div>
                 </div>
               )}
@@ -398,23 +575,50 @@ const sharePost = async (id: string) => {
             </div>
 
             <div className={styles.chatInputRow}>
+              <button
+                type="button"
+                className={styles.emojiBtn}
+                onClick={() => setShowChatEmoji((prev) => !prev)}
+              >
+                😀
+              </button>
+
+              {showChatEmoji && (
+                <div className={styles.emojiPickerChat}>
+                  <EmojiPicker onEmojiClick={handleChatEmojiClick} />
+                </div>
+              )}
+
               <input
                 type="text"
                 className={styles.chatInput}
                 placeholder="Write a message…"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+
+                  socketRef.current?.emit("typing", {
+                    userName: currentUser?.name,
+                  });
+
+                  if (typingTimeoutRef.current)
+                    clearTimeout(typingTimeoutRef.current);
+                  typingTimeoutRef.current = window.setTimeout(() => {
+                    socketRef.current?.emit("typing", { userName: null });
+                  }, 1200);
+                }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
 
-              <button className={styles.chatSendButton} onClick={handleSendMessage}>
+              <button
+                className={styles.chatSendButton}
+                onClick={handleSendMessage}
+              >
                 ➤
               </button>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   );

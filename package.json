@@ -19,6 +19,7 @@
     "@nivo/core": "^0.99.0",
     "@nivo/line": "^0.99.0",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
     "emailjs-com": "^3.2.0",
     "emoji-picker-react": "^4.16.1",
     "firebase": "^12.5.0",
@@ -45,6 +46,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

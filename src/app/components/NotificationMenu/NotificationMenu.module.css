@@ -1,0 +1,111 @@
+.menu {
+  position: absolute;
+  top: 58px;
+  right: 20px;
+  width: 340px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+  transition: all 0.25s ease;
+  padding: 18px;
+  z-index: 999;
+}
+
+.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f4d1f;
+  margin-bottom: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: #8b9ba8;
+  padding: 16px 0;
+  font-size: 14px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ====== NEW CARD DESIGN ====== */
+.card {
+  background: #f7f9fb;
+  border: 1px solid #e0e6ed;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+  background: #eef3f7;
+  transform: translateY(-2px);
+}
+
+/* Left section */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1f25;
+}
+
+.company {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+/* Right section */
+.bottomRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+/* Modern Pay button */
+.payButton {
+  background: linear-gradient(135deg, #2e7d32, #3fa447);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
+}
+
+.payButton:hover {
+  background: #256628;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}

@@ -1,0 +1,186 @@
+/* ===== WRAPPER ===== */
+.pageWrapper {
+    padding: 30px;
+    margin-top: 12vh;
+    /* משאיר מקום להדר */
+}
+
+/* ===== HEADER ICON AREA ===== */
+.topIconArea {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.infoIcon {
+    color: #2563eb;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    width: 24px;
+    height: 24px;
+}
+
+.infoIcon:hover {
+    color: #1e40af;
+}
+
+/* ===== PAGE TITLE ===== */
+.pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* ===== USER LIST WRAPPER ===== */
+.userList {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+/* ===== USER CARD ===== */
+.userCard {
+    width: 100%;
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.userCard:hover {
+    background-color: #f9fafb;
+}
+
+/* ===== USER HEADER (IMAGE + DETAILS) ===== */
+.userHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.userImg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ccc;
+}
+
+/* ===== USER DETAILS TEXT ===== */
+.userName {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.userDetail {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* ===== GRAPH AREA ===== */
+.graphWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.graphContainer {
+    width: 160px;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== BUTTONS ===== */
+.button {
+    margin-top: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #fff;
+    width: 150px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.btnContacted {
+    background-color: #2563eb;
+}
+
+.btnContacted:hover {
+    background-color: #1e40af;
+}
+
+.btnNotContacted {
+    background-color: #16a34a;
+}
+
+.btnNotContacted:hover {
+    background-color: #15803d;
+}
+
+/* ===== MODAL BACKDROP ===== */
+.modalBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+/* ===== MODAL BOX ===== */
+.modalBox {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    width: 380px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.modalTitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.modalGraph {
+    width: 100%;
+    height: 140px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.modalBtnPrimary {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #16a34a;
+    padding: 10px;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.modalBtnSecondary {
+    margin-top: 10px;
+    width: 100%;
+    background-color: #d1d5db;
+    padding: 10px;
+    border-radius: 8px;
+    color: black;
+}
