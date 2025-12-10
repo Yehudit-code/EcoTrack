@@ -1,6 +1,8 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import styles from "./page.module.css";
 import { fetchCompanyFilteredUserDetails } from "@/app/services/client/consumptionClient";
 
@@ -12,6 +14,8 @@ export default function UserDetailsPage({
   // Next.js 16 — params is a Promise
   const { userId } = use(params);
 
+  const router = useRouter(); // ← תיקון חשוב
+
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [category, setCategory] = useState<string>("");
@@ -20,25 +24,25 @@ export default function UserDetailsPage({
 
   // Load data on mount
   useEffect(() => {
-  async function load() {
-    try {
-      const response = await fetchCompanyFilteredUserDetails(userId);
+    async function load() {
+      try {
+        const response = await fetchCompanyFilteredUserDetails(userId);
 
-      // כאן אין success → פשוט מקבלים את התוצאה
-      setUser(response.user);
-      setCategory(response.companyCategory);
-      setRecords(response.consumption);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Failed to load user details");
-    } finally {
-      setLoading(false);
+        setUser(response.user);
+        setCategory(response.companyCategory);
+        setRecords(response.consumption);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Failed to load user details");
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  load();
-}, [userId]);
-  // =========== UI Rendering ===========
+    load();
+  }, [userId]);
+
+  // ================= UI ==================
 
   if (loading) return <div className={styles.container}>Loading...</div>;
 
@@ -106,8 +110,14 @@ export default function UserDetailsPage({
         )}
       </div>
 
+      {/* Navigation Button */}
       <div className={styles.btnContainer}>
-        <button className={styles.button}>Create Payment Offer</button>
+        <button
+          className={styles.button}
+          onClick={() => router.push(`/company/requests/${user._id}`)}
+        >
+          Create Payment Offer
+        </button>
       </div>
     </div>
   );
