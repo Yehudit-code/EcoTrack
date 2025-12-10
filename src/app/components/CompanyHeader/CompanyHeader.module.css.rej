@@ -1,0 +1,76 @@
+diff a/src/app/components/CompanyHeader/CompanyHeader.module.css b/src/app/components/CompanyHeader/CompanyHeader.module.css	(rejected hunks)
+@@ -1,38 +1,58 @@
++/* ====== HEADER WRAPPER ====== */
+ .header {
++  position: fixed;
++  top: 0;
++  left: 0;
++  width: 100%;
++
++  height: 12vh;            /* גובה אחיד וגבוה */
++  min-height: 90px;        /* לא יקרוס במסכים קטנים */
++
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+-  background-color: #ffffff;
+-  padding: 10px 30px;
++
++  padding: 0 40px;         /* ריווח טוב יותר */
++  background-color: #ffffffcc; /* רקע לבן עם שקיפות */
+   border-bottom: 1px solid #ddd;
++  backdrop-filter: blur(6px);  /* אפקט מודרני */
++  box-sizing: border-box;
++  z-index: 9999;
+ }
+ 
++
++/* ====== LOGO ====== */
+ .logoContainer {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+ }
+ 
++
++/* ====== NAVIGATION ====== */
+ .nav {
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+   display: flex;
+-  gap: 20px;
++  gap: 24px;
+ }
+ 
+ .nav a {
+   color: #333;
+   text-decoration: none;
+   font-weight: 500;
+-  transition: color 0.2s ease;
++  font-size: 15px;
++  transition: color 0.2s ease, transform 0.15s ease;
+ }
+ 
+ .nav a:hover {
+   color: #3b6e3b;
++  transform: translateY(-1px);
+ }
+ 
+-/* פרופיל */
++
++/* ====== PROFILE AREA ====== */
+ .profileContainer {
+   display: flex;
+   align-items: center;
+@@ -53,8 +73,8 @@
+ }
+ 
+ .profileImg {
+-  width: 38px;
+-  height: 38px;
++  width: 42px;
++  height: 42px;
+   border-radius: 50%;
+   object-fit: cover;
+   border: 2px solid #3b6e3b;

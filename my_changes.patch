@@ -1,0 +1,5798 @@
+commit 3abe932ada0a4c35dbaa8aa0b573271f4f48ffba
+Author: User <hadarn26@gmail.com>
+Date:   Tue Dec 9 15:15:05 2025 +0200
+
+    little logic and css
+
+diff --git a/package-lock.json b/package-lock.json
+index 56f29d0..09336dc 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -17,6 +17,7 @@
+         "@nivo/core": "^0.99.0",
+         "@nivo/line": "^0.99.0",
+         "bcryptjs": "^3.0.3",
++        "dotenv": "^17.2.3",
+         "emailjs-com": "^3.2.0",
+         "emoji-picker-react": "^4.16.1",
+         "firebase": "^12.5.0",
+@@ -43,7 +44,8 @@
+         "eslint": "^9",
+         "eslint-config-next": "16.0.1",
+         "tailwindcss": "^4",
+-        "typescript": "^5"
++        "ts-node": "^10.9.2",
++        "typescript": "^5.9.3"
+       }
+     },
+     "node_modules/@alloc/quick-lru": {
+@@ -1044,6 +1046,30 @@
+         "node": ">=6.9.0"
+       }
+     },
++    "node_modules/@cspotcode/source-map-support": {
++      "version": "0.8.1",
++      "resolved": "https://registry.npmjs.org/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz",
++      "integrity": "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/trace-mapping": "0.3.9"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/@cspotcode/source-map-support/node_modules/@jridgewell/trace-mapping": {
++      "version": "0.3.9",
++      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.9.tgz",
++      "integrity": "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/resolve-uri": "^3.0.3",
++        "@jridgewell/sourcemap-codec": "^1.4.10"
++      }
++    },
+     "node_modules/@emailjs/browser": {
+       "version": "4.4.1",
+       "resolved": "https://registry.npmjs.org/@emailjs/browser/-/browser-4.4.1.tgz",
+@@ -4144,6 +4170,34 @@
+         "tailwindcss": "4.1.17"
+       }
+     },
++    "node_modules/@tsconfig/node10": {
++      "version": "1.0.12",
++      "resolved": "https://registry.npmjs.org/@tsconfig/node10/-/node10-1.0.12.tgz",
++      "integrity": "sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tsconfig/node12": {
++      "version": "1.0.11",
++      "resolved": "https://registry.npmjs.org/@tsconfig/node12/-/node12-1.0.11.tgz",
++      "integrity": "sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tsconfig/node14": {
++      "version": "1.0.3",
++      "resolved": "https://registry.npmjs.org/@tsconfig/node14/-/node14-1.0.3.tgz",
++      "integrity": "sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tsconfig/node16": {
++      "version": "1.0.4",
++      "resolved": "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.4.tgz",
++      "integrity": "sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==",
++      "dev": true,
++      "license": "MIT"
++    },
+     "node_modules/@tybys/wasm-util": {
+       "version": "0.10.1",
+       "resolved": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.1.tgz",
+@@ -4968,6 +5022,19 @@
+         "acorn": "^6.0.0 || ^7.0.0 || ^8.0.0"
+       }
+     },
++    "node_modules/acorn-walk": {
++      "version": "8.3.4",
++      "resolved": "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.3.4.tgz",
++      "integrity": "sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "acorn": "^8.11.0"
++      },
++      "engines": {
++        "node": ">=0.4.0"
++      }
++    },
+     "node_modules/agentkeepalive": {
+       "version": "4.6.0",
+       "resolved": "https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-4.6.0.tgz",
+@@ -5021,6 +5088,13 @@
+         "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+       }
+     },
++    "node_modules/arg": {
++      "version": "4.1.3",
++      "resolved": "https://registry.npmjs.org/arg/-/arg-4.1.3.tgz",
++      "integrity": "sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==",
++      "dev": true,
++      "license": "MIT"
++    },
+     "node_modules/argparse": {
+       "version": "2.0.1",
+       "resolved": "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz",
+@@ -5557,6 +5631,13 @@
+         "node": ">= 0.10"
+       }
+     },
++    "node_modules/create-require": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz",
++      "integrity": "sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==",
++      "dev": true,
++      "license": "MIT"
++    },
+     "node_modules/cross-spawn": {
+       "version": "7.0.6",
+       "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz",
+@@ -5880,6 +5961,16 @@
+         "node": ">=8"
+       }
+     },
++    "node_modules/diff": {
++      "version": "4.0.2",
++      "resolved": "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz",
++      "integrity": "sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==",
++      "dev": true,
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=0.3.1"
++      }
++    },
+     "node_modules/doctrine": {
+       "version": "2.1.0",
+       "resolved": "https://registry.npmjs.org/doctrine/-/doctrine-2.1.0.tgz",
+@@ -5893,6 +5984,18 @@
+         "node": ">=0.10.0"
+       }
+     },
++    "node_modules/dotenv": {
++      "version": "17.2.3",
++      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-17.2.3.tgz",
++      "integrity": "sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==",
++      "license": "BSD-2-Clause",
++      "engines": {
++        "node": ">=12"
++      },
++      "funding": {
++        "url": "https://dotenvx.com"
++      }
++    },
+     "node_modules/dunder-proto": {
+       "version": "1.0.1",
+       "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
+@@ -8353,6 +8456,13 @@
+         "@jridgewell/sourcemap-codec": "^1.5.5"
+       }
+     },
++    "node_modules/make-error": {
++      "version": "1.3.6",
++      "resolved": "https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz",
++      "integrity": "sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==",
++      "dev": true,
++      "license": "ISC"
++    },
+     "node_modules/math-intrinsics": {
+       "version": "1.1.0",
+       "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
+@@ -10210,6 +10320,50 @@
+         "typescript": ">=4.8.4"
+       }
+     },
++    "node_modules/ts-node": {
++      "version": "10.9.2",
++      "resolved": "https://registry.npmjs.org/ts-node/-/ts-node-10.9.2.tgz",
++      "integrity": "sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@cspotcode/source-map-support": "^0.8.0",
++        "@tsconfig/node10": "^1.0.7",
++        "@tsconfig/node12": "^1.0.7",
++        "@tsconfig/node14": "^1.0.0",
++        "@tsconfig/node16": "^1.0.2",
++        "acorn": "^8.4.1",
++        "acorn-walk": "^8.1.1",
++        "arg": "^4.1.0",
++        "create-require": "^1.1.0",
++        "diff": "^4.0.1",
++        "make-error": "^1.1.1",
++        "v8-compile-cache-lib": "^3.0.1",
++        "yn": "3.1.1"
++      },
++      "bin": {
++        "ts-node": "dist/bin.js",
++        "ts-node-cwd": "dist/bin-cwd.js",
++        "ts-node-esm": "dist/bin-esm.js",
++        "ts-node-script": "dist/bin-script.js",
++        "ts-node-transpile-only": "dist/bin-transpile.js",
++        "ts-script": "dist/bin-script-deprecated.js"
++      },
++      "peerDependencies": {
++        "@swc/core": ">=1.2.50",
++        "@swc/wasm": ">=1.2.50",
++        "@types/node": "*",
++        "typescript": ">=2.7"
++      },
++      "peerDependenciesMeta": {
++        "@swc/core": {
++          "optional": true
++        },
++        "@swc/wasm": {
++          "optional": true
++        }
++      }
++    },
+     "node_modules/tsconfig-paths": {
+       "version": "3.15.0",
+       "resolved": "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz",
+@@ -10493,6 +10647,13 @@
+         "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+       }
+     },
++    "node_modules/v8-compile-cache-lib": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/v8-compile-cache-lib/-/v8-compile-cache-lib-3.0.1.tgz",
++      "integrity": "sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==",
++      "dev": true,
++      "license": "MIT"
++    },
+     "node_modules/vary": {
+       "version": "1.1.2",
+       "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+@@ -10767,6 +10928,16 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/yn": {
++      "version": "3.1.1",
++      "resolved": "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz",
++      "integrity": "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      }
++    },
+     "node_modules/yocto-queue": {
+       "version": "0.1.0",
+       "resolved": "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz",
+diff --git a/package.json b/package.json
+index 7671588..4aec0ce 100644
+--- a/package.json
++++ b/package.json
+@@ -19,6 +19,7 @@
+     "@nivo/core": "^0.99.0",
+     "@nivo/line": "^0.99.0",
+     "bcryptjs": "^3.0.3",
++    "dotenv": "^17.2.3",
+     "emailjs-com": "^3.2.0",
+     "emoji-picker-react": "^4.16.1",
+     "firebase": "^12.5.0",
+@@ -45,6 +46,7 @@
+     "eslint": "^9",
+     "eslint-config-next": "16.0.1",
+     "tailwindcss": "^4",
+-    "typescript": "^5"
++    "ts-node": "^10.9.2",
++    "typescript": "^5.9.3"
+   }
+ }
+diff --git a/public/images/bell.png b/public/images/bell.png
+new file mode 100644
+index 0000000..fdac3ef
+Binary files /dev/null and b/public/images/bell.png differ
+diff --git a/public/images/upload.png b/public/images/upload.png
+new file mode 100644
+index 0000000..3f6e2e2
+Binary files /dev/null and b/public/images/upload.png differ
+diff --git a/scripts/fix-previous-values.cjs b/scripts/fix-previous-values.cjs
+new file mode 100644
+index 0000000..62bc95f
+--- /dev/null
++++ b/scripts/fix-previous-values.cjs
+@@ -0,0 +1,95 @@
++// scripts/fix-previous-values.cjs
++
++// 1. טוען משתני סביבה מתוך .env.local (או .env)
++require("dotenv").config({ path: ".env.local" });
++
++const mongoose = require("mongoose");
++
++// 2. חיבור למונגו
++const uri = process.env.MONGODB_URI || process.env.MONGODB_URL;
++
++if (!uri) {
++  console.error("❌ Missing MONGODB_URI in .env.local");
++  process.exit(1);
++}
++
++// 3. הגדרת סכימה מינימלית ל-ConsumptionHabit (רק לשימוש סקריפט)
++const consumptionHabitSchema = new mongoose.Schema(
++  {
++    userEmail: { type: String, required: true },
++    category: { type: String, required: true },
++    value: { type: Number, required: true },
++    previousValue: { type: Number, default: null },
++    month: { type: Number, required: true },
++    year: { type: Number, required: true },
++  },
++  {
++    collection: "ConsumptionHabits",
++  }
++);
++
++const ConsumptionHabit =
++  mongoose.models.ConsumptionHabit ||
++  mongoose.model("ConsumptionHabit", consumptionHabitSchema);
++
++async function run() {
++  try {
++    console.log("🔌 Connecting to Mongo...");
++    await mongoose.connect(uri);
++    console.log("✅ Connected");
++
++    // מביא את כל הרשומות, ממוין לפי יוזר+קטגוריה+תאריך
++    const habits = await ConsumptionHabit.find({})
++      .sort({ userEmail: 1, category: 1, year: 1, month: 1 })
++      .lean();
++
++    console.log(`📦 Found ${habits.length} habits`);
++
++    if (!habits.length) {
++      console.log("⚠️ No documents, nothing to update.");
++      process.exit(0);
++    }
++
++    // קיבוץ לפי userEmail+category
++    const grouped = {};
++    for (const h of habits) {
++      const key = `${h.userEmail}__${h.category}`;
++      if (!grouped[key]) grouped[key] = [];
++      grouped[key].push(h);
++    }
++
++    let updatedCount = 0;
++
++    for (const key of Object.keys(grouped)) {
++      const list = grouped[key];
++
++      // list כבר ממוין לפי year+month
++      for (let i = 1; i < list.length; i++) {
++        const prev = list[i - 1];
++        const curr = list[i];
++
++        // אם כבר יש previousValue, לא נוגעים
++        if (curr.previousValue !== null && curr.previousValue !== undefined) {
++          continue;
++        }
++
++        const newPrev = prev.value ?? null;
++
++        await ConsumptionHabit.updateOne(
++          { _id: curr._id },
++          { $set: { previousValue: newPrev } }
++        );
++
++        updatedCount++;
++      }
++    }
++
++    console.log(`✅ Done. Updated ${updatedCount} documents.`);
++    process.exit(0);
++  } catch (err) {
++    console.error("❌ Error running script:", err);
++    process.exit(1);
++  }
++}
++
++run();
+diff --git a/src/app/about/page.module.css b/src/app/about/page.module.css
+index d025898..2f346a2 100644
+--- a/src/app/about/page.module.css
++++ b/src/app/about/page.module.css
+@@ -12,6 +12,7 @@
+   justify-content: center;
+   align-items: center;
+   padding: 40px 20px;
++  padding-top: 18vh;
+ }
+ 
+ .contentWrapper {
+@@ -58,10 +59,21 @@
+   animation: fadeInUp 0.8s ease forwards;
+ }
+ 
+-.textBlock:nth-child(1) { animation-delay: 0.2s; }
+-.textBlock:nth-child(2) { animation-delay: 0.4s; }
+-.textBlock:nth-child(3) { animation-delay: 0.6s; }
+-.textBlock:nth-child(4) { animation-delay: 0.8s; }
++.textBlock:nth-child(1) {
++  animation-delay: 0.2s;
++}
++
++.textBlock:nth-child(2) {
++  animation-delay: 0.4s;
++}
++
++.textBlock:nth-child(3) {
++  animation-delay: 0.6s;
++}
++
++.textBlock:nth-child(4) {
++  animation-delay: 0.8s;
++}
+ 
+ .sectionTitle {
+   font-size: 1.3rem;
+@@ -106,6 +118,7 @@
+     opacity: 0;
+     transform: translateY(30px);
+   }
++
+   to {
+     opacity: 1;
+     transform: translateY(0);
+@@ -113,9 +126,12 @@
+ }
+ 
+ @keyframes gentle-bounce {
+-  0%, 100% {
++
++  0%,
++  100% {
+     transform: translateY(0);
+   }
++
+   50% {
+     transform: translateY(-10px);
+   }
+@@ -126,15 +142,15 @@
+     padding: 25px 20px;
+     margin: 15px;
+   }
+-  
++
+   .title {
+     font-size: 2rem;
+   }
+-  
++
+   .sectionTitle {
+     font-size: 1.2rem;
+   }
+-  
++
+   .paragraph {
+     font-size: 0.95rem;
+   }
+@@ -144,21 +160,21 @@
+   .container {
+     padding: 25px 15px;
+   }
+-  
++
+   .contentWrapper {
+     padding: 20px 18px;
+   }
+-  
++
+   .title {
+     font-size: 1.6rem;
+     letter-spacing: 1px;
+   }
+-  
++
+   .sectionTitle {
+     font-size: 1.1rem;
+   }
+-  
++
+   .paragraph {
+     font-size: 0.9rem;
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/src/app/api/company-requests/route.ts b/src/app/api/company-requests/route.ts
+index 2a657a0..90fe19b 100644
+--- a/src/app/api/company-requests/route.ts
++++ b/src/app/api/company-requests/route.ts
+@@ -17,6 +17,8 @@ export async function GET(req: Request) {
+ 
+     const pipeline: any[] = [
+       { $match: match },
++
++      // 🔵 הבאת פרטי המשתמש (לקוח)
+       {
+         $lookup: {
+           from: "Users",
+@@ -25,13 +27,21 @@ export async function GET(req: Request) {
+           as: "userData",
+         },
+       },
++      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
++
++      // 🟢 הבאת פרטי החברה (החברה שהציעה את ההצעה)
+       {
+-        $unwind: {
+-          path: "$userData",
+-          preserveNullAndEmptyArrays: true,
++        $lookup: {
++          from: "Users",
++          localField: "companyId",
++          foreignField: "_id",
++          as: "companyData",
+         },
+       },
++      { $unwind: { path: "$companyData", preserveNullAndEmptyArrays: true } },
++
+       { $sort: { createdAt: -1 } },
++
+       {
+         $project: {
+           productName: 1,
+@@ -40,11 +50,20 @@ export async function GET(req: Request) {
+           paymentId: 1,
+           createdAt: 1,
+           userId: 1,
++          companyId: 1,
++
++          // פרטי המשתמש
+           "userData.name": 1,
+           "userData.email": 1,
+           "userData.phone": 1,
++
++          // פרטי החברה
++          companyName: "$companyData.name",
++          companyEmail: "$companyData.email",
++          companyCategory: "$companyData.companyCategory",
+         },
+-      },
++      }
++
+     ];
+ 
+     const items = await collection.aggregate(pipeline).toArray();
+@@ -59,6 +78,7 @@ export async function GET(req: Request) {
+   }
+ }
+ 
++
+ export async function POST(req: Request) {
+   try {
+     const { userId, companyId, productName, description, price } =
+diff --git a/src/app/api/consumption/route.ts b/src/app/api/consumption/route.ts
+index 387fcc4..1147377 100644
+--- a/src/app/api/consumption/route.ts
++++ b/src/app/api/consumption/route.ts
+@@ -35,13 +35,24 @@ export async function POST(req: Request) {
+     await connectDB();
+     const body = await req.json();
+ 
+-    const { userEmail, category, month, year } = body;
++    const { userEmail, category, month, year, value } = body;
+ 
+-    if (!userEmail || !category || !month || !year) {
++    if (!userEmail || !category || !month || !year || value == null) {
+       return fail("Missing required fields", 400);
+     }
+ 
+-    // Check if record exists for this user+category+month+year
++    // ⬅️ שליפת הצריכה הקודמת של המשתמש באותה קטגוריה
++    const lastRecord = await ConsumptionHabit.findOne({
++      userEmail,
++      category,
++    })
++      .sort({ year: -1, month: -1 }) // חשוב - כדי לקבל את האחרונה
++      .lean() as any;
++
++    // ⬅️ הגדרת previousValue אוטומטית
++    const previousValue = lastRecord?.value ?? null;
++
++    // בדיקה אם קיים כבר רישום לחודש הזה → עדכון
+     const existing = await ConsumptionHabit.findOne({
+       userEmail,
+       category,
+@@ -50,16 +61,23 @@ export async function POST(req: Request) {
+     });
+ 
+     if (existing) {
+-      // Update instead of creating a duplicate
+       const updated = await ConsumptionHabit.findByIdAndUpdate(
+         existing._id,
+-        body,
++        {
++          ...body,
++          previousValue, // ⬅️ חשוב!
++        },
+         { new: true }
+       );
+       return ok(updated);
+     }
+ 
+-    const created = await ConsumptionHabit.create(body);
++    // יצירת רשומה חדשה
++    const created = await ConsumptionHabit.create({
++      ...body,
++      previousValue, // ⬅️ נשמר כאן
++    });
++
+     return ok(created);
+   } catch (err) {
+     console.error("POST error:", err);
+@@ -67,6 +85,7 @@ export async function POST(req: Request) {
+   }
+ }
+ 
++
+ export async function PUT(req: Request) {
+   try {
+     await connectDB();
+diff --git a/src/app/api/posts/route.ts b/src/app/api/posts/route.ts
+index 921e822..91ac09a 100644
+--- a/src/app/api/posts/route.ts
++++ b/src/app/api/posts/route.ts
+@@ -41,11 +41,12 @@ export async function POST(req: Request) {
+             content,
+             imageUrl: imageUrl || null,
+             createdAt: new Date(),
+-            likes: 0,
++            likes: [],
+             comments: [],
+             shares: 0,
+         };
+ 
++
+         const result = await postsCollection.insertOne(newPost);
+ 
+         return Response.json(
+@@ -80,12 +81,36 @@ export async function PATCH(req: Request) {
+         const _id = new ObjectId(postId);
+ 
+         if (action === "like") {
++            const { userId } = body;
++            if (!userId) {
++                return Response.json(
++                    { error: "Missing userId for like" },
++                    { status: 400 }
++                );
++            }
++
++            const post = await postsCollection.findOne({ _id });
++            if (!post) {
++                return Response.json({ error: "Post not found" }, { status: 404 });
++            }
++
++            // אם אין מערך לייקים ניצור אחד
++            let likes = Array.isArray(post.likes) ? post.likes : [];
++
++            // Toggle
++            if (likes.includes(userId)) {
++                likes = likes.filter((id: string) => id !== userId);
++            } else {
++                likes.push(userId);
++            }
++
+             await postsCollection.updateOne(
+                 { _id },
+-                { $inc: { likes: 1 } }
++                { $set: { likes } }
+             );
+         }
+ 
++
+         if (action === "share") {
+             await postsCollection.updateOne(
+                 { _id },
+diff --git a/src/app/api/savers/route.ts b/src/app/api/savers/route.ts
+index dc5aafe..4cd14cb 100644
+--- a/src/app/api/savers/route.ts
++++ b/src/app/api/savers/route.ts
+@@ -1,5 +1,4 @@
+ import { connectDB } from "@/app/services/server/mongodb";
+-import { ObjectId } from "mongodb";
+ 
+ export async function GET() {
+   try {
+@@ -10,31 +9,29 @@ export async function GET() {
+     const users = await usersCollection.find({}).toArray();
+     const results: any[] = [];
+ 
+-    // ⬅️ תאריך תחילת החודש
+-    const now = new Date();
+-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+-
+     for (const user of users) {
+       const habits = await habitsCollection
+-        .find({
+-          userId: new ObjectId(user._id),
+-          createdAt: { $gte: monthStart }, // ⬅️ רק מהחודש הנוכחי
+-        })
++        .find({ userEmail: user.email })
++        .sort({ year: 1, month: 1 }) // לא חובה כאן, אבל מסודר יפה
+         .toArray();
+ 
+-      if (!habits.length) continue;
++      if (habits.length === 0) continue;
++
++      const savings: number[] = [];
++
++      for (const h of habits) {
++        if (h.previousValue && h.previousValue > 0) {
++          const savingPercent =
++            ((h.previousValue - h.value) / h.previousValue) * 100;
+ 
+-      const percents = habits
+-        .filter((h: any) => h.previousValue && h.previousValue > 0)
+-        .map(
+-          (h: any) =>
+-            ((h.previousValue - h.value) / h.previousValue) * 100
+-        );
++          savings.push(savingPercent);
++        }
++      }
++
++      if (savings.length === 0) continue;
+ 
+       const avgSaving =
+-        percents.length > 0
+-          ? percents.reduce((a: number, b: number) => a + b, 0) / percents.length
+-          : 0;
++        savings.reduce((a, b) => a + b, 0) / savings.length;
+ 
+       results.push({
+         name: user.name || "Unknown",
+@@ -44,11 +41,11 @@ export async function GET() {
+       });
+     }
+ 
+-    // מיון מהגדול לקטן
++    // ממיין מהכי חוסך (אחוז גבוה) להכי פחות
+     results.sort((a, b) => b.avgSaving - a.avgSaving);
+ 
+-    // מחזיר רק את 4 המובילים
+     return Response.json(results.slice(0, 4));
++
+   } catch (err) {
+     console.error("❌ Error in /api/savers:", err);
+     return Response.json({ error: "failed" }, { status: 500 });
+diff --git a/src/app/components/CompanyHeader/CompanyHeader.module.css b/src/app/components/CompanyHeader/CompanyHeader.module.css
+index 8e0890c..1c54bcc 100644
+--- a/src/app/components/CompanyHeader/CompanyHeader.module.css
++++ b/src/app/components/CompanyHeader/CompanyHeader.module.css
+@@ -1,38 +1,58 @@
++/* ====== HEADER WRAPPER ====== */
+ .header {
++  position: fixed;
++  top: 0;
++  left: 0;
++  width: 100%;
++
++  height: 12vh;            /* גובה אחיד וגבוה */
++  min-height: 90px;        /* לא יקרוס במסכים קטנים */
++
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+-  background-color: #ffffff;
+-  padding: 10px 30px;
++
++  padding: 0 40px;         /* ריווח טוב יותר */
++  background-color: #ffffffcc; /* רקע לבן עם שקיפות */
+   border-bottom: 1px solid #ddd;
++  backdrop-filter: blur(6px);  /* אפקט מודרני */
++  box-sizing: border-box;
++  z-index: 9999;
+ }
+ 
++
++/* ====== LOGO ====== */
+ .logoContainer {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+ }
+ 
++
++/* ====== NAVIGATION ====== */
+ .nav {
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+   display: flex;
+-  gap: 20px;
++  gap: 24px;
+ }
+ 
+ .nav a {
+   color: #333;
+   text-decoration: none;
+   font-weight: 500;
+-  transition: color 0.2s ease;
++  font-size: 15px;
++  transition: color 0.2s ease, transform 0.15s ease;
+ }
+ 
+ .nav a:hover {
+   color: #3b6e3b;
++  transform: translateY(-1px);
+ }
+ 
+-/* פרופיל */
++
++/* ====== PROFILE AREA ====== */
+ .profileContainer {
+   display: flex;
+   align-items: center;
+@@ -53,8 +73,8 @@
+ }
+ 
+ .profileImg {
+-  width: 38px;
+-  height: 38px;
++  width: 42px;
++  height: 42px;
+   border-radius: 50%;
+   object-fit: cover;
+   border: 2px solid #3b6e3b;
+diff --git a/src/app/components/CompanyHeader/CompanyHeader.tsx b/src/app/components/CompanyHeader/CompanyHeader.tsx
+index 8dd46da..32e8974 100644
+--- a/src/app/components/CompanyHeader/CompanyHeader.tsx
++++ b/src/app/components/CompanyHeader/CompanyHeader.tsx
+@@ -36,7 +36,7 @@ export default function Header() {
+           <FontAwesomeIcon icon={faHome} />
+           <span>Home</span>
+         </Link>
+-        <Link href="/displa-user" className={styles.navLink}>
++        <Link href="/display-user" className={styles.navLink}>
+           <FontAwesomeIcon icon={faDatabase} />
+           <span>Display Users</span>
+         </Link>
+diff --git a/src/app/components/Header/Header.module.css b/src/app/components/Header/Header.module.css
+index 98183d9..5ec8266 100644
+--- a/src/app/components/Header/Header.module.css
++++ b/src/app/components/Header/Header.module.css
+@@ -1,30 +1,60 @@
+ .header {
++  position: fixed;
++  top: 0;
++  left: 0;
++  width: 100%;
++
++  height: 12vh;
++  /* 🔥 הגובה שאת רוצה */
++  min-height: 90px;
++  /* שלא יהיה קטן מדי במסכים קטנים */
++
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
++
++  padding: 0 40px;
++  /* רחב ונראה טוב */
+   background-color: #ffffff;
+-  padding: 10px 30px;
+   border-bottom: 1px solid #ddd;
++  z-index: 9999;
++  /* כדי שיהיה מעל הכל */
++  box-sizing: border-box;
++
++  backdrop-filter: blur(6px);
++  /* אופציונלי – אפקט יוקרתי */
+ }
+ 
++
++/* לוגו */
+ .logoContainer {
+   display: flex;
+   align-items: center;
+-  gap: 8px;
++  gap: 12px;
++  /* רווח יפה יותר */
+ }
+ 
++.logoContainer img {
++  height: 42px;
++  /* אם יש לוגו – שיהיה גדול יותר */
++}
++
++/* ניווט */
+ .nav {
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+   display: flex;
+-  gap: 20px;
++  gap: 28px;
++  /* רחב יותר */
+ }
+ 
+ .nav a {
+   color: #333;
+   text-decoration: none;
+   font-weight: 500;
++  font-size: 16px;
++  /* יותר גדול וקריא */
+   transition: color 0.2s ease;
+ }
+ 
+@@ -36,6 +66,7 @@
+ .profileContainer {
+   display: flex;
+   align-items: center;
++  gap: 12px;
+ }
+ 
+ .profileLink {
+@@ -48,18 +79,21 @@
+ }
+ 
+ .profileLink:hover {
+-  transform: scale(1.05);
+-  box-shadow: 0 0 5px rgba(59, 110, 59, 0.3);
++  transform: scale(1.07);
++  box-shadow: 0 0 6px rgba(59, 110, 59, 0.35);
+ }
+ 
+ .profileImg {
+-  width: 38px;
+-  height: 38px;
++  width: 46px;
++  /* גדול יותר */
++  height: 46px;
++  /* תואם */
+   border-radius: 50%;
+   object-fit: cover;
+-  border: 2px solid #3b6e3b;
++  border: 2.5px solid #3b6e3b;
+ }
+ 
++/* עיגול הודעות */
+ .badge {
+   position: absolute;
+   top: -6px;
+@@ -72,5 +106,78 @@
+   font-weight: 700;
+   min-width: 22px;
+   text-align: center;
+-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
++  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
++}
++
++.rightSection {
++  display: flex;
++  align-items: center;
++  gap: 22px;
++  position: relative;
++}
++
++.bellWrapper {
++  position: relative;
++  cursor: pointer;
++  margin-top: 10px;
++
+ }
++
++.bellIcon {
++  width: 24px;
++  height: 24px;
++  object-fit: contain;
++  cursor: pointer;
++  transition: transform 0.2s;
++  transform-origin: top center;
++}
++
++@keyframes bellRing {
++  0% {
++    transform: rotate(0deg);
++  }
++
++  15% {
++    transform: rotate(15deg);
++  }
++
++  30% {
++    transform: rotate(-15deg);
++  }
++
++  45% {
++    transform: rotate(10deg);
++  }
++
++  60% {
++    transform: rotate(-10deg);
++  }
++
++  75% {
++    transform: rotate(5deg);
++  }
++
++  100% {
++    transform: rotate(0deg);
++  }
++}
++
++.bellIcon:hover {
++  animation: bellRing 0.7s ease-in-out;
++}
++
++
++.bellBadge {
++  position: absolute;
++  top: -6px;
++  right: -6px;
++  background: #e53935;
++  color: white;
++  border-radius: 50%;
++  padding: 2px 7px;
++  font-size: 11px;
++  font-weight: 700;
++  min-width: 20px;
++  text-align: center;
++  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
++}
+\ No newline at end of file
+diff --git a/src/app/components/Header/Header.tsx b/src/app/components/Header/Header.tsx
+index ecc4cb0..83f9bac 100644
+--- a/src/app/components/Header/Header.tsx
++++ b/src/app/components/Header/Header.tsx
+@@ -1,7 +1,8 @@
+ "use client";
+ 
+ import Link from "next/link";
+-import { useEffect, useState } from "react";
++import { useEffect, useState, useRef } from "react";
++import NotificationMenu from "@/app/components/NotificationMenu/NotificationMenu";
+ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+ import {
+   faLeaf,
+@@ -10,37 +11,51 @@ import {
+   faDatabase,
+   faInfoCircle,
+   faUser,
+-  faShoppingCart,
++  faBell,
+ } from "@fortawesome/free-solid-svg-icons";
+ 
+ import { getProfileImage } from "@/app/lib/getProfileImage";
+ import styles from "./Header.module.css";
+ 
+ export default function Header() {
+-  const [profilePic, setProfilePic] = useState<string>("/images/default-profile.png");
+-  const [proposalsCount, setProposalsCount] = useState<number>(0);
+-  const [userRole, setUserRole] = useState<string | null>(null);
++  const [profilePic, setProfilePic] = useState("/images/default-profile.png");
++  const [proposalsCount, setProposalsCount] = useState(0);
++  const [notifications, setNotifications] = useState([]);
++  const [dropdownOpen, setDropdownOpen] = useState(false);
++  const menuRef = useRef<HTMLDivElement>(null);
+ 
++  // סגירה בלחיצה מחוץ
+   useEffect(() => {
+-    const userData = localStorage.getItem("currentUser");
+-    if (userData) {
+-      const parsed = JSON.parse(userData);
+-
+-      setUserRole(parsed.role);
+-
+-      const pic = getProfileImage(parsed);
+-      setProfilePic(pic);
+-      localStorage.setItem("profilePic", pic);
+-
+-      if (parsed.role === "user") {
+-        fetch(`/api/company-requests?userId=${parsed._id}`)
+-          .then((res) => res.json())
+-          .then((data) => {
+-            setProposalsCount(Array.isArray(data) ? data.length : 0);
+-          })
+-          .catch(() => setProposalsCount(0));
++    function handleClickOutside(e: MouseEvent) {
++      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
++        setDropdownOpen(false);
+       }
+     }
++
++    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
++    return () => document.removeEventListener("mousedown", handleClickOutside);
++  }, [dropdownOpen]);
++
++
++  // טעינת נתוני המשתמש וההצעות
++  useEffect(() => {
++    const userData = localStorage.getItem("currentUser");
++    if (!userData) return;
++
++    const parsed = JSON.parse(userData);
++    const pic = getProfileImage(parsed);
++    setProfilePic(pic);
++
++    fetch(`/api/company-requests?userId=${parsed._id}`)
++      .then((r) => r.json())
++      .then((data) => {
++        setNotifications(data);
++        setProposalsCount(data.length);
++      })
++      .catch(() => {
++        setNotifications([]);
++        setProposalsCount(0);
++      });
+   }, []);
+ 
+   return (
+@@ -53,59 +68,33 @@ export default function Header() {
+ 
+       {/* ניווט */}
+       <nav className={styles.nav}>
+-        <Link href="/home" className={styles.navLink}>
+-          <FontAwesomeIcon icon={faHome} />
+-          <span>Home</span>
+-        </Link>
+-
+-        <Link href="/manage-data" className={styles.navLink}>
+-          <FontAwesomeIcon icon={faDatabase} />
+-          <span>Manage Data</span>
+-        </Link>
++        <Link href="/home" className={styles.navLink}><FontAwesomeIcon icon={faHome} /><span>Home</span></Link>
++        <Link href="/manage-data" className={styles.navLink}><FontAwesomeIcon icon={faDatabase} /><span>Manage Data</span></Link>
++        <Link href="/indicators" className={styles.navLink}><FontAwesomeIcon icon={faChartBar} /><span>Analytics</span></Link>
++        <Link href="/social-sharing" className={styles.navLink}><FontAwesomeIcon icon={faUser} /><span>Social Sharing</span></Link>
++        <Link href="/about" className={styles.navLink}><FontAwesomeIcon icon={faInfoCircle} /><span>About</span></Link>
++      </nav>
+ 
+-        <Link href="/indicators" className={styles.navLink}>
+-          <FontAwesomeIcon icon={faChartBar} />
+-          <span>Analytics</span>
+-        </Link>
++      {/* פעמון + פרופיל */}
++      <div className={styles.rightSection} ref={menuRef}>
++        {/* פעמון */}
++        <div
++          className={styles.bellWrapper}
++          onClick={() => setDropdownOpen(!dropdownOpen)}
++        >
++          <img src="/images/bell.png" className={styles.bellIcon} />
+ 
+-        <Link href="/social-sharing" className={styles.navLink}>
+-          <FontAwesomeIcon icon={faUser} />
+-          <span>Social Sharing</span>
+-        </Link>
++          {proposalsCount > 0 && (
++            <span className={styles.bellBadge}>{proposalsCount}</span>
++          )}
++        </div>
+ 
+-        <Link href="/about" className={styles.navLink}>
+-          <FontAwesomeIcon icon={faInfoCircle} />
+-          <span>About</span>
+-        </Link>
+-
+-        {userRole === "company" && (
+-          <Link href="/display-user" className={styles.navLink}>
+-            <FontAwesomeIcon icon={faUser} />
+-            <span>Display Users</span>
+-          </Link>
+-        )}
+-      </nav>
+ 
+-      {/* אזור משתמש */}
+-      <div className={styles.userSection}>
+-        {userRole === "user" && (
+-          <Link
+-            href="/proposals-inbox"
+-            className={styles.cartLink}
+-            style={{ position: "relative", marginRight: 18 }}
+-          >
+-            <FontAwesomeIcon icon={faShoppingCart} size="lg" color="#2e7d32" />
+-
+-            {proposalsCount > 0 && (
+-              <span className={styles.badge}>{proposalsCount}</span>
+-            )}
+-          </Link>
+-        )}
++        <NotificationMenu open={dropdownOpen} />
+ 
++        {/* פרופיל */}
+         <Link href="/profile" className={styles.profileLink}>
+-          <div className={styles.profileContainer}>
+-            <img src={profilePic} alt="User Profile" className={styles.profileImg} />
+-          </div>
++          <img src={profilePic} className={styles.profileImg} />
+         </Link>
+       </div>
+     </header>
+diff --git a/src/app/components/NotificationMenu/NotificationMenu.module.css b/src/app/components/NotificationMenu/NotificationMenu.module.css
+new file mode 100644
+index 0000000..214a7cd
+--- /dev/null
++++ b/src/app/components/NotificationMenu/NotificationMenu.module.css
+@@ -0,0 +1,111 @@
++.menu {
++  position: absolute;
++  top: 58px;
++  right: 20px;
++  width: 340px;
++  background: #ffffff;
++  border-radius: 16px;
++  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
++  opacity: 0;
++  pointer-events: none;
++  transform: translateY(-12px);
++  transition: all 0.25s ease;
++  padding: 18px;
++  z-index: 999;
++}
++
++.open {
++  opacity: 1;
++  pointer-events: auto;
++  transform: translateY(0);
++}
++
++.title {
++  font-size: 18px;
++  font-weight: 700;
++  color: #1f4d1f;
++  margin-bottom: 16px;
++}
++
++.empty {
++  text-align: center;
++  color: #8b9ba8;
++  padding: 16px 0;
++  font-size: 14px;
++}
++
++.list {
++  display: flex;
++  flex-direction: column;
++  gap: 14px;
++}
++
++/* ====== NEW CARD DESIGN ====== */
++.card {
++  background: #f7f9fb;
++  border: 1px solid #e0e6ed;
++  border-radius: 14px;
++  padding: 14px 16px;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  transition: 0.25s ease;
++  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
++}
++
++.card:hover {
++  background: #eef3f7;
++  transform: translateY(-2px);
++}
++
++/* Left section */
++.info {
++  display: flex;
++  flex-direction: column;
++  gap: 4px;
++}
++
++.productName {
++  font-size: 15px;
++  font-weight: 600;
++  color: #1a1f25;
++}
++
++.company {
++  font-size: 13px;
++  color: #4b5563;
++  font-weight: 500;
++}
++
++/* Right section */
++.bottomRow {
++  display: flex;
++  flex-direction: column;
++  align-items: flex-end;
++  gap: 6px;
++}
++
++.price {
++  font-size: 16px;
++  font-weight: 700;
++  color: #2e7d32;
++}
++
++/* Modern Pay button */
++.payButton {
++  background: linear-gradient(135deg, #2e7d32, #3fa447);
++  color: white;
++  padding: 6px 16px;
++  border-radius: 8px;
++  font-size: 13px;
++  font-weight: 600;
++  text-decoration: none;
++  transition: all 0.2s ease;
++  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
++}
++
++.payButton:hover {
++  background: #256628;
++  transform: translateY(-2px);
++  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
++}
+diff --git a/src/app/components/NotificationMenu/NotificationMenu.tsx b/src/app/components/NotificationMenu/NotificationMenu.tsx
+new file mode 100644
+index 0000000..d11cf3e
+--- /dev/null
++++ b/src/app/components/NotificationMenu/NotificationMenu.tsx
+@@ -0,0 +1,108 @@
++"use client";
++
++import { useEffect, useState } from "react";
++import Link from "next/link";
++import styles from "./NotificationMenu.module.css";
++
++type RequestItem = {
++    _id: string;
++    productName: string;
++    price: number;
++    status: string;
++    paymentId: string;
++    companyName?: string;
++};
++
++export default function NotificationMenu({ open }: { open: boolean }) {
++    const [isClient, setIsClient] = useState(false);
++    const [userId, setUserId] = useState<string | null>(null);
++    const [items, setItems] = useState<RequestItem[]>([]);
++
++    // -------------------------
++    // Mark component as client-side
++    // -------------------------
++    useEffect(() => {
++        setIsClient(true);
++    }, []);
++
++    // -------------------------
++    // Load userId (runs only after isClient = true)
++    // -------------------------
++    useEffect(() => {
++        if (!isClient) return;
++
++        const userStr = localStorage.getItem("currentUser");
++        if (!userStr) return;
++
++        try {
++            const user = JSON.parse(userStr);
++            setUserId(user._id);
++        } catch { }
++    }, [isClient]);
++
++    // -------------------------
++    // Load pending offers
++    // -------------------------
++    useEffect(() => {
++        if (!userId) return;
++
++        fetch(`/api/company-requests?userId=${userId}`)
++            .then((res) => res.json())
++            .then((data) => {
++                const pending = data.filter(
++                    (i: RequestItem) => i.status !== "paid"
++                );
++                setItems(pending);
++            })
++            .catch(() => setItems([]));
++    }, [userId]);
++
++    // -------------------------
++    // Render safely
++    // -------------------------
++    if (!isClient) {
++        return (
++            <div
++                className={`${styles.menu} ${open ? styles.open : ""}`}
++            >
++                <p className={styles.empty}>Loading…</p>
++            </div>
++        );
++    }
++
++    return (
++        <div className={`${styles.menu} ${open ? styles.open : ""}`}>
++            <h4 className={styles.title}>Pending Offers</h4>
++
++            {items.length === 0 && (
++                <p className={styles.empty}>No pending offers</p>
++            )}
++
++            <div className={styles.list}>
++                {items.map((item) => (
++                    <div key={item._id} className={styles.card}>
++                        <div className={styles.info}>
++                            <div className={styles.productName}>{item.productName}</div>
++                            {item.companyName && (
++                                <div className={styles.company}>
++                                    {item.companyName}
++                                </div>
++                            )}
++                        </div>
++
++                        <div className={styles.bottomRow}>
++                            <span className={styles.price}>{item.price}₪</span>
++
++                            <Link
++                                href={`/pay/${item.paymentId}`}
++                                className={styles.payButton}
++                            >
++                                Pay
++                            </Link>
++                        </div>
++                    </div>
++                ))}
++            </div>
++        </div>
++    );
++}
+diff --git a/src/app/contact/Contact.module.css b/src/app/contact/Contact.module.css
+index 4465d2e..e91efc2 100644
+--- a/src/app/contact/Contact.module.css
++++ b/src/app/contact/Contact.module.css
+@@ -1,98 +1,98 @@
+ .page {
+-  min-height: 100vh;
+-  background: #f3f4f6;
+-
+-  display: flex;
+-  justify-content: center;     /* מרכז אופקית */
+-  align-items: flex-start;     /* מזיז למעלה */
+-  padding-top: 120px;          /* שליטה כמה גבוה הכרטיס */
++    min-height: 100vh;
++    background: #f3f4f6;
++    display: flex;
++    justify-content: center;
++    align-items: flex-start;
++    padding-top: 22vh;
+ }
+ 
+ 
+ 
+ .card {
+-  background: white;
+-  padding: 32px;
+-  border-radius: 14px;
+-  width: 100%;
+-  max-width: 420px;
+-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
++    background: white;
++    padding: 32px;
++    border-radius: 14px;
++    width: 100%;
++    max-width: 420px;
++    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+ }
+ 
+ 
+ 
+ .title {
+-  font-size: 26px;
+-  font-weight: 700;
+-  text-align: center;
+-  margin-bottom: 20px;
+-  color: #1f2937;
++    font-size: 26px;
++    font-weight: 700;
++    text-align: center;
++    margin-bottom: 20px;
++    color: #1f2937;
+ }
+ 
+ .form {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 16px;
++    display: flex;
++    flex-direction: column;
++    gap: 16px;
+ }
+ 
+ .disabledInput {
+-  background: #e5e7eb;
+-  padding: 12px;
+-  border-radius: 8px;
+-  border: 1px solid #d1d5db;
+-  font-size: 15px;
+-  cursor: not-allowed;
+-  color: #6b7280;
++    background: #e5e7eb;
++    padding: 12px;
++    border-radius: 8px;
++    border: 1px solid #d1d5db;
++    font-size: 15px;
++    cursor: not-allowed;
++    color: #6b7280;
+ }
+ 
+ .textarea {
+-  border: 1px solid #d1d5db;
+-  border-radius: 8px;
+-  padding: 12px;
+-  font-size: 15px;
+-  resize: none;
+-  min-height: 130px;
+-  transition: 0.2s ease;
++    border: 1px solid #d1d5db;
++    border-radius: 8px;
++    padding: 12px;
++    font-size: 15px;
++    resize: none;
++    min-height: 130px;
++    transition: 0.2s ease;
+ }
+ 
+ .textarea:focus {
+-  border-color: #2563eb;
+-  outline: none;
+-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
++    border-color: #2563eb;
++    outline: none;
++    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+ }
+ 
+ .button {
+-  background: #2563eb;
+-  color: white;
+-  padding: 14px;
+-  border-radius: 8px;
+-  font-weight: 600;
+-  font-size: 15px;
+-  cursor: pointer;
+-  transition: 0.2s;
+-  border: none;
++    background: #2563eb;
++    color: white;
++    padding: 14px;
++    border-radius: 8px;
++    font-weight: 600;
++    font-size: 15px;
++    cursor: pointer;
++    transition: 0.2s;
++    border: none;
+ }
+ 
+ .button:hover {
+-  background: #1d4ed8;
++    background: #1d4ed8;
+ }
+ 
+ .success {
+-  margin-top: 18px;
+-  color: #16a34a;
+-  text-align: center;
+-  font-weight: 600;
+-  font-size: 15px;
++    margin-top: 18px;
++    color: #16a34a;
++    text-align: center;
++    font-weight: 600;
++    font-size: 15px;
+ }
+ 
+ /* אנימציה לכניסה יפה */
+ @keyframes fadeIn {
+-  from {
+-    opacity: 0;
+-    transform: translateY(4px);
+-  }
+-  to {
+-    opacity: 1;
+-    transform: translateY(0);
+-  }
+-}
++    from {
++        opacity: 0;
++        transform: translateY(4px);
++    }
++
++    to {
++        opacity: 1;
++        transform: translateY(0);
++    }
++}
+\ No newline at end of file
+diff --git a/src/app/displa-user/display-user.module.css b/src/app/displa-user/display-user.module.css
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/src/app/displa-user/page.tsx b/src/app/displa-user/page.tsx
+deleted file mode 100644
+index c5a980a..0000000
+--- a/src/app/displa-user/page.tsx
++++ /dev/null
+@@ -1,204 +0,0 @@
+-
+-"use client";
+-import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
+-
+-import React, { useState, useEffect } from "react";
+-import Link from "next/link";
+-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+-import styles from "./SocialSharing.module.css";
+-import dynamic from "next/dynamic";
+-
+-const ConsumptionGraph = dynamic(() => import("../components/ConsumptionGraph"), { ssr: false });
+-
+-type User = {
+-  _id?: string;
+-  name: string;
+-  phone?: string;
+-  email: string;
+-  photo?: string;
+-  improvementScore?: number;
+-  talked?: boolean;
+-  value?: number;
+-  valuesByMonth?: { month: number; year: number; value: number }[];
+-  maxValue?: number;
+-};
+-
+-
+-const DisplayUsersPage = () => {
+-  const [users, setUsers] = useState<User[]>([]);
+-  const [loading, setLoading] = useState(true);
+-  const [error, setError] = useState<string | null>(null);
+-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+-  const [modalOpen, setModalOpen] = useState(false);
+-  const [category, setCategory] = useState<string | null>(null);
+-
+-  // קבלת הקטגוריה של החברה מהמשתמש המחובר
+-  useEffect(() => {
+-    const userStr = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
+-    if (userStr) {
+-      try {
+-        const user = JSON.parse(userStr);
+-        setCategory(user.companyCategory || null);
+-      } catch {
+-        setCategory(null);
+-      }
+-    } else {
+-      setCategory(null);
+-    }
+-  }, []);
+-
+-  // Fetch top users by value in selected category
+-  useEffect(() => {
+-    if (!category) return;
+-    const fetchUsers = async () => {
+-      setLoading(true);
+-      try {
+-        const res = await fetch(`/api/company/users?category=${category}`);
+-        if (!res.ok) throw new Error("Failed to fetch users");
+-        const data = await res.json();
+-        setUsers(data.users?.slice(0, 3) || []);
+-      } catch (err: any) {
+-        setError(err.message);
+-      } finally {
+-        setLoading(false);
+-      }
+-    };
+-    fetchUsers();
+-  }, [category]);
+-
+-  // 🔹 Toggle Talked state (update in DB)
+-  const toggleTalk = async (email: string, currentTalked?: boolean) => {
+-    try {
+-      const res = await fetch(`/api/users/${encodeURIComponent(email)}`, {
+-        method: "PATCH",
+-        headers: { "Content-Type": "application/json" },
+-        body: JSON.stringify({ talked: !currentTalked })
+-      });
+-      if (!res.ok) throw new Error("Failed to update talk status");
+-      // רענון רשימת המשתמשים
+-      if (category) {
+-        const usersRes = await fetch(`/api/company/users?category=${category}`);
+-        if (usersRes.ok) {
+-          const data = await usersRes.json();
+-          setUsers(data.users?.slice(0, 3) || []);
+-        }
+-      }
+-    } catch (err: any) {
+-      alert(err.message);
+-    }
+-  };
+-
+-  const openModal = (user: User) => {
+-    setSelectedUser(user);
+-    setModalOpen(true);
+-  };
+-
+-  const closeModal = () => {
+-    setSelectedUser(null);
+-    setModalOpen(false);
+-  };
+-
+-  if (loading) return <p>Loading users...</p>;
+-  if (error) return <p>Error: {error}</p>;
+-  if (!category) return <p>No category selected for your company.</p>;
+-
+-  return (
+-    <>
+-      <CompanyHeader />
+-      <div className="p-6">
+-        {/* אייקון פרטים בראש העמוד */}
+-        <div className="flex justify-end mb-4">
+-          <Link href="/requests">
+-            <FontAwesomeIcon icon={faInfoCircle} size="2x" className="text-blue-600 cursor-pointer hover:text-blue-800" title="פרטים" />
+-          </Link>
+-        </div>
+-      <h1 className="text-2xl font-bold mb-4">Top users in category: {category}</h1>
+-
+-      {/* רשימת משתמשים */}
+-      <div className="flex flex-col gap-8 items-center w-full max-w-2xl mx-auto">
+-        {users.length === 0 ? (
+-          <p className="w-full text-center">No users found in this category.</p>
+-        ) : (
+-          users.map((user) => (
+-            <div
+-              key={user.email}
+-              className="flex flex-col w-full bg-white shadow rounded-xl p-6 cursor-pointer hover:bg-gray-50 transition-all border border-gray-100"
+-            >
+-              <div className="flex items-center gap-4 mb-4" onClick={() => openModal(user)}>
+-                <img
+-                  src={user.photo || "/default-user.png"}
+-                  alt={user.name}
+-                  className="w-16 h-16 rounded-full border border-gray-300"
+-                  onError={e => {
+-                    const target = e.currentTarget as HTMLImageElement;
+-                    if (target.src !== window.location.origin + "/default-user.png") {
+-                      target.src = "/default-user.png";
+-                    }
+-                  }}
+-                />
+-                <div>
+-                  <p className="font-semibold text-lg">{user.name}</p>
+-                  <p className="text-sm text-gray-500">{user.phone}</p>
+-                  <p className="text-sm text-gray-500">{user.email}</p>
+-                  {/* Current consumption removed as requested */}
+-                </div>
+-              </div>
+-              <div className="flex flex-col items-center gap-2 mt-2">
+-                <div className="w-full flex items-center justify-center">
+-                  <div className="w-40 h-16 flex items-center justify-center">
+-                    <ConsumptionGraph data={(user.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
+-                  </div>
+-                </div>
+-                <button
+-                  className={`mt-2 px-4 py-1 rounded-full font-semibold shadow transition-colors duration-200 text-white ${
+-                    user.talked ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
+-                  }`}
+-                  onClick={() => toggleTalk(user.email, user.talked)}
+-                >
+-                  {user.talked ? "Contacted" : "Not Contacted"}
+-                </button>
+-              </div>
+-            </div>
+-          ))
+-        )}
+-      </div>
+-
+-      {/* Modal */}
+-      {modalOpen && selectedUser && (
+-        <div
+-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+-          onClick={closeModal}
+-        >
+-          <div
+-            className="bg-white p-6 rounded shadow-lg w-96"
+-            onClick={(e) => e.stopPropagation()}
+-          >
+-            <h2 className="text-xl font-bold mb-2">{selectedUser.name}</h2>
+-            <p>Phone: {selectedUser.phone}</p>
+-            <p>Email: {selectedUser.email}</p>
+-            {/* Current consumption removed as requested */}
+-            <div className="mt-4 w-full h-32 bg-gray-100 rounded flex items-center justify-center">
+-              <ConsumptionGraph data={(selectedUser.valuesByMonth || []).map(v => ({ month: v.month.toString(), value: v.value }))} />
+-            </div>
+-            <button
+-              className="mt-4 w-full bg-green-500 text-white py-2 rounded font-semibold"
+-              onClick={() => alert("Go to create proposal page")}
+-            >
+-              Create Payment Proposal
+-            </button>
+-            <button
+-              className="mt-2 w-full bg-gray-300 text-black py-2 rounded"
+-              onClick={closeModal}
+-            >
+-              Close
+-            </button>
+-          </div>
+-        </div>
+-      )}
+-      </div>
+-    </>
+-  );
+-};
+-
+-export default DisplayUsersPage;
+diff --git a/src/app/display-user/DisplayUsers.module.css b/src/app/display-user/DisplayUsers.module.css
+new file mode 100644
+index 0000000..d62be78
+--- /dev/null
++++ b/src/app/display-user/DisplayUsers.module.css
+@@ -0,0 +1,186 @@
++/* ===== WRAPPER ===== */
++.pageWrapper {
++    padding: 30px;
++    margin-top: 12vh;
++    /* משאיר מקום להדר */
++}
++
++/* ===== HEADER ICON AREA ===== */
++.topIconArea {
++    display: flex;
++    justify-content: flex-end;
++    margin-bottom: 20px;
++}
++
++.infoIcon {
++    color: #2563eb;
++    cursor: pointer;
++    transition: color 0.2s ease;
++    width: 24px;
++    height: 24px;
++}
++
++.infoIcon:hover {
++    color: #1e40af;
++}
++
++/* ===== PAGE TITLE ===== */
++.pageTitle {
++    font-size: 24px;
++    font-weight: 700;
++    margin-bottom: 20px;
++}
++
++/* ===== USER LIST WRAPPER ===== */
++.userList {
++    display: flex;
++    flex-direction: column;
++    gap: 32px;
++    align-items: center;
++    width: 100%;
++    max-width: 650px;
++    margin: 0 auto;
++}
++
++/* ===== USER CARD ===== */
++.userCard {
++    width: 100%;
++    background: #fff;
++    padding: 24px;
++    border-radius: 16px;
++    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
++    border: 1px solid #e5e7eb;
++    cursor: pointer;
++    transition: background-color 0.2s ease;
++}
++
++.userCard:hover {
++    background-color: #f9fafb;
++}
++
++/* ===== USER HEADER (IMAGE + DETAILS) ===== */
++.userHeader {
++    display: flex;
++    align-items: center;
++    gap: 16px;
++    margin-bottom: 16px;
++}
++
++.userImg {
++    width: 64px;
++    height: 64px;
++    border-radius: 50%;
++    object-fit: cover;
++    border: 1px solid #ccc;
++}
++
++/* ===== USER DETAILS TEXT ===== */
++.userName {
++    font-size: 18px;
++    font-weight: 600;
++}
++
++.userDetail {
++    font-size: 14px;
++    color: #6b7280;
++}
++
++/* ===== GRAPH AREA ===== */
++.graphWrapper {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    margin-top: 8px;
++}
++
++.graphContainer {
++    width: 160px;
++    height: 65px;
++    display: flex;
++    justify-content: center;
++    align-items: center;
++}
++
++/* ===== BUTTONS ===== */
++.button {
++    margin-top: 8px;
++    padding: 6px 16px;
++    border-radius: 20px;
++    font-weight: 600;
++    color: #fff;
++    width: 150px;
++    text-align: center;
++    transition: background-color 0.2s ease;
++}
++
++.btnContacted {
++    background-color: #2563eb;
++}
++
++.btnContacted:hover {
++    background-color: #1e40af;
++}
++
++.btnNotContacted {
++    background-color: #16a34a;
++}
++
++.btnNotContacted:hover {
++    background-color: #15803d;
++}
++
++/* ===== MODAL BACKDROP ===== */
++.modalBackdrop {
++    position: fixed;
++    inset: 0;
++    background: rgba(0, 0, 0, 0.5);
++    display: flex;
++    justify-content: center;
++    align-items: center;
++    z-index: 50;
++}
++
++/* ===== MODAL BOX ===== */
++.modalBox {
++    background: #fff;
++    padding: 24px;
++    border-radius: 12px;
++    width: 380px;
++    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
++}
++
++.modalTitle {
++    font-size: 20px;
++    font-weight: 700;
++    margin-bottom: 12px;
++}
++
++.modalGraph {
++    width: 100%;
++    height: 140px;
++    background: #f3f4f6;
++    border-radius: 8px;
++    display: flex;
++    justify-content: center;
++    align-items: center;
++    margin-top: 12px;
++}
++
++.modalBtnPrimary {
++    margin-top: 20px;
++    width: 100%;
++    background-color: #16a34a;
++    padding: 10px;
++    color: white;
++    border-radius: 8px;
++    font-weight: 600;
++}
++
++.modalBtnSecondary {
++    margin-top: 10px;
++    width: 100%;
++    background-color: #d1d5db;
++    padding: 10px;
++    border-radius: 8px;
++    color: black;
++}
+\ No newline at end of file
+diff --git a/src/app/display-user/page.tsx b/src/app/display-user/page.tsx
+new file mode 100644
+index 0000000..726f3a3
+--- /dev/null
++++ b/src/app/display-user/page.tsx
+@@ -0,0 +1,203 @@
++"use client";
++
++import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
++import React, { useState, useEffect } from "react";
++import Link from "next/link";
++import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
++import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
++import dynamic from "next/dynamic";
++
++import styles from "./DisplayUsers.module.css";
++
++const ConsumptionGraph = dynamic(() => import("../components/ConsumptionGraph"), { ssr: false });
++
++type User = {
++  _id?: string;
++  name: string;
++  phone?: string;
++  email: string;
++  photo?: string;
++  improvementScore?: number;
++  talked?: boolean;
++  value?: number;
++  valuesByMonth?: { month: number; year: number; value: number }[];
++};
++
++const DisplayUsersPage = () => {
++  const [users, setUsers] = useState<User[]>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const [selectedUser, setSelectedUser] = useState<User | null>(null);
++  const [modalOpen, setModalOpen] = useState(false);
++  const [category, setCategory] = useState<string | null>(null);
++
++  useEffect(() => {
++    const userStr = typeof window !== "undefined" ? localStorage.getItem("currentUser") : null;
++    if (userStr) {
++      try {
++        const user = JSON.parse(userStr);
++        setCategory(user.companyCategory || null);
++      } catch {
++        setCategory(null);
++      }
++    } else {
++      setCategory(null);
++    }
++  }, []);
++
++  useEffect(() => {
++    if (!category) return;
++
++    const fetchUsers = async () => {
++      setLoading(true);
++      try {
++        const res = await fetch(`/api/company/users?category=${category}`);
++        if (!res.ok) throw new Error("Failed to fetch users");
++
++        const data = await res.json();
++        setUsers(data.users?.slice(0, 3) || []);
++      } catch (err: any) {
++        setError(err.message);
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchUsers();
++  }, [category]);
++
++  const toggleTalk = async (email: string, currentTalked?: boolean) => {
++    try {
++      const res = await fetch(`/api/users/${encodeURIComponent(email)}`, {
++        method: "PATCH",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({ talked: !currentTalked })
++      });
++
++      if (!res.ok) throw new Error("Failed to update talk status");
++
++      if (category) {
++        const usersRes = await fetch(`/api/company/users?category=${category}`);
++        if (usersRes.ok) {
++          const data = await usersRes.json();
++          setUsers(data.users?.slice(0, 3) || []);
++        }
++      }
++    } catch (err: any) {
++      alert(err.message);
++    }
++  };
++
++  const openModal = (user: User) => {
++    setSelectedUser(user);
++    setModalOpen(true);
++  };
++
++  const closeModal = () => {
++    setSelectedUser(null);
++    setModalOpen(false);
++  };
++
++  if (loading) return <p>Loading users...</p>;
++  if (error) return <p>Error: {error}</p>;
++  if (!category) return <p>No category selected for your company.</p>;
++
++  return (
++    <>
++      <CompanyHeader />
++
++      <div className={styles.pageWrapper}>
++        <div className={styles.topIconArea}>
++          <Link href="/requests">
++            <FontAwesomeIcon icon={faInfoCircle} className={styles.infoIcon} />
++          </Link>
++        </div>
++
++        <h1 className={styles.pageTitle}>Top users in category: {category}</h1>
++
++        <div className={styles.userList}>
++          {users.length === 0 ? (
++            <p>No users found in this category.</p>
++          ) : (
++            users.map((user) => (
++              <div
++                key={user.email}
++                className={styles.userCard}
++              >
++                <div className={styles.userHeader} onClick={() => openModal(user)}>
++                  <img
++                    src={user.photo || "/default-user.png"}
++                    alt={user.name}
++                    className={styles.userImg}
++                    onError={(e) => {
++                      const target = e.currentTarget as HTMLImageElement;
++                      if (target.src !== window.location.origin + "/default-user.png") {
++                        target.src = "/default-user.png";
++                      }
++                    }}
++                  />
++
++                  <div>
++                    <p className={styles.userName}>{user.name}</p>
++                    <p className={styles.userDetail}>{user.phone}</p>
++                    <p className={styles.userDetail}>{user.email}</p>
++                  </div>
++                </div>
++
++                <div className={styles.graphWrapper}>
++                  <div className={styles.graphContainer}>
++                    <ConsumptionGraph
++                      data={(user.valuesByMonth || []).map((v) => ({
++                        month: v.month.toString(),
++                        value: v.value
++                      }))}
++                    />
++                  </div>
++
++                  <button
++                    className={`${styles.button} ${
++                      user.talked ? styles.btnContacted : styles.btnNotContacted
++                    }`}
++                    onClick={() => toggleTalk(user.email, user.talked)}
++                  >
++                    {user.talked ? "Contacted" : "Not Contacted"}
++                  </button>
++                </div>
++              </div>
++            ))
++          )}
++        </div>
++
++        {modalOpen && selectedUser && (
++          <div className={styles.modalBackdrop} onClick={closeModal}>
++            <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
++              <h2 className={styles.modalTitle}>{selectedUser.name}</h2>
++
++              <p>Phone: {selectedUser.phone}</p>
++              <p>Email: {selectedUser.email}</p>
++
++              <div className={styles.modalGraph}>
++                <ConsumptionGraph
++                  data={(selectedUser.valuesByMonth || []).map((v) => ({
++                    month: v.month.toString(),
++                    value: v.value
++                  }))}
++                />
++              </div>
++
++              <button className={styles.modalBtnPrimary}>
++                Create Payment Proposal
++              </button>
++
++              <button className={styles.modalBtnSecondary} onClick={closeModal}>
++                Close
++              </button>
++            </div>
++          </div>
++        )}
++      </div>
++    </>
++  );
++};
++
++export default DisplayUsersPage;
+diff --git a/src/app/globals.css b/src/app/globals.css
+index a2dc41e..2a89a48 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -12,13 +12,6 @@
+   --font-mono: var(--font-geist-mono);
+ }
+ 
+-@media (prefers-color-scheme: dark) {
+-  :root {
+-    --background: #0a0a0a;
+-    --foreground: #ededed;
+-  }
+-}
+-
+ body {
+   background: var(--background);
+   color: var(--foreground);
+diff --git a/src/app/home/page.module.css b/src/app/home/page.module.css
+index 059f030..f8d82f2 100644
+--- a/src/app/home/page.module.css
++++ b/src/app/home/page.module.css
+@@ -1,4 +1,5 @@
+ .container {
++  padding-top: 13vh;
+   min-height: 100vh;
+   background: #f8f9fa;
+   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+@@ -622,8 +623,13 @@
+ }
+ 
+ @keyframes growUp {
+-  from { height: 0; }
+-  to { height: var(--final-height); }
++  from {
++    height: 0;
++  }
++
++  to {
++    height: var(--final-height);
++  }
+ }
+ 
+ .chartLabel {
+@@ -845,19 +851,19 @@
+   .main {
+     padding: 1rem;
+   }
+-  
++
+   .welcomeContent h1 {
+     font-size: 2rem;
+   }
+-  
++
+   .quickStats {
+     grid-template-columns: 1fr;
+   }
+-  
++
+   .dashboard {
+     grid-template-columns: 1fr;
+   }
+-  
++
+   .statCard {
+     justify-content: center;
+     text-align: center;
+@@ -1068,7 +1074,7 @@
+   .categoriesGrid {
+     grid-template-columns: repeat(2, 1fr);
+   }
+-  
++
+   .statsGrid {
+     grid-template-columns: repeat(2, 1fr);
+   }
+@@ -1079,15 +1085,15 @@
+     gap: 40px;
+     margin-bottom: 80px;
+   }
+-  
++
+   .featureImage {
+     flex: 0 0 400px;
+   }
+-  
++
+   .featureImage img {
+     height: 280px;
+   }
+-  
++
+   .sectionTitle h2 {
+     font-size: 2.2rem;
+   }
+@@ -1097,81 +1103,81 @@
+   .main {
+     padding: 20px;
+   }
+-  
++
+   .mainTitle {
+     font-size: 2rem;
+   }
+-  
++
+   .categoriesGrid {
+     grid-template-columns: 1fr;
+   }
+-  
++
+   .statsGrid {
+     grid-template-columns: repeat(2, 1fr);
+   }
+-  
++
+   .tipContent {
+     flex-direction: column;
+     gap: 16px;
+     text-align: center;
+   }
+-  
++
+   .tipText {
+     text-align: center;
+   }
+-  
++
+   .featuresSection {
+     margin: 60px 0;
+     padding: 0 15px;
+   }
+-  
++
+   .sectionTitle {
+     margin-bottom: 40px;
+   }
+-  
++
+   .sectionTitle h2 {
+     font-size: 2rem;
+   }
+-  
++
+   .sectionTitle p {
+     font-size: 1rem;
+   }
+-  
++
+   .featureRow {
+     flex-direction: column;
+     gap: 30px;
+     margin-bottom: 60px;
+     text-align: center;
+   }
+-  
++
+   .slideRight .featureContent,
+   .slideRight .featureImage {
+     order: unset;
+   }
+-  
++
+   .featureImage {
+     flex: none;
+     width: 100%;
+     max-width: 400px;
+     margin: 0 auto;
+   }
+-  
++
+   .featureImage img {
+     height: 250px;
+   }
+-  
++
+   .featureContent {
+     padding: 0;
+   }
+-  
++
+   .featureContent h3 {
+     font-size: 1.5rem;
+   }
+-  
++
+   .featureContent p {
+     font-size: 1rem;
+   }
+-  
++
+   .imageGrid {
+     grid-template-columns: 1fr;
+     padding: 0 1rem;
+@@ -1180,4 +1186,4 @@
+   .aboutSection {
+     padding: 0 1rem;
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/src/app/indicators/page.module.css b/src/app/indicators/page.module.css
+index 49ed052..9c71aa9 100644
+--- a/src/app/indicators/page.module.css
++++ b/src/app/indicators/page.module.css
+@@ -6,6 +6,7 @@
+   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+   color: #2c3e50;
+   line-height: 1.6;
++  padding-top: 13vh;
+ }
+ 
+ /* MAIN CONTENT */
+@@ -225,11 +226,11 @@
+   .contentBox {
+     max-width: 900px;
+   }
+-  
++
+   .chartsGrid {
+     gap: 20px;
+   }
+-  
++
+   .chartCard {
+     padding: 20px;
+     height: 260px;
+@@ -240,28 +241,28 @@
+   .main {
+     padding: 20px 16px;
+   }
+-  
++
+   .chartsGrid {
+     grid-template-columns: 1fr;
+     grid-template-rows: repeat(4, 1fr);
+     gap: 16px;
+   }
+-  
++
+   .chartCard {
+     height: 240px;
+     padding: 16px;
+   }
+-  
++
+   .title {
+     font-size: 1.6rem;
+     margin-bottom: 24px;
+   }
+-  
++
+   .tabButtons {
+     width: 100%;
+     margin-bottom: 24px;
+   }
+-  
++
+   .tabButton {
+     padding: 10px 16px;
+     font-size: 0.85rem;
+@@ -272,21 +273,20 @@
+   .title {
+     font-size: 1.4rem;
+   }
+-  
++
+   .chartCard {
+     height: 220px;
+     padding: 12px;
+   }
+-  
++
+   .chartTitle {
+     font-size: 1rem;
+     margin-bottom: 12px;
+   }
+-  
++
+   .dataTable th,
+   .dataTable td {
+     padding: 10px 12px;
+     font-size: 0.85rem;
+   }
+-}
+-
++}
+\ No newline at end of file
+diff --git a/src/app/manage-data/ManageData.module.css b/src/app/manage-data/ManageData.module.css
+index 80ff2df..46d8051 100644
+--- a/src/app/manage-data/ManageData.module.css
++++ b/src/app/manage-data/ManageData.module.css
+@@ -1,12 +1,12 @@
+-/* src/app/manage-data/page.module.css */
++/* src/app/manage-data/ManageData.module.css */
+ 
+ .container {
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+-  background-color: #ffffff;
+-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+-    sans-serif;
++  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
++  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", sans-serif;
++  padding-top: 13vh;
+ }
+ 
+ /* MAIN CONTENT */
+@@ -15,7 +15,7 @@
+   display: flex;
+   justify-content: center;
+   align-items: flex-start;
+-  padding: 40px 20px;
++  padding: 60px 24px;
+ }
+ 
+ .contentBox {
+@@ -23,149 +23,245 @@
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+-  max-width: 1100px;
++  max-width: 1200px;
++  animation: fadeInUp 0.6s ease-out;
++}
++
++@keyframes fadeInUp {
++  from {
++    opacity: 0;
++    transform: translateY(20px);
++  }
++  to {
++    opacity: 1;
++    transform: translateY(0);
++  }
+ }
+ 
+ .title {
+-  font-size: 2.6rem;
+-  color: #2d5c2d;
+-  margin-bottom: 10px;
++  font-size: 3rem;
++  font-weight: 700;
++  background: linear-gradient(135deg, #2d5c2d 0%, #4a934a 100%);
++  -webkit-background-clip: text;
++  -webkit-text-fill-color: transparent;
++  background-clip: text;
++  margin-bottom: 12px;
+   text-align: center;
++  letter-spacing: -0.5px;
+ }
+ 
+ .subtitle {
+-  font-size: 1rem;
+-  color: #555555;
+-  margin-bottom: 40px;
++  font-size: 1.125rem;
++  color: #64748b;
++  margin-bottom: 48px;
+   text-align: center;
+   max-width: 600px;
++  line-height: 1.6;
+ }
+ 
+ /* GRID OF CARDS */
+ .dataSection {
+   display: grid;
+-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+-  gap: 30px;
++  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
++  gap: 24px;
+   width: 100%;
++  margin-top: 32px;
+ }
+ 
+ .dataCard {
+-  background-color: #f8fdf8;
+-  border: 2px solid #9bc59b;
+-  border-radius: 18px;
+-  padding: 24px 22px;
++  background: #ffffff;
++  border: 1px solid rgba(155, 197, 155, 0.2);
++  border-radius: 20px;
++  padding: 32px 28px;
+   text-align: center;
+-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+-  transition: transform 0.18s ease, box-shadow 0.18s ease;
++  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
++  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
++  position: relative;
++  overflow: hidden;
++}
++
++.dataCard::before {
++  content: '';
++  position: absolute;
++  top: 0;
++  left: 0;
++  right: 0;
++  height: 4px;
++  background: linear-gradient(90deg, #9bc59b 0%, #7ba87b 100%);
++  transform: scaleX(0);
++  transform-origin: left;
++  transition: transform 0.3s ease;
++}
++
++.dataCard:hover::before {
++  transform: scaleX(1);
+ }
+ 
+ .dataCard:hover {
+-  transform: translateY(-4px);
+-  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.12);
++  transform: translateY(-8px);
++  box-shadow: 0 12px 32px rgba(155, 197, 155, 0.25);
++  border-color: rgba(155, 197, 155, 0.4);
+ }
+ 
+ .dataCard h3 {
+   color: #2d5c2d;
+   font-size: 1.5rem;
++  font-weight: 700;
+   margin-bottom: 8px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 8px;
++  min-height: 36px;
+ }
+ 
+ .cardDescription {
+-  font-size: 0.95rem;
+-  color: #666666;
+-  margin-bottom: 18px;
++  font-size: 0.925rem;
++  color: #64748b;
++  margin-bottom: 24px;
++  line-height: 1.5;
++  min-height: 42px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ }
+ 
+ /* INPUT GROUP */
+ .inputGroup {
+-  margin-bottom: 20px;
++  margin-bottom: 24px;
+   text-align: left;
++  min-height: 90px;
++  display: flex;
++  flex-direction: column;
+ }
+ 
+ .inputGroup label {
+   display: block;
+-  margin-bottom: 6px;
++  margin-bottom: 8px;
+   font-weight: 600;
+-  color: #444444;
++  color: #334155;
++  font-size: 0.875rem;
++  text-transform: uppercase;
++  letter-spacing: 0.5px;
+ }
+ 
+ .inputGroup input {
+   width: 100%;
+-  padding: 10px 12px;
+-  border: 1px solid #cccccc;
+-  border-radius: 8px;
+-  font-size: 1rem;
++  padding: 14px 16px;
++  border: 2px solid #e2e8f0;
++  border-radius: 12px;
++  font-size: 1.125rem;
+   text-align: center;
+-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
++  font-weight: 600;
++  color: #2d5c2d;
++  transition: all 0.2s ease;
++  background: #f8fafc;
++}
++
++.inputGroup input:hover {
++  border-color: #cbd5e1;
++  background: #ffffff;
+ }
+ 
+ .inputGroup input:focus {
+   outline: none;
+   border-color: #9bc59b;
+-  box-shadow: 0 0 0 3px rgba(155, 197, 155, 0.35);
++  background: #ffffff;
++  box-shadow: 0 0 0 4px rgba(155, 197, 155, 0.15);
++}
++
++.inputGroup input::placeholder {
++  color: #94a3b8;
++  font-weight: 400;
+ }
+ 
+ /* BUTTONS */
+ .saveBtn {
+-  background-color: #9bc59b;
++  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
+   color: #ffffff;
+-  padding: 10px 22px;
++  padding: 14px 32px;
+   border: none;
+-  border-radius: 999px;
+-  font-size: 0.98rem;
++  border-radius: 12px;
++  font-size: 1rem;
+   font-weight: 600;
+   cursor: pointer;
+-  transition: background-color 0.15s ease, transform 0.1s ease,
+-    box-shadow 0.15s ease;
++  transition: all 0.2s ease;
++  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.3);
++  position: relative;
++  overflow: hidden;
++}
++
++.saveBtn::before {
++  content: '';
++  position: absolute;
++  top: 50%;
++  left: 50%;
++  width: 0;
++  height: 0;
++  border-radius: 50%;
++  background: rgba(255, 255, 255, 0.3);
++  transform: translate(-50%, -50%);
++  transition: width 0.4s, height 0.4s;
++}
++
++.saveBtn:hover::before {
++  width: 300px;
++  height: 300px;
+ }
+ 
+ .saveBtn:hover {
+-  background-color: #7ba87b;
+-  transform: translateY(-1px);
+-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
++  transform: translateY(-2px);
++  box-shadow: 0 6px 20px rgba(155, 197, 155, 0.4);
++}
++
++.saveBtn:active {
++  transform: translateY(0);
+ }
+ 
+ .saveBtn:disabled {
+-  background-color: #c7ddc7;
+-  cursor: default;
++  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
++  cursor: not-allowed;
+   box-shadow: none;
++  opacity: 0.6;
+ }
+ 
+ /* MESSAGES */
+ .statusMessage {
+-  margin-top: 10px;
+-  font-size: 0.9rem;
+-  color: #305830;
+-}
+-
+-.globalMessage {
+-  margin-bottom: 20px;
+-  font-size: 0.95rem;
+-  color: #b04545;
+-  text-align: center;
+-}
+-
+-/* FOOTER (נשלט ע"י הקומפוננטה עצמה, כאן רק רווח קטן מעליו) */
+-.footer {
+-  text-align: center;
+-  padding: 10px;
+-  background-color: #faf3dc;
+-  border-top: 1px solid #dddddd;
++  margin-top: 16px;
++  font-size: 0.875rem;
++  font-weight: 600;
++  color: #16a34a;
++  padding: 8px 16px;
++  background: #f0fdf4;
++  border-radius: 8px;
++  border: 1px solid #86efac;
++  animation: slideIn 0.3s ease;
++  min-height: 38px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ }
+ 
+-/* RESPONSIVE */
+-@media (max-width: 600px) {
+-  .main {
+-    padding: 24px 12px;
++@keyframes slideIn {
++  from {
++    opacity: 0;
++    transform: translateY(-10px);
+   }
+-
+-  .title {
+-    font-size: 2rem;
++  to {
++    opacity: 1;
++    transform: translateY(0);
+   }
++}
+ 
+-  .dataCard {
+-    padding: 20px 16px;
+-  }
++.globalMessage {
++  margin-bottom: 24px;
++  font-size: 0.95rem;
++  color: #dc2626;
++  text-align: center;
++  padding: 12px 20px;
++  background: #fef2f2;
++  border-radius: 10px;
++  border: 1px solid #fecaca;
+ }
+ 
+ /* ----------------------- */
+@@ -174,77 +270,173 @@
+ 
+ .pickerContainer {
+   position: relative;
++  margin-bottom: 48px;
++  z-index: 100;
+ }
+ 
+ .pickerButton {
+   background: #ffffff;
+   border: 2px solid #9bc59b;
+-  border-radius: 10px;
+-  padding: 10px 16px;
++  border-radius: 16px;
++  padding: 16px 28px;
+   cursor: pointer;
+-  font-size: 1.1rem;
++  font-size: 1.125rem;
++  font-weight: 600;
+   color: #2d5c2d;
+   display: flex;
+   align-items: center;
+-  gap: 8px;
+-  transition: 0.2s;
++  gap: 12px;
++  transition: all 0.2s ease;
++  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
++  min-width: 240px;
++  justify-content: center;
+ }
+ 
+ .pickerButton:hover {
+-  background: #f0faf0;
++  background: #f0fdf4;
++  border-color: #7ba87b;
++  box-shadow: 0 4px 16px rgba(155, 197, 155, 0.2);
++  transform: translateY(-2px);
++}
++
++.pickerButton:active {
++  transform: translateY(0);
+ }
+ 
+ .pickerPopup {
+   position: absolute;
+-  top: 50px;
+-  left: 0;
++  top: calc(100% + 12px);
++  left: 50%;
++  transform: translateX(-50%);
+   background: #ffffff;
+-  border: 2px solid #9bc59b;
+-  border-radius: 12px;
+-  padding: 15px;
+-  width: 260px;
+-  z-index: 100;
+-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
++  border: 2px solid #e5e7eb;
++  border-radius: 20px;
++  padding: 24px;
++  width: 320px;
++  z-index: 1000;
++  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
++  animation: popupAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
++}
++
++@keyframes popupAppear {
++  from {
++    opacity: 0;
++    transform: translateX(-50%) translateY(-10px);
++  }
++  to {
++    opacity: 1;
++    transform: translateX(-50%) translateY(0);
++  }
+ }
+ 
+ .yearRow {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+-  margin-bottom: 12px;
+-  font-weight: 600;
++  margin-bottom: 20px;
++  font-weight: 700;
++  font-size: 1.25rem;
++  color: #2d5c2d;
+ }
+ 
+ .yearRow button {
+-  background: #e6f4e6;
++  background: linear-gradient(135deg, #e6f4e6 0%, #d4e9d4 100%);
+   border: 1px solid #9bc59b;
+-  padding: 4px 8px;
+-  border-radius: 6px;
++  width: 40px;
++  height: 40px;
++  border-radius: 10px;
+   cursor: pointer;
++  font-size: 1.25rem;
++  color: #2d5c2d;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  transition: all 0.2s ease;
++  font-weight: 600;
++}
++
++.yearRow button:hover {
++  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
++  color: #ffffff;
++  transform: scale(1.1);
++}
++
++.yearRow button:active {
++  transform: scale(0.95);
+ }
+ 
+ .monthGrid {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+-  gap: 8px;
++  gap: 10px;
+ }
+ 
+ .monthItem {
+-  background: #f7fdf7;
+-  border: 1px solid #9bc59b;
+-  padding: 8px 0;
+-  border-radius: 8px;
++  background: #f8fdf8;
++  border: 2px solid #e2e8f0;
++  padding: 12px 0;
++  border-radius: 12px;
+   cursor: pointer;
+-  transition: 0.2s;
+-  color: #2d5c2d;
++  transition: all 0.2s ease;
++  color: #334155;
++  font-weight: 600;
++  font-size: 0.875rem;
+ }
+ 
+ .monthItem:hover {
+-  background: #e5f3e5;
++  background: #e6f4e6;
++  border-color: #9bc59b;
++  transform: translateY(-2px);
++  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.2);
++}
++
++.monthItem:active {
++  transform: translateY(0);
+ }
+ 
+ .activeMonth {
+-  background: #9bc59b !important;
+-  color: #fff;
+-  border-color: #7da67d;
++  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%) !important;
++  color: #ffffff !important;
++  border-color: #7ba87b !important;
++  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.4);
++}
++
++/* RESPONSIVE */
++@media (max-width: 768px) {
++  .main {
++    padding: 40px 16px;
++  }
++
++  .title {
++    font-size: 2.25rem;
++  }
++
++  .dataSection {
++    grid-template-columns: 1fr;
++    gap: 20px;
++  }
++
++  .dataCard {
++    padding: 28px 24px;
++  }
++
++  .pickerPopup {
++    width: 280px;
++  }
+ }
++
++@media (max-width: 480px) {
++  .title {
++    font-size: 1.875rem;
++  }
++
++  .pickerButton {
++    min-width: 200px;
++    padding: 14px 20px;
++    font-size: 1rem;
++  }
++
++  .dataCard {
++    padding: 24px 20px;
++  }
++}
+\ No newline at end of file
+diff --git a/src/app/manage-data/MonthYearPicker.tsx b/src/app/manage-data/MonthYearPicker.tsx
+index 6e7470f..5b5132f 100644
+--- a/src/app/manage-data/MonthYearPicker.tsx
++++ b/src/app/manage-data/MonthYearPicker.tsx
+@@ -15,9 +15,9 @@ export default function MonthYearPicker({
+   const containerRef = useRef<HTMLDivElement>(null);
+ 
+   const months = [
+-    "January","February","March","April",
+-    "May","June","July","August",
+-    "September","October","November","December",
++    "January", "February", "March", "April",
++    "May", "June", "July", "August",
++    "September", "October", "November", "December",
+   ];
+ 
+   // Close on outside click
+@@ -44,15 +44,29 @@ export default function MonthYearPicker({
+         className={styles.pickerButton}
+         onClick={() => setOpen((prev) => !prev)}
+       >
+-        📅 {months[selectedMonth - 1]} {selectedYear}
++        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
++          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
++          <line x1="16" y1="2" x2="16" y2="6" />
++          <line x1="8" y1="2" x2="8" y2="6" />
++          <line x1="3" y1="10" x2="21" y2="10" />
++        </svg>
++        {months[selectedMonth - 1]} {selectedYear}
+       </button>
+ 
+       {open && (
+         <div className={styles.pickerPopup}>
+           <div className={styles.yearRow}>
+-            <button onClick={() => changeYear(-1)}>‹</button>
++            <button onClick={() => changeYear(-1)}>
++              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
++                <polyline points="15 18 9 12 15 6" />
++              </svg>
++            </button>
+             <span>{selectedYear}</span>
+-            <button onClick={() => changeYear(1)}>›</button>
++            <button onClick={() => changeYear(1)}>
++              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
++                <polyline points="9 18 15 12 9 6" />
++              </svg>
++            </button>
+           </div>
+ 
+           <div className={styles.monthGrid}>
+diff --git a/src/app/proposals-inbox/page.tsx b/src/app/proposals-inbox/page.tsx
+deleted file mode 100644
+index fdaed31..0000000
+--- a/src/app/proposals-inbox/page.tsx
++++ /dev/null
+@@ -1,56 +0,0 @@
+-"use client";
+-
+-import React, { useEffect, useState } from "react";
+-import { ShoppingCart } from "lucide-react";
+-
+-export default function ProposalsInboxPage() {
+-  const [proposals, setProposals] = useState<any[]>([]);
+-  const [loading, setLoading] = useState(true);
+-  const [error, setError] = useState<string | null>(null);
+-
+-  useEffect(() => {
+-    const userStr = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
+-    if (!userStr) {
+-      setError("User not found");
+-      setLoading(false);
+-      return;
+-    }
+-    const user = JSON.parse(userStr);
+-    fetch(`/api/company-requests?userId=${user._id}`)
+-      .then(res => res.json())
+-      .then(data => {
+-        setProposals(Array.isArray(data) ? data : []);
+-        setLoading(false);
+-      })
+-      .catch(() => {
+-        setError("Failed to fetch proposals");
+-        setLoading(false);
+-      });
+-  }, []);
+-
+-  if (loading) return <div style={{textAlign:'center',marginTop:80}}>Loading proposals...</div>;
+-  if (error) return <div style={{textAlign:'center',marginTop:80,color:'#d33'}}>{error}</div>;
+-
+-  return (
+-    <div style={{maxWidth:600,margin:'60px auto',background:'#fff',borderRadius:16,padding:32,boxShadow:'0 2px 12px #eee'}}>
+-      <h2 style={{display:'flex',alignItems:'center',gap:10,fontSize:28,fontWeight:700,marginBottom:24}}>
+-        <ShoppingCart size={32} color="#2e7d32" /> Proposals Inbox
+-      </h2>
+-      {proposals.length === 0 ? (
+-        <div style={{textAlign:'center',color:'#888'}}>No proposals received yet.</div>
+-      ) : (
+-        <ul style={{listStyle:'none',padding:0}}>
+-          {proposals.map((p) => (
+-            <li key={p._id} style={{borderBottom:'1px solid #eee',padding:'18px 0'}}>
+-              <div style={{fontWeight:600,fontSize:18}}>{p.productName}</div>
+-              <div style={{color:'#555',margin:'6px 0'}}>{p.description}</div>
+-              <div style={{color:'#2e7d32',fontWeight:500}}>Price: {p.price} ₪</div>
+-              <div style={{fontSize:13,color:'#888'}}>Status: {p.status}</div>
+-              <div style={{fontSize:12,color:'#aaa'}}>Received: {p.createdAt ? new Date(p.createdAt).toLocaleString() : ''}</div>
+-            </li>
+-          ))}
+-        </ul>
+-      )}
+-    </div>
+-  );
+-}
+diff --git a/src/app/signIn/SignIn.module.css b/src/app/signIn/SignIn.module.css
+index c18430d..d7193d9 100644
+--- a/src/app/signIn/SignIn.module.css
++++ b/src/app/signIn/SignIn.module.css
+@@ -1,244 +1,144 @@
++/* ==== PAGE BG ==== */
+ .container {
++  height: 100vh;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+-  height: 100vh;
+-  background-color: #ffffff;
+-  font-family: "Segoe UI", Arial, sans-serif;
++  background: #f7f9fb;
++  font-family: "Inter", sans-serif;
+ }
+ 
++/* ==== CARD ==== */
+ .formWrapper {
+-  text-align: center;
+-  background: #fffdf9;
+-  padding: 40px 60px;
+-  border-radius: 8px;
+-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   width: 360px;
++  background: #ffffff;
++  padding: 48px 50px; /* מרווח כללי משופר */
++  border-radius: 12px;
++  border: 1px solid #e6e6e6;
++  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
++  text-align: center;
++  animation: fadeIn .25s ease-out;
++}
++
++@keyframes fadeIn {
++  from { opacity: 0; transform: translateY(8px); }
++  to   { opacity: 1; transform: translateY(0); }
+ }
+ 
++/* ==== TITLE ==== */
+ .logo {
+-  color: #3b6e3b;
+-  font-weight: 600;
++  font-size: 22px;
++  font-weight: 700;
++  color: #2a783f;
++  margin-bottom: 6px;
+ }
+ 
++.logo span {
++  color: #3f7a3f;
++}
++
++/* ==== SUBTITLE ==== */
++.subtitle {
++  font-size: 14px;
++  color: #555;
++  margin-bottom: 28px; /* ריווח משופר */
++}
++
++/* ==== INPUTS ==== */
+ .form {
+   display: flex;
+   flex-direction: column;
+-  gap: 12px;
+-  margin-top: 20px;
++  gap: 10px; /* ריווח בין כל אינפוט */
++  margin-top: 22px;
+ }
+ 
+ .inputField {
+-  padding: 10px;
+-  border: 1px solid #ccc;
+-  border-radius: 6px;
++  width: 100%;
++  padding: 12px 14px;
++  border-radius: 8px;
++  border: 1px solid #dcdcdc;
++  background: #fafafa;
+   font-size: 14px;
+-  outline: none;
++  transition: 0.2s;
+ }
+ 
+ .inputField:focus {
+-  border-color: #3b6e3b;
++  border-color: #3f7a3f;
++  background: #fff;
++  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
++  outline: none;
+ }
+ 
++/* ==== BUTTON ==== */
+ .signInButton {
+-  background-color: #3b6e3b;
+-  color: white;
+-  padding: 10px;
++  width: 100%;
++  margin-top: 14px;
++  margin-bottom: 16px; /* רווח מלמטה */
++  padding: 12px;
++  border-radius: 8px;
+   border: none;
+-  border-radius: 6px;
+-  cursor: pointer;
++  font-size: 15px;
+   font-weight: 600;
+-  margin-top: 5px;
++  cursor: pointer;
++  color: white;
++  background: #3f7a3f;
++  transition: .2s;
+ }
+ 
+ .signInButton:hover {
+-  background-color: #2e5b2e;
++  background: #366a36;
++}
++
++/* ==== CONSENT ==== */
++.consentText {
++  font-size: 10px;
++  color: #888;
++  margin-top: 2px;
++  margin-bottom: 1px; /* רווח לפני המפריד */
++  line-height: 1.3;
+ }
+ 
++/* ==== DIVIDER ==== */
+ .divider {
+-  margin: 20px 0;
+-  color: gray;
+-  font-size: 14px;
++  color: #777;
++  font-size: 13px;
+   display: flex;
+   align-items: center;
+-  text-align: center;
++  gap: 12px;
++  margin: 26px 0 22px; /* ריווחים חזקים */
+ }
+ 
+ .divider::before,
+ .divider::after {
+   content: "";
+   flex: 1;
+-  border-bottom: 1px solid #ddd;
+-}
+-
+-.divider:not(:empty)::before {
+-  margin-right: 0.75em;
+-}
+-
+-.divider:not(:empty)::after {
+-  margin-left: 0.75em;
+-}
+-
+-.authButtons {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 10px;
++  height: 1px;
++  background: #e3e3e3;
+ }
+ 
++/* ==== GOOGLE BUTTON ==== */
+ .providerBtn {
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 8px;
+-  padding: 10px;
+-  width: 100%;
+-  border-radius: 6px;
+-  border: 1px solid #ddd;
+-  background-color: #fff;
+-  cursor: pointer;
+-  transition: background 0.2s ease;
+-}
+-
+-.providerBtn:hover {
+-  background-color: #f3f3f3;
+-}
+-
+-.icon {
+-  width: 18px;
+-  height: 18px;
+-}
+-    
+-.googleBtn, .facebookBtn, .githubBtn {
+-  background-color: #fff8eb;
+-}
+-
+-.roleModal {
+-  position: fixed;
+-  top: 0;
+-  left: 0;
+   width: 100%;
+-  height: 100%;
+-  background: rgba(0, 0, 0, 0.5);
++  border: 1px solid #dcdcdc;
++  background: #fff;
++  padding: 12px;
++  border-radius: 8px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+-  z-index: 999;
+-}
+-
+-.roleBox {
+-  background: white;
+-  padding: 30px;
+-  border-radius: 10px;
+-  text-align: center;
+-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+-}
+-
+-.roleButtons {
+-  margin-top: 15px;
+-  display: flex;
+-  justify-content: center;
+   gap: 10px;
+-}
+-
+-.roleButtons button {
+-  background-color: #3b6e3b;
+-  color: white;
+-  border: none;
+-  border-radius: 6px;
+-  padding: 10px 20px;
++  font-size: 14px;
++  font-weight: 500;
+   cursor: pointer;
+   transition: 0.2s;
++  margin-top: 6px; /* ריווח מהקו */
+ }
+ 
+-.roleButtons button:hover {
+-  background-color: #2e5b2e;
+-}
+-
+-/* Toast */
+-.toast {
+-  position: fixed;
+-  top: 20px;
+-  left: 50%;
+-  transform: translateX(-50%);
+-  background: #2ecc71;
+-  color: white;
+-  padding: 10px 18px;
+-  border-radius: 8px;
+-  font-weight: 600;
+-  z-index: 9999;
+-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+-  animation: fadeInOut 2s ease forwards;
+-}
+-
+-@keyframes fadeInOut {
+-  0% { opacity: 0; transform: translate(-50%, -10px); }
+-  10% { opacity: 1; transform: translate(-50%, 0); }
+-  90% { opacity: 1; }
+-  100% { opacity: 0; transform: translate(-50%, -10px); }
+-}
+-
+-/* Modal general */
+-.modalOverlay {
+-  position: fixed;
+-  inset: 0;
+-  background: rgba(0,0,0,0.4);
+-  backdrop-filter: blur(4px);
+-  display: flex;
+-  justify-content: center;
+-  align-items: center;
+-  z-index: 99999;
+-}
+-
+-.modalBox {
+-  background: #fff;
+-  padding: 24px;
+-  width: 330px;
+-  border-radius: 14px;
+-  text-align: center;
+-  animation: popIn .25s ease;
+-}
+-
+-@keyframes popIn {
+-  from { transform: scale(.8); opacity: 0; }
+-  to { transform: scale(1); opacity: 1; }
+-}
+-
+-.modalButtons {
+-  display: flex;
+-  gap: 12px;
+-  margin-top: 18px;
+-  justify-content: center;
+-}
+-
+-.modalButtons button {
+-  padding: 8px 14px;
+-  border-radius: 8px;
+-  border: none;
+-  cursor: pointer;
+-  font-weight: 600;
+-}
+-
+-.acceptBtn {
+-  background: #2ecc71;
+-  color: white;
+-}
+-
+-.declineBtn {
+-  background: #eee;
+-  color: #333;
+-}
+-
+-.modalDesc {
+-  font-size: 14px;
+-  color: #555;
+-  margin-top: 8px;
++.providerBtn:hover {
++  background: #f5f5f5;
+ }
+ 
+-.consentText {
+-  font-size: 9px;
+-  color: #727272;
+-  margin-top: 3px;
+-  text-align: left;
+-  line-height: 1.4;
++.icon {
++  width: 18px;
++  height: 18px;
+ }
+-
+diff --git a/src/app/signUp/SignUp.module.css b/src/app/signUp/SignUp.module.css
+index 919aa92..8b76d5e 100644
+--- a/src/app/signUp/SignUp.module.css
++++ b/src/app/signUp/SignUp.module.css
+@@ -1,50 +1,74 @@
++/* ==== PAGE BG ==== */
+ .container {
++  min-height: 100vh;              /* פותר את הדבק למעלה + למטה */
++  width: 100%;
+   display: flex;
+   justify-content: center;
+-  align-items: center;
+-  height: 100vh;
+-  background-color: #ffffff;
+-  font-family: "Segoe UI", Arial, sans-serif;
++  align-items: flex-start;        /* לא דבוק למרכז לגמרי */
++  padding-top: 60px;              /* מרווח מהעליון */
++  padding-bottom: 60px;           /* מרווח מהתחתון */
++  background: #f7f9fb;            /* רקע אחיד */
++  font-family: "Inter", sans-serif;
++  box-sizing: border-box;         /* חשוב למניעת גלילה מוזרה */
+ }
+ 
++
++
++/* ==== CARD ==== */
+ .formWrapper {
++  width: 380px;
++  background: #ffffff;
++  padding: 48px 50px;
++  border-radius: 12px;
++  border: 1px solid #e6e6e6;
++  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+   text-align: center;
+-  background: #fffdf9;
+-  padding: 40px 60px;
+-  border-radius: 8px;
+-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+-  width: 360px;
++  animation: fadeIn .25s ease-out;
+ }
+ 
++@keyframes fadeIn {
++  from { opacity: 0; transform: translateY(8px); }
++  to   { opacity: 1; transform: translateY(0); }
++}
++
++/* ==== TITLE ==== */
+ .logo {
+-  color: #3b6e3b;
+-  font-weight: 600;
++  font-size: 22px;
++  font-weight: 700;
++  color: #2a783f;
++  margin-bottom: 6px;
+ }
+ 
+-/* כפתורי הרשמה חברתית */
++.logo span {
++  color: #3f7a3f;
++}
++
++/* ==== SOCIAL AUTH BUTTONS ==== */
+ .authButtons {
+   display: flex;
+   flex-direction: column;
+-  gap: 10px;
+-  margin-top: 15px;
++  gap: 12px;
++  margin-top: 6px;
+ }
+ 
+ .providerBtn {
++  width: 100%;
++  padding: 12px;
++  border-radius: 8px;
++  border: 1px solid #dcdcdc;
++  background: #fff;
+   display: flex;
+-  align-items: center;
+   justify-content: center;
+-  gap: 8px;
+-  padding: 10px;
+-  width: 100%;
+-  border-radius: 6px;
+-  border: 1px solid #ddd;
+-  background-color: #fff8eb;
++  align-items: center;
++  gap: 10px;
++  font-size: 14px;
++  font-weight: 500;
+   cursor: pointer;
+-  transition: background 0.2s ease;
++  transition: 0.2s;
+ }
+ 
+ .providerBtn:hover {
+-  background-color: #f3f3f3;
++  background: #f5f5f5;
+ }
+ 
+ .icon {
+@@ -52,57 +76,30 @@
+   height: 18px;
+ }
+ 
+-/* קו מפריד */
++/* ==== DIVIDER ==== */
+ .divider {
+-  margin: 20px 0;
+-  color: gray;
+-  font-size: 14px;
++  color: #777;
++  font-size: 13px;
+   display: flex;
+   align-items: center;
+-  text-align: center;
++  gap: 12px;
++  margin: 28px 0 22px;
+ }
+ 
+ .divider::before,
+ .divider::after {
+   content: "";
+   flex: 1;
+-  border-bottom: 1px solid #ddd;
+-}
+-
+-.divider:not(:empty)::before {
+-  margin-right: 0.75em;
+-}
+-
+-.divider:not(:empty)::after {
+-  margin-left: 0.75em;
+-}
+-
+-/* טופס הרשמה */
+-.form {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 12px;
+-  margin-top: 10px;
+-}
+-
+-.inputField {
+-  padding: 10px;
+-  border: 1px solid #ccc;
+-  border-radius: 6px;
+-  font-size: 14px;
+-  outline: none;
+-}
+-
+-.inputField:focus {
+-  border-color: #3b6e3b;
++  height: 1px;
++  background: #e3e3e3;
+ }
+ 
++/* ==== PROFILE UPLOAD ==== */
+ .profileUpload {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+-  margin-bottom: 15px;
+-  position: relative;
++  margin-bottom: 16px;
+ }
+ 
+ .profileImageContainer {
+@@ -111,14 +108,15 @@
+   height: 100px;
+   border-radius: 50%;
+   overflow: hidden;
+-  border: 2px solid #3b6e3b;
++  border: 2px solid #3f7a3f;
+   cursor: pointer;
+-  transition: transform 0.2s ease, box-shadow 0.2s ease;
++  transition: 0.2s ease;
++  background: #f2f2f2;
+ }
+ 
+ .profileImageContainer:hover {
+-  transform: scale(1.05);
+-  box-shadow: 0 0 10px rgba(59, 110, 59, 0.3);
++  transform: scale(1.03);
++  box-shadow: 0 0 10px rgba(63,122,63,0.3);
+ }
+ 
+ .profileImage {
+@@ -130,79 +128,92 @@
+ .placeholder {
+   width: 100%;
+   height: 100%;
+-  background: #f2f2f2;
+   display: flex;
+-  justify-content: center;
+   align-items: center;
+-  font-size: 28px;
++  justify-content: center;
+   color: #999;
++  font-size: 28px;
+ }
+ 
+ .overlay {
+   position: absolute;
+   bottom: 0;
+   width: 100%;
+-  height: 30%;
+-  background: rgba(59, 110, 59, 0.8);
++  height: 28%;
++  background: rgba(63,122,63,0.85);
+   color: white;
+   font-size: 12px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   opacity: 0;
+-  transition: opacity 0.3s ease;
++  transition: opacity .25s ease;
+ }
+ 
+ .profileImageContainer:hover .overlay {
+   opacity: 1;
+ }
+ 
+-.changeText {
+-  font-weight: 500;
+-  letter-spacing: 0.5px;
+-}
+-
+ .hiddenInput {
+   display: none;
+ }
+ 
+-/* בחירת תפקיד */
++/* ==== FORM INPUTS ==== */
++.form {
++  display: flex;
++  flex-direction: column;
++  gap: 18px;
++  margin-top: 22px;
++}
++
++.inputField,
+ .roleSelect {
+-  padding: 10px;
+-  border: 1px solid #ccc;
+-  border-radius: 6px;
++  width: 100%;
++  padding: 12px 14px;
++  border-radius: 8px;
++  border: 1px solid #dcdcdc;
++  background: #fafafa;
+   font-size: 14px;
+-  outline: none;
++  transition: 0.2s;
+ }
+ 
++.inputField:focus,
+ .roleSelect:focus {
+-  border-color: #3b6e3b;
++  border-color: #3f7a3f;
++  background: #fff;
++  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
++  outline: none;
+ }
+ 
+-/* כפתור הרשמה */
++/* ==== SIGNUP BUTTON ==== */
+ .signInButton {
+-  background-color: #3b6e3b;
+-  color: white;
+-  padding: 10px;
++  width: 100%;
++  margin-top: 8px;
++  padding: 12px;
++  border-radius: 8px;
+   border: none;
+-  border-radius: 6px;
+-  cursor: pointer;
++  font-size: 15px;
+   font-weight: 600;
+-  margin-top: 5px;
++  cursor: pointer;
++  color: white;
++  background: #3f7a3f;
++  transition: .2s;
+ }
+ 
+ .signInButton:hover {
+-  background-color: #2e5b2e;
++  background: #366a36;
+ }
+ 
++/* ==== CONSENT ==== */
+ .consentText {
+-  font-size: 9px;
+-  color: #727272;
+-  margin-top: 14px;
++  font-size: 10px;
++  color: #888;
++  margin-top: 4px;
+   text-align: left;
+-  line-height: 1.4;
++  line-height: 1.3;
+ }
+ 
++/* ==== MODAL ==== */
+ .modalOverlay {
+   position: fixed;
+   inset: 0;
+@@ -225,7 +236,6 @@
+ .modalButtons {
+   margin-top: 18px;
+   display: flex;
+-  justify-content: space-between;
+   gap: 12px;
+ }
+ 
+@@ -249,9 +259,177 @@
+   cursor: pointer;
+ }
+ 
+-.consentText {
+-  font-size: 9px;
++
++/* ==== FILE UPLOAD PROFESSIONAL FIELD ==== */
++
++.uploadWrapper {
++  width: 100%;
+   text-align: left;
+-  margin-top: 3px;
+-  color: #727272;
++  margin-bottom: 20px;
++}
++
++.uploadLabel {
++  font-size: 14px;
++  font-weight: 500;
++  color: #333;
++  margin-bottom: 6px;
++  display: block;
++}
++
++.uploadField {
++  width: 100%;
++  padding: 12px 14px;
++  border: 1px solid #dcdcdc;
++  background: #fafafa;
++  border-radius: 8px;
++  font-size: 14px;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  cursor: pointer;
++  transition: .2s;
++}
++
++.uploadField:hover {
++  border-color: #3f7a3f;
++  background: #f3f8f3;
++}
++
++.uploadField span {
++  color: #555;
++  font-size: 14px;
++}
++
++.uploadField button {
++  padding: 6px 12px;
++  border: none;
++  background: #3f7a3f;
++  color: white;
++  border-radius: 6px;
++  cursor: pointer;
++  font-size: 13px;
++  font-weight: 500;
++  transition: .2s;
++}
++
++.uploadField button:hover {
++  background: #356b35;
++}
++
++.thumbPreview {
++  margin-top: 10px;
++  width: 70px;
++  height: 70px;
++  border-radius: 6px;
++  object-fit: cover;
++  border: 1px solid #dcdcdc;
++}
++
++.hiddenInput {
++  display: none;
++}
++
++/* ==== FILE INPUT FIELD (Like regular input) ==== */
++
++.inputFileRow {
++  width: 100%;
++  padding: 12px 14px;
++  border-radius: 8px;
++  border: 1px solid #dcdcdc;
++  background: #fafafa;
++  font-size: 14px;
++  transition: 0.2s;
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  cursor: pointer;
++}
++
++.inputFileRow:hover {
++  border-color: #3f7a3f;
++  background: #fff;
++  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
++}
++
++.fileIcon {
++  font-size: 18px;
++  opacity: 0.85;
++}
++
++.fileText {
++  color: #555;
++  font-size: 14px;
++}
++
++.hiddenInput {
++  display: none;
++}
++
++/* Thumbnail image */
++.thumbPreview {
++  margin-top: 8px;
++  width: 70px;
++  height: 70px;
++  border-radius: 6px;
++  object-fit: cover;
++  border: 1px solid #dcdcdc;
++}
++
++/* ==== FILE ROW (regular field) ==== */
++.fileRow {
++  width: 100%;
++  height: 50px;
++  padding: 12px 14px;
++  border-radius: 8px;
++  border: 1px solid #dcdcdc;
++  background: #fafafa;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  transition: 0.2s;
++}
++
++.fileRow:hover {
++  border-color: #3f7a3f;
++  background: #fff;
++  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
++}
++
++.fileText {
++  font-size: 14px;
++  color: #555;
++}
++
++/* ==== ICON BUTTON (ONLY THE ICON IS CLICKABLE) ==== */
++.iconButton {
++  background: none;
++  border: none;
++  padding: 6px;
++  cursor: pointer;
++  border-radius: 6px;
++  transition: 0.2s;
++}
++
++.iconButton:hover {
++  background: rgba(63,122,63,0.10);
++}
++
++.uploadIcon {
++  width: 15px;
++  height: 15px;
++}
++
++/* Hidden input */
++.hiddenInput {
++  display: none;
++}
++
++/* Preview thumbnail */
++.thumbPreview {
++  margin-top: 10px;
++  width: 70px;
++  height: 70px;
++  border-radius: 8px;
++  object-fit: cover;
++  border: 1px solid #ddd;
+ }
+diff --git a/src/app/signUp/SignUpForm.tsx b/src/app/signUp/SignUpForm.tsx
+index 368ce9f..055c085 100644
+--- a/src/app/signUp/SignUpForm.tsx
++++ b/src/app/signUp/SignUpForm.tsx
+@@ -193,20 +193,20 @@ export default function SignUpForm() {
+       {toast && <Toast text={toast} />}
+ 
+       <form className={styles.form} onSubmit={handleSubmit}>
+-
+-        <div className={styles.profileUpload}>
+-          <div className={styles.profileImageContainer} onClick={handleProfileClick}>
+-            {photoPreview ? (
+-              <img src={photoPreview} alt="Profile" className={styles.profileImage} />
+-            ) : (
+-              <div className={styles.placeholder}>
+-                <span className={styles.cameraIcon}>📷</span>
+-              </div>
+-            )}
+-            <div className={styles.overlay}>
+-              <span className={styles.changeText}>Change</span>
+-            </div>
+-          </div>
++        {/* ==== NEW IMAGE UPLOAD FIELD ==== */}
++        {/* ==== NEW IMAGE UPLOAD FIELD (ICON ONLY CLICKABLE) ==== */}
++        <div className={styles.fileRow}>
++          <span className={styles.fileText}>
++            {photoPreview ? "Image selected" : "Upload profile image"}
++          </span>
++
++          <button
++            type="button"
++            className={styles.iconButton}
++            onClick={() => fileInputRef.current?.click()}
++          >
++            <img src="/images/upload.png" alt="upload" className={styles.uploadIcon} />
++          </button>
+ 
+           <input
+             type="file"
+@@ -217,6 +217,12 @@ export default function SignUpForm() {
+           />
+         </div>
+ 
++        {photoPreview && (
++          <img src={photoPreview} alt="Preview" className={styles.thumbPreview} />
++        )}
++
++
++
+         <input
+           type="text"
+           placeholder="Full Name"
+diff --git a/src/app/social-sharing/SocialSharing.module.css b/src/app/social-sharing/SocialSharing.module.css
+index 54eb67d..b35fa61 100644
+--- a/src/app/social-sharing/SocialSharing.module.css
++++ b/src/app/social-sharing/SocialSharing.module.css
+@@ -1,569 +1,697 @@
+- 
++/* ==================== PAGE ==================== */
+ .page {
+-    min-height: 100vh;
+-    background: linear-gradient(135deg, #f6fdf8 0%, #ffffff 40%, #f4f8ff 100%);
+-    padding-top: 20px;
++  min-height: 100vh;
++  background: #f0f2f5;
++  padding-top: 0;
+ }
+ 
+-
+ .container {
+-    max-width: 1200px;
+-    margin: 0 auto;
+-    padding: 32px 16px;
+-    display: grid;
+-    grid-template-columns: 26% 46% 28%;
+-    gap: 24px;
+-    box-sizing: border-box;
++  max-width: 1400px;
++  margin: 0 auto;
++  padding: 32px 24px;
++  display: grid;
++  grid-template-columns: 300px 1fr 360px;
++  gap: 40px;
++  padding-top: 120px;
++  align-items: flex-start;
+ }
+ 
+-
+ .columnTitle {
+-    font-size: 20px;
+-    font-weight: 700;
+-    margin-bottom: 16px;
+-    color: #1f2933;
+-}
+-
+-
+-@keyframes saverFadeUp {
+-    from {
+-        opacity: 0;
+-        transform: translateY(10px);
+-    }
+-
+-    to {
+-        opacity: 1;
+-        transform: translateY(0);
+-    }
+-}
+-
+-@keyframes cardPop {
+-    from {
+-        opacity: 0;
+-        transform: translateY(6px) scale(0.98);
+-    }
+-
+-    to {
+-        opacity: 1;
+-        transform: translateY(0) scale(1);
+-    }
++  font-size: 18px;
++  font-weight: 700;
++  margin-bottom: 16px;
++  color: #050505;
++  letter-spacing: -0.3px;
+ }
+ 
+-@keyframes typingBlink {
+-
+-    0%,
+-    80%,
+-    100% {
+-        opacity: 0.25;
+-        transform: translateY(0);
+-    }
+-
+-    40% {
+-        opacity: 1;
+-        transform: translateY(-2px);
+-    }
+-}
+-
+-
++/* ==================== LEFT COLUMN ==================== */
+ .leftColumn {
+-    background: rgba(255, 255, 255, 0.75);
+-    backdrop-filter: blur(8px);
+-    border: 1px solid rgba(200, 220, 200, 0.35);
+-    border-radius: 22px;
+-    padding: 20px;
+-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
++  position: sticky;
++  top: 100px;
++  height: fit-content;
+ }
+ 
+ .saversList {
+-    list-style: none;
+-    padding: 0;
+-    margin: 0;
++  list-style: none;
++  padding: 0;
++  margin: 0;
++  display: flex;
++  flex-direction: column;
++  gap: 10px;
+ }
+ 
+ .saverItem {
+-    display: flex;
+-    align-items: center;
+-    gap: 10px;
+-    padding: 8px 0;
+-    opacity: 0;
+-    animation: saverFadeUp 0.45s ease forwards;
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  padding: 12px 10px;
++  border-radius: 10px;
++  transition: background-color 0.15s ease;
++  cursor: pointer;
+ }
+ 
+-.rankBadge {
+-    width: 30px;
+-    height: 30px;
+-    border-radius: 999px;
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
+-    font-weight: 700;
+-    font-size: 14px;
+-    color: #4b3412;
+-    background: linear-gradient(135deg, #ffd666, #ffb347);
++.saverItem:hover {
++  background-color: #f2f3f5;
+ }
+ 
+-.rankBadge.gold {
+-    background: linear-gradient(135deg, #ffcf33, #e6ac00);
+-    color: #553800;
+-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
++.rankBadge {
++  width: 28px;
++  height: 28px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  border-radius: 50%;
++  font-weight: 700;
++  font-size: 13px;
++  flex-shrink: 0;
+ }
+ 
+-.rankBadge.silver {
+-    background: linear-gradient(135deg, #dcdcdc, #bfbfbf);
+-    color: #4a4a4a;
+-    box-shadow: 0 0 6px rgba(200, 200, 200, 0.5);
++.rank1 {
++  background: linear-gradient(135deg, #ffd700, #ffed4e);
++  color: #000;
++  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+ }
+ 
+-.rankBadge.bronze {
+-    background: linear-gradient(135deg, #d9a066, #b8742a);
+-    color: #4a2b00;
+-    box-shadow: 0 0 6px rgba(180, 120, 60, 0.5);
++.rank2 {
++  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
++  color: #000;
++  box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+ }
+ 
++.rank3 {
++  background: linear-gradient(135deg, #cd7f32, #e8a87c);
++  color: #fff;
++  box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
++}
+ 
+-.saverAvatar {
+-    width: 40px;
+-    height: 40px;
+-    border-radius: 999px;
+-    object-fit: cover;
+-    border: 2px solid #cfead3;
++.rankOther {
++  background: #e4e6eb;
++  color: #65676b;
+ }
+ 
+-.saverInfo {
+-    display: flex;
+-    flex-direction: column;
++.saverAvatar {
++  width: 40px;
++  height: 40px;
++  border-radius: 50%;
++  object-fit: cover;
++  border: 2px solid #fff;
++  flex-shrink: 0;
+ }
+ 
+ .saverName {
+-    font-size: 14px;
+-    font-weight: 600;
+-    color: #1f2933;
++  font-size: 14px;
++  font-weight: 600;
++  color: #050505;
++  line-height: 1.3;
+ }
+ 
+ .saverSaving {
+-    font-size: 12px;
+-    color: #6b7b8c;
++  font-size: 12px;
++  color: #65676b;
++  line-height: 1.3;
+ }
+ 
+-.saverAvatar,
+-.postAvatar,
+-.chatAvatar,
+-.createAvatar {
+-    border: 2px solid rgba(255, 255, 255, 0.6);
+-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
++.card {
++  background: #ffffff;
++  border-radius: 12px;
++  padding: 20px;
++  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+ }
+ 
+-
+-
++/* ==================== CENTER COLUMN ==================== */
+ .centerColumn {
+-    background: rgba(255, 255, 255, 0.96);
+-    border-radius: 22px;
+-    padding: 20px;
+-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+-    border: 1px solid rgba(224, 232, 245, 0.95);
+-    display: flex;
+-    flex-direction: column;
+-    gap: 16px;
+-    backdrop-filter: blur(14px);
++  display: flex;
++  flex-direction: column;
++  gap: 20px;
++  min-height: 600px;
+ }
+ 
+-
+ .createPostCard {
+-    border-radius: 18px;
+-    background: #f5f7fb;
+-    border: 1px solid #dde6f2;
+-    padding: 12px 16px;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 10px;
+-    animation: cardPop 0.2s ease-out;
+-    backdrop-filter: blur(14px);
++  background: #ffffff;
++  border-radius: 12px;
++  padding: 20px;
++  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
++  margin-top: -19px;
+ }
+ 
++/* יצירת פוסט */
+ .createPostTop {
+-    display: flex;
+-    gap: 10px;
+-    align-items: center;
++  display: flex;
++  gap: 8px;
++  align-items: flex-start;
+ }
+ 
+ .createAvatar {
+-    width: 40px;
+-    height: 40px;
+-    border-radius: 999px;
+-    object-fit: cover;
++  width: 40px;
++  height: 40px;
++  border-radius: 50%;
++  object-fit: cover;
++  flex-shrink: 0;
++}
++
++/* קונטיינר של הטקסט+כפתורים */
++.postInputWrapper {
++  flex: 1;
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  background: #f0f2f5;
++  border-radius: 24px;
++  padding: 8px 14px;
++  position: relative;
+ }
+ 
+ .postTextarea {
+-    flex: 1;
+-    resize: none;
+-    border-radius: 999px;
+-    border: 1px solid #ccd6e6;
+-    padding: 10px 14px;
+-    font-size: 14px;
+-    min-height: 44px;
+-    background: #ffffff;
++  flex: 1;
++  border: none;
++  background: transparent !important;
++  resize: none;
++  font-size: 15px;
++  line-height: 1.4;
++  padding: 0;
++  min-height: 32px;
++}
++
++.postTextarea:focus {
++  outline: none;
+ }
+ 
++
+ .postTextarea::placeholder {
+-    color: #9ca7b8;
++  color: #65676b;
+ }
+ 
+-.postTextarea:focus {
+-    outline: none;
+-    border-color: #3b8f5a;
+-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
++/* שורת כפתורים ליד יצירת פוסט */
++.postActionsRow {
++  display: flex;
++  gap: 8px;
++  margin-top: 8px;
++  padding-left: 4px;
+ }
+ 
+-.createPostBottom {
+-    display: flex;
+-    justify-content: flex-end;
+-    margin-top: 6px;
++.emojiBtn,
++.imageUploadBtn {
++  width: 34px;
++  height: 34px;
++  background: #ffffff;
++  border-radius: 50%;
++  font-size: 20px;
++  border: none;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  cursor: pointer;
++  transition: 0.15s ease;
++  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
++}
++
++.emojiBtn:hover,
++.imageUploadBtn:hover {
++  transform: scale(1.08);
++  background: #f3f3f3;
+ }
+ 
+-.postButton {
+-    background: linear-gradient(135deg, #3b8f5a, #4fc77b);
+-    box-shadow: 0 4px 14px rgba(38, 148, 87, 0.25);
+-    transition: all 0.25s ease;
+-    border: none;
+-    border-radius: 999px;
+-    padding: 8px 20px;
+-    color: #ffffff;
+-    font-weight: 600;
+-    font-size: 14px;
+-    cursor: pointer;
++@keyframes fadeEmoji {
++  from { opacity: 0; transform: translateY(6px); }
++  to { opacity: 1; transform: translateY(0); }
+ }
+ 
+-.postButton:hover {
+-    filter: brightness(1.05);
+-    transform: translateY(-2px) scale(1.02);
+-    box-shadow: 0 6px 18px rgba(38, 148, 87, 0.3);
++/* תמונת תצוגה */
++.previewWrapper {
++  position: relative;
++  margin-top: 14px;
++  border-radius: 10px;
++  overflow: hidden;
++  background: #000;
+ }
+ 
++.previewImage {
++  width: 100%;
++  max-height: 400px;
++  object-fit: contain;
++}
+ 
+-.imageUploadBtn {
+-    border: none;
+-    background: transparent;
+-    font-size: 22px;
+-    cursor: pointer;
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
+-    color: #6b7b8c;
++.removeImageBtn {
++  position: absolute;
++  top: 8px;
++  right: 8px;
++  background: rgba(0,0,0,0.6);
++  border-radius: 50%;
++  width: 32px;
++  height: 32px;
++  border: none;
++  color: white;
++  cursor: pointer;
++  transition: background 0.2s ease;
+ }
+ 
+-.imageUploadBtn:hover {
+-    color: #3c7cff;
++.removeImageBtn:hover {
++  background: rgba(0,0,0,0.8);
+ }
+ 
++.postButton {
++  margin-top: 12px;
++  width: 100%;
++  background: #1877f2;
++  border: none;
++  border-radius: 8px;
++  padding: 12px;
++  color: #fff;
++  font-weight: 600;
++  font-size: 15px;
++  cursor: pointer;
++  transition: background 0.2s ease;
++}
+ 
+-.hiddenFile {
+-    display: none;
++.postButton:hover {
++  background: #166fe5;
+ }
+ 
+-.previewWrapper {
+-    position: relative;
+-    display: inline-block;
+-    width: 100%;
+-    margin-top: 6px;
++.postInputWrapper {
++  position: relative;
++  width: 100%;
+ }
+ 
+-.previewImage {
+-    width: 100%;
+-    max-height: 250px;
+-    border-radius: 14px;
+-    object-fit: cover;
+-    border: 1px solid #d9e3f7;
++.postIcons {
++  display: flex;
++  gap: 8px;
++  align-items: center;
+ }
+ 
+-.removeImageBtn {
+-    position: absolute;
+-    top: 8px;
+-    right: 8px;
+-    background: rgba(255, 77, 77, 0.95);
+-    border-radius: 50%;
+-    width: 26px;
+-    height: 26px;
+-    border: none;
+-    color: white;
+-    font-size: 16px;
+-    cursor: pointer;
++.hiddenFile {
++  display: none !important;
+ }
+ 
+ 
++/* ==================== POSTS ==================== */
++
+ .postsList {
+-    margin-top: 4px;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 12px;
++  display: flex;
++  flex-direction: column;
++  gap: 20px;
+ }
+ 
+ .postCard {
+-    border-radius: 18px;
+-    background: #ffffff;
+-    border: 1px solid #e4e6eb;
+-    padding: 14px 16px;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 8px;
+-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+-    animation: cardPop 0.18s ease-out;
+-    backdrop-filter: blur(14px);
++  background: #ffffff;
++  border-radius: 12px;
++  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
++  padding: 20px;
+ }
+ 
+ .postHeader {
+-    display: flex;
+-    align-items: center;
+-    gap: 10px;
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  margin-bottom: 14px;
+ }
+ 
+ .postAvatar {
+-    width: 44px;
+-    height: 44px;
+-    border-radius: 999px;
+-    object-fit: cover;
++  width: 40px;
++  height: 40px;
++  border-radius: 50%;
++  cursor: pointer;
++}
++
++/* טקסט פוסט */
++.postContent {
++  font-size: 15px;
++  margin-bottom: 14px;
++}
++
++/* תמונה */
++.postImageWrapper {
++  margin-bottom: 14px;
++  border-radius: 10px;
++  overflow: hidden;
++  background: #f0f2f5;
++}
++
++.postImage {
++  width: 100%;
++  object-fit: contain;
++}
++
++/* פעולות */
++.postActions {
++  display: flex;
++  justify-content: space-between;
++  padding-top: 12px;
++  margin-top: 8px;
++  border-top: 1px solid #e4e6eb;
++  gap: 8px;
+ }
+ 
++.postActions button {
++  flex: 1;
++  border: none;
++  background: transparent;
++  cursor: pointer;
++  color: #65676b;
++  font-size: 15px;
++  font-weight: 600;
++  padding: 8px;
++  border-radius: 6px;
++  transition: background 0.15s ease;
++}
++
++.postActions button:hover {
++  background: #f0f2f5;
++}
++
++/* לייק כחול */
++.likedBtn {
++  color: #1877f2 !important;
++}
++
++/* מידע על המשתמש (שם + תאריך) */
+ .postMeta {
+-    display: flex;
+-    flex-direction: column;
++  display: flex;
++  flex-direction: column;
++  gap: 2px;
+ }
+ 
+ .postUser {
+-    font-size: 15px;
+-    font-weight: 700;
+-    color: #1c1e21;
++  font-size: 15px;
++  font-weight: 600;
++  color: #050505;
++  line-height: 1.2;
++  margin-bottom: 2px;
+ }
+ 
+ .postTime {
+-    font-size: 12px;
+-    color: #65676b;
++  font-size: 13px;
++  color: #65676b;
++  line-height: 1.2;
++  margin-top: 2px;
+ }
+ 
+-.postContent {
+-    font-size: 14px;
+-    color: #222a35;
+-    margin-top: 4px;
+-    white-space: pre-wrap;
++
++/* ==================== COMMENTS SECTION ==================== */
++
++.commentsBox {
++  margin-top: 12px;
++  background: #f7f8fa;
++  border-radius: 12px;
++  padding: 14px;
++  border: 1px solid #e4e6eb;
+ }
+ 
+-.postImageWrapper {
+-    margin-top: 6px;
+-    border-radius: 14px;
+-    overflow: hidden;
+-    max-height: 280px;
++.commentsList {
++  display: flex;
++  flex-direction: column;
++  gap: 12px;
+ }
+ 
+-.postImage {
+-    width: 100%;
+-    height: 100%;
+-    object-fit: cover;
++.commentItem {
++  display: flex;
++  align-items: flex-start;
++  gap: 10px;
++  animation: cmtFade 0.15s ease-out;
+ }
+ 
+-.postActions {
+-    margin-top: 6px;
+-    display: flex;
+-    justify-content: space-around;
+-    padding-top: 6px;
+-    border-top: 1px solid #e4e6eb;
+-    font-size: 14px;
++@keyframes cmtFade {
++  from { opacity: 0; transform: translateY(6px); }
++  to { opacity: 1; transform: translateY(0); }
+ }
+ 
+-.postActions button {
+-    border: none;
+-    background: transparent;
+-    cursor: pointer;
+-    color: #65676b;
+-    display: flex;
+-    align-items: center;
+-    gap: 6px;
++.commentAvatar {
++  width: 32px;
++  height: 32px;
++  border-radius: 50%;
++  object-fit: cover;
+ }
+ 
+-.postActions button:hover {
+-    color: #1877f2;
++.commentUser {
++  font-size: 13px;
++  font-weight: 600;
++  margin-bottom: 4px;
++}
++
++.commentText {
++  background: white;
++  padding: 10px 14px;
++  border-radius: 14px;
++  font-size: 14px;
++  line-height: 1.4;
++  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
++  max-width: 85%;
++}
++
++.emptyComments {
++  text-align: center;
++  padding: 10px;
++  color: #999;
++  font-size: 14px;
++}
++
++/* כתיבת תגובה */
++.commentInputRow {
++  margin-top: 14px;
++  display: flex;
++  gap: 8px;
++  align-items: center;
++}
++
++.commentInput {
++  flex: 1;
++  border: none;
++  padding: 10px 14px;
++  border-radius: 20px;
++  background: #e9ebee;
++  font-size: 14px;
++}
++
++.commentInput:focus {
++  outline: none;
++  background: #dfe1e6;
++}
++
++.sendCommentBtn {
++  width: 34px;
++  height: 34px;
++  border-radius: 50%;
++  background: #1877f2;
++  color: white;
++  border: none;
++  cursor: pointer;
++  font-size: 16px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ }
+ 
++/* ==================== RIGHT COLUMN (CHAT) ==================== */
+ 
+ .rightColumn {
+-    background: rgba(255, 255, 255, 0.96);
+-    border-radius: 22px;
+-    padding: 16px;
+-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+-    border: 1px solid rgba(224, 232, 245, 0.95);
+-    display: flex;
+-    flex-direction: column;
+-    backdrop-filter: blur(14px);
++  position: sticky;
++  top: 100px;
++  height: fit-content;
+ }
+ 
+ .chatCard {
+-    margin-top: 4px;
+-    border-radius: 18px;
+-    background: #f4f8ff;
+-    border: 1px solid #d3e0f7;
+-    display: flex;
+-    flex-direction: column;
+-    height: 380px;
+-    overflow: hidden;
+-    backdrop-filter: blur(14px);
++  background: #fff;
++  border-radius: 12px;
++  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
++  display: flex;
++  flex-direction: column;
++  height: calc(100vh - 180px);
++  max-height: 700px;
++  overflow: hidden;
+ }
+ 
+ .messagesArea {
+-    flex: 1;
+-    padding: 10px 12px 6px;
+-    overflow-y: auto;
++  flex: 1;
++  padding: 20px 16px;
++  overflow-y: auto;
++  display: flex;
++  flex-direction: column;
++  gap: 14px;
+ }
+ 
+-
+ .messageRowOther,
+ .messageRowMe {
+-    display: flex;
+-    align-items: flex-end;
+-    margin-bottom: 10px;
++  display: flex;
++  gap: 8px;
++  align-items: flex-end;
++  animation: messageSlideIn 0.2s ease-out;
+ }
+ 
+-.messageRowOther {
+-    justify-content: flex-start;
+-    gap: 8px;
++@keyframes messageSlideIn {
++  from { opacity: 0; transform: translateY(10px); }
++  to { opacity: 1; transform: translateY(0); }
+ }
+ 
+ .messageRowMe {
+-    justify-content: flex-end;
+-    gap: 8px;
++  justify-content: flex-end;
+ }
+ 
+ .chatAvatar {
+-    width: 32px;
+-    height: 32px;
+-    border-radius: 999px;
+-    object-fit: cover;
++  width: 28px;
++  height: 28px;
++  border-radius: 50%;
+ }
+ 
++/* בועות צ'אט */
+ .messageBubbleOther,
+ .messageBubbleMe {
+-    max-width: 72%;
+-    padding: 8px 12px;
+-    font-size: 13px;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 3px;
+-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+-    animation: cardPop 0.18s ease-out;
++  max-width: 70%;
++  padding: 10px 14px;
++  border-radius: 18px;
++  font-size: 15px;
++  line-height: 1.4;
+ }
+ 
+ .messageBubbleOther {
+-    background: #ffffff;
+-    border-radius: 16px 16px 16px 4px;
+-    border: 1px solid #d6e0f2;
++  background: #e4e6eb;
++  color: #000;
+ }
+ 
+ .messageBubbleMe {
+-    background: linear-gradient(135deg, #c0e3ff, #d8f0ff);
+-    border-radius: 16px 16px 4px 16px;
+-    border: 1px solid #9ec8f2;
++  background: #0084ff;
++  color: #fff;
+ }
+ 
+ .messageName {
+-    font-size: 12px;
+-    font-weight: 600;
+-    color: #36506f;
+-}
+-
+-.messageText {
+-    font-size: 13px;
+-    color: #233044;
++  font-size: 11px;
++  font-weight: 600;
++  margin-bottom: 4px;
+ }
+ 
+ .messageTime {
+-    font-size: 10px;
+-    color: #7c8da4;
+-    align-self: flex-end;
++  margin-top: 4px;
++  font-size: 11px;
++  opacity: 0.7;
+ }
+ 
+ .typingIndicator {
+-    font-size: 11px;
+-    color: #6b7a92;
+-    font-style: italic;
+-    margin: 2px 6px 8px;
+-    display: flex;
+-    align-items: center;
+-    gap: 6px;
+-}
+-
+-.typingDots {
+-    display: flex;
+-    gap: 3px;
++  display: flex;
++  align-items: center;
++  gap: 8px;
+ }
+ 
+ .typingDots span {
+-    width: 4px;
+-    height: 4px;
+-    border-radius: 50%;
+-    background: #6b7a92;
+-    animation: typingBlink 1s infinite ease-in-out;
+-}
+-
+-.typingDots span:nth-child(2) {
+-    animation-delay: 0.2s;
++  width: 6px;
++  height: 6px;
++  background: #65676b;
++  border-radius: 50%;
++  animation: typingBounce 1s infinite;
+ }
+ 
+-.typingDots span:nth-child(3) {
+-    animation-delay: 0.4s;
++@keyframes typingBounce {
++  0%, 60%, 100% { opacity: 0.5; transform: translateY(0); }
++  30% { opacity: 1; transform: translateY(-6px); }
+ }
+ 
++/* שורת כתיבה בצ'אט */
+ .chatInputRow {
+-    border-top: 1px solid #d3e0f7;
+-    padding: 8px;
+-    display: flex;
+-    gap: 8px;
+-    align-items: center;
+-    background: #e9f0ff;
++  border-top: 1px solid #e4e6eb;
++  padding: 16px;
++  display: flex;
++  gap: 10px;
++  align-items: center;
++  background: #fff;
++  position: relative;
+ }
+ 
+ .chatInput {
+-    flex: 1;
+-    border-radius: 999px;
+-    border: 1px solid #c1d2f0;
+-    padding: 8px 14px;
+-    font-size: 13px;
+-    background: #ffffff;
++  flex: 1;
++  border: none;
++  padding: 8px 14px;
++  background: #f0f2f5;
++  border-radius: 20px;
++  font-size: 15px;
+ }
+ 
+ .chatInput:focus {
+-    outline: none;
+-    border-color: #82a8ff;
++  background: #e4e6eb;
+ }
+ 
+ .chatSendButton {
+-    width: 34px;
+-    height: 34px;
+-    border-radius: 999px;
+-    border: none;
+-    background: linear-gradient(135deg, #3c7cff, #5ea9ff);
+-    color: #fff;
+-    font-size: 16px;
+-    cursor: pointer;
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
++  width: 36px;
++  height: 36px;
++  border-radius: 50%;
++  background: #0084ff;
++  color: white;
++  border: none;
++  cursor: pointer;
++  font-size: 18px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
++/* רספונסיביות */
++@media (max-width: 1024px) {
++  .container { grid-template-columns: 1fr; }
++  .rightColumn, .leftColumn { position: static; }
+ }
+ 
++/* ====== CUSTOM SMALL EMOJI PICKER ====== */
+ 
+-.emptyText {
+-  font-size: 14px;
+-  text-align: center;
+-  padding: 20px;
+-  color: #8aa0b0;
+-  opacity: 0.7;
++/* ====== EMOJI PICKER לפוסט – מתחת לאייקון ====== */
++.emojiPickerPost {
++  position: absolute;
++  z-index: 9999;
++
++  top: 42px;        /* מתחת לשורת האייקונים */
++  right: 0;         /* צמוד לאייקון האמוג'י (שנמצא בצד ימין) */
++
++  transform: scale(0.75);
++  transform-origin: top right;
++
++  background: white;
++  border-radius: 12px;
++  overflow: hidden;
++  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
++}
++
++/* ====== EMOJI PICKER בצ'אט – כמו שעבד לך ====== */
++.emojiPickerChat {
++  position: absolute;
++  z-index: 9999;
++
++  bottom: 45px;
++  left: 0;
++
++  transform: scale(0.70);
++  transform-origin: bottom left;
++
++  background: white;
++  border-radius: 12px;
++  overflow: hidden;
++  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
++}
++
++/* החלק הפנימי (ספריית EmojiPickerReact) */
++.emojiPickerPost .EmojiPickerReact,
++.emojiPickerChat .EmojiPickerReact {
++  width: 250px !important;
++  max-height: 300px !important;
++  transform: scale(0.85);
++  transform-origin: top left;
++  overflow: hidden !important;
++}
++
++
++/* תיבת החיפוש */
++.EmojiPickerReact .epr-search-container {
++  transform: scale(0.9);
++  transform-origin: top left;
++}
++
++/* גריד האמוג'ים */
++.EmojiPickerReact .epr-emoji-category-content {
++  max-height: 180px !important;
++  overflow-y: auto !important;
++}
++
++/* גלילה צרה */
++.EmojiPickerReact ::-webkit-scrollbar {
++  width: 6px;
++}
++.EmojiPickerReact ::-webkit-scrollbar-thumb {
++  background: #ccc;
++  border-radius: 10px;
+ }
+ 
+ 
+-@media (max-width: 1024px) {
+-    .container {
+-        grid-template-columns: 1fr;
+-    }
+-
+-    .leftColumn,
+-    .centerColumn,
+-    .rightColumn {
+-        width: 100%;
+-    }
+-}
+\ No newline at end of file
+diff --git a/src/app/social-sharing/page.tsx b/src/app/social-sharing/page.tsx
+index 8609704..0dc6613 100644
+--- a/src/app/social-sharing/page.tsx
++++ b/src/app/social-sharing/page.tsx
+@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from "react";
+ import styles from "./SocialSharing.module.css";
+ import Header from "@/app/components/Header/Header";
+ import { io, Socket } from "socket.io-client";
++import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+ 
+-// ⭐ ייבוא כל השירותים בקובץ אחד
+ import {
+   getSavers,
+   getPosts,
+@@ -38,7 +38,8 @@ interface Post {
+   imageUrl?: string | null;
+   createdAt?: string;
+ 
+-  likes: number;
++  // יכול להיות או מספר (ישן) או מערך userIds (חדש)
++  likes: number | string[];
+   comments: CommentObj[];
+   shares: number;
+ }
+@@ -71,6 +72,14 @@ export default function SocialSharingPage() {
+ 
+   const [typingUser, setTypingUser] = useState<string | null>(null);
+ 
++  // 🎯 אמוג'י פוסט + צ'אט
++  const [showPostEmoji, setShowPostEmoji] = useState(false);
++  const [showChatEmoji, setShowChatEmoji] = useState(false);
++
++  // 💬 תגובות לפוסט
++  const [openCommentsPostId, setOpenCommentsPostId] = useState<string | null>(null);
++  const [commentText, setCommentText] = useState("");
++
+   const fileInputRef = useRef<HTMLInputElement | null>(null);
+   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+   const typingTimeoutRef = useRef<number | null>(null);
+@@ -102,36 +111,37 @@ export default function SocialSharingPage() {
+     setMessages(Array.isArray(data) ? data : []);
+   };
+ 
+-useEffect(() => {
+-  const socket = io("http://localhost:4000", {
+-    transports: ["websocket"],
+-  });
++  useEffect(() => {
++    const socket = io("http://localhost:4000", {
++      transports: ["websocket", "polling"],
++      autoConnect: true,
++    });
+ 
+-  socketRef.current = socket;
++    socketRef.current = socket;
+ 
+-  socket.on("connect", () => {
+-    console.log("🔌 Socket connected");
+-  });
++    socket.on("connect", () => {
++      console.log("🔌 Socket connected");
++    });
+ 
+-  socket.on("new_message", (msg) => {
+-    setMessages((prev) => [...prev, msg]);
+-  });
++    socket.on("new_message", (msg) => {
++      setMessages((prev) => [...prev, msg]);
++    });
+ 
+-  socket.on("typing", (data) => {
+-    setTypingUser(data.userName);
+-    setTimeout(() => setTypingUser(null), 2000);
+-  });
++    socket.on("typing", (data) => {
++      setTypingUser(data.userName);
++      setTimeout(() => setTypingUser(null), 2000);
++    });
+ 
+-  socket.on("disconnect", () => {
+-    console.log("❌ Socket disconnected");
+-  });
++    socket.on("disconnect", () => {
++      console.log("❌ Socket disconnected");
++    });
+ 
+-  return () => {
+-    socket.disconnect();
+-  };
+-}, []);
+- 
++    return () => {
++      socket.disconnect();
++    };
++  }, []);
+ 
++  // ⭐ יצירת פוסט
+   const handleCreatePost = async () => {
+     if (!currentUser) return;
+     if (!newPostText.trim() && !newPostImage) return;
+@@ -148,39 +158,65 @@ useEffect(() => {
+ 
+     setNewPostText("");
+     setNewPostImage(null);
++    setShowPostEmoji(false);
+   };
+ 
+-const likePost = async (id: string) => {
+-  const updated = await updatePost("like", { postId: id });
+-
+-  setPosts((prev) =>
+-    prev.map((p) => (p._id === updated._id ? updated : p))
+-  );
+-};
+-
++  // ⭐ לייק לפי משתמש אחד
++  const likePost = async (id: string) => {
++    if (!currentUser) return;
+ 
+-const commentPost = async (id: string, text: string) => {
+-  const updated = await updatePost("comment", {
+-    postId: id,
+-    comment: text,
+-    userName: currentUser?.name,
+-    userPhoto: currentUser?.photo,
+-  });
++    const updated = await updatePost("like", {
++      postId: id,
++      userId: currentUser._id,
++    });
+ 
+-  setPosts((prev) =>
+-    prev.map((p) => (p._id === updated._id ? updated : p))
+-  );
+-};
++    setPosts((prev) =>
++      prev.map((p) => (p._id === updated._id ? updated : p))
++    );
++  };
+ 
++  // ⭐ תגובה לפוסט
++  const commentPost = async (id: string, text: string) => {
++    if (!currentUser) return;
++    if (!text.trim()) return;
+ 
+-const sharePost = async (id: string) => {
+-  const updated = await updatePost("share", { postId: id });
++    const updated = await updatePost("comment", {
++      postId: id,
++      comment: text,
++      userName: currentUser?.name,
++      userPhoto: currentUser?.photo,
++    });
+ 
+-  setPosts((prev) =>
+-    prev.map((p) => (p._id === updated._id ? updated : p))
+-  );
+-};
++    setPosts((prev) =>
++      prev.map((p) => (p._id === updated._id ? updated : p))
++    );
++  };
+ 
++  // ⭐ שיתוף אמיתי
++  const sharePost = async (id: string) => {
++    const shareUrl = `${window.location.origin}/social-sharing?post=${id}`;
++
++    try {
++      if (navigator.share) {
++        await navigator.share({
++          title: "EcoTrack – Community post",
++          text: "Check out this eco-saving post on EcoTrack 🌱",
++          url: shareUrl,
++        });
++      } else {
++        await navigator.clipboard.writeText(shareUrl);
++        alert("Post link copied to clipboard");
++      }
++    } catch (err) {
++      console.log("Share cancelled or failed:", err);
++    }
++
++    const updated = await updatePost("share", { postId: id });
++
++    setPosts((prev) =>
++      prev.map((p) => (p._id === updated._id ? updated : p))
++    );
++  };
+ 
+   // ⭐ שליחת הודעה בצ׳אט
+   const handleSendMessage = async () => {
+@@ -196,6 +232,7 @@ const sharePost = async (id: string) => {
+ 
+     setMessages((prev) => [...prev, created]);
+     setNewMessage("");
++    setShowChatEmoji(false);
+ 
+     socketRef.current?.emit("send_message", created);
+   };
+@@ -212,6 +249,14 @@ const sharePost = async (id: string) => {
+     });
+   };
+ 
++  const handlePostEmojiClick = (emojiData: EmojiClickData) => {
++    setNewPostText((prev) => prev + emojiData.emoji);
++  };
++
++  const handleChatEmojiClick = (emojiData: EmojiClickData) => {
++    setNewMessage((prev) => prev + emojiData.emoji);
++  };
++
+   return (
+     <div className={styles.page}>
+       <Header />
+@@ -222,24 +267,45 @@ const sharePost = async (id: string) => {
+         <div className={styles.leftColumn}>
+           <h3 className={styles.columnTitle}>The best savers 🏆</h3>
+ 
+-          <ul className={styles.saversList}>
+-            {savers.map((u, i) => (
+-              <li key={i} className={styles.saverItem}>
+-                <span className={styles.rankBadge}>{i + 1}</span>
+-                <img src={u.photo || "/images/default-profile.png"} className={styles.saverAvatar} />
+-                <div>
+-                  <div className={styles.saverName}>{u.name}</div>
+-                  <div className={styles.saverSaving}>
+-                    Saved {u.avgSaving}% on average
++          <div className={styles.card}>
++            <ul className={styles.saversList}>
++              {savers.map((u, i) => (
++                <li key={i} className={styles.saverItem}>
++                  <span
++                    className={`
++                      ${styles.rankBadge}
++                      ${i === 0
++                        ? styles.rank1
++                        : i === 1
++                          ? styles.rank2
++                          : i === 2
++                            ? styles.rank3
++                            : styles.rankOther
++                      }
++                    `}
++                  >
++                    {i + 1}
++                  </span>
++
++                  <img
++                    src={u.photo || "/images/default-profile.png"}
++                    className={styles.saverAvatar}
++                  />
++
++                  <div>
++                    <div className={styles.saverName}>{u.name}</div>
++                    <div className={styles.saverSaving}>
++                      Saved {u.avgSaving}% on average
++                    </div>
+                   </div>
+-                </div>
+-              </li>
+-            ))}
++                </li>
++              ))}
+ 
+-            {savers.length === 0 && (
+-              <li className={styles.emptyText}>No data yet…</li>
+-            )}
+-          </ul>
++              {savers.length === 0 && (
++                <li className={styles.emptyText}>No data yet…</li>
++              )}
++            </ul>
++          </div>
+         </div>
+ 
+         {/* ---------------- CENTER ---------------- */}
+@@ -254,34 +320,54 @@ const sharePost = async (id: string) => {
+                 className={styles.createAvatar}
+               />
+ 
+-              <textarea
+-                className={styles.postTextarea}
+-                placeholder="Share your eco achievement… 💡"
+-                value={newPostText}
+-                onChange={(e) => setNewPostText(e.target.value)}
+-              />
++              <div className={styles.postInputWrapper}>
++                <textarea
++                  className={styles.postTextarea}
++                  placeholder="Share your eco achievement… 💡"
++                  value={newPostText}
++                  onChange={(e) => setNewPostText(e.target.value)}
++                />
+ 
+-              <button
+-                className={styles.imageUploadBtn}
+-                onClick={() => fileInputRef.current?.click()}
+-              >
+-                📷
+-              </button>
++                <div className={styles.postIcons}>
++                  <button
++                    type="button"
++                    className={styles.emojiBtn}
++                    onClick={() => setShowPostEmoji((prev) => !prev)}
++                  >
++                    😀
++                  </button>
+ 
+-              <input
+-                type="file"
+-                ref={fileInputRef}
+-                accept="image/*"
+-                className={styles.hiddenFile}
+-                onChange={(e) => {
+-                  const file = e.target.files?.[0];
+-                  if (!file) return;
+-                  const reader = new FileReader();
+-                  reader.onloadend = () =>
+-                    setNewPostImage(reader.result as string);
+-                  reader.readAsDataURL(file);
+-                }}
+-              />
++                  <button
++                    type="button"
++                    className={styles.imageUploadBtn}
++                    onClick={() => fileInputRef.current?.click()}
++                  >
++                    📷
++                  </button>
++
++                  <input
++                    type="file"
++                    ref={fileInputRef}
++                    accept="image/*"
++                    className={styles.hiddenFile}
++                    onChange={(e) => {
++                      const file = e.target.files?.[0];
++                      if (!file) return;
++                      const reader = new FileReader();
++                      reader.onloadend = () =>
++                        setNewPostImage(reader.result as string);
++                      reader.readAsDataURL(file);
++                    }}
++                  />
++                </div>
++
++
++                {showPostEmoji && (
++                  <div className={styles.emojiPickerPost}>
++                    <EmojiPicker onEmojiClick={handlePostEmojiClick} />
++                  </div>
++                )}
++              </div>
+             </div>
+ 
+             {newPostImage && (
+@@ -303,43 +389,119 @@ const sharePost = async (id: string) => {
+ 
+           {/* פוסטים */}
+           <div className={styles.postsList}>
+-            {posts.map((post) => (
+-              <div key={post._id} className={styles.postCard}>
+-                <div className={styles.postHeader}>
+-                  <img
+-                    src={post.userPhoto || "/images/default-profile.png"}
+-                    className={styles.postAvatar}
+-                  />
+-                  <div className={styles.postMeta}>
+-                    <span className={styles.postUser}>{post.userName}</span>
+-                    <span className={styles.postTime}>
+-                      {formatTime(post.createdAt)}
+-                    </span>
++            {posts.map((post) => {
++              const likesCount = Array.isArray(post.likes)
++                ? post.likes.length
++                : post.likes ?? 0;
++
++              const isLiked =
++                currentUser &&
++                Array.isArray(post.likes) &&
++                post.likes.includes(currentUser._id);
++
++              return (
++                <div key={post._id} className={styles.postCard}>
++                  <div className={styles.postHeader}>
++                    <img
++                      src={post.userPhoto || "/images/default-profile.png"}
++                      className={styles.postAvatar}
++                    />
++                    <div className={styles.postMeta}>
++                      <div className={styles.postUser}>{post.userName}</div>
++                      <div className={styles.postTime}>{formatTime(post.createdAt)}</div>
++                    </div>
+                   </div>
+-                </div>
+ 
+-                <div className={styles.postContent}>{post.content}</div>
++                  <div className={styles.postContent}>{post.content}</div>
+ 
+-                {post.imageUrl && (
+-                  <div className={styles.postImageWrapper}>
+-                    <img src={post.imageUrl} className={styles.postImage} />
++                  {post.imageUrl && (
++                    <div className={styles.postImageWrapper}>
++                      <img src={post.imageUrl} className={styles.postImage} />
++                    </div>
++                  )}
++
++                  <div className={styles.postActions}>
++                    <button
++                      onClick={() => likePost(post._id!)}
++                      className={isLiked ? styles.likedBtn : undefined}
++                    >
++                      {isLiked ? "💙 Liked" : "👍 Like"} ({likesCount})
++                    </button>
++
++                    <button
++                      onClick={() =>
++                        setOpenCommentsPostId(
++                          openCommentsPostId === post._id ? null : post._id!
++                        )
++                      }
++                    >
++                      💬 Comment ({post.comments?.length ?? 0})
++                    </button>
++
++                    <button onClick={() => sharePost(post._id!)}>
++                      ↗ Share ({post.shares ?? 0})
++                    </button>
+                   </div>
+-                )}
+ 
+-                <div className={styles.postActions}>
+-                  <button onClick={() => likePost(post._id!)}>👍 Like ({post.likes ?? 0})</button>
+-                  <button
+-                    onClick={() => {
+-                      const text = prompt("Write a comment");
+-                      if (text?.trim()) commentPost(post._id!, text);
+-                    }}
+-                  >
+-                    💬 Comment ({post.comments?.length ?? 0})
+-                  </button>
+-                  <button onClick={() => sharePost(post._id!)}>↗ Share ({post.shares ?? 0})</button>
++                  {/* קופסת תגובות */}
++                  {openCommentsPostId === post._id && (
++                    <div className={styles.commentsBox}>
++                      <div className={styles.commentsList}>
++                        {post.comments.map((c, i) => (
++                          <div key={i} className={styles.commentItem}>
++                            <img
++                              src={
++                                c.userPhoto || "/images/default-profile.png"
++                              }
++                              className={styles.commentAvatar}
++                            />
++                            <div>
++                              <div className={styles.commentUser}>
++                                {c.userName}
++                              </div>
++                              <div className={styles.commentText}>
++                                {c.text}
++                              </div>
++                            </div>
++                          </div>
++                        ))}
++
++                        {(!post.comments || post.comments.length === 0) && (
++                          <div className={styles.emptyComments}>
++                            No comments yet…
++                          </div>
++                        )}
++                      </div>
++
++                      <div className={styles.commentInputRow}>
++                        <input
++                          type="text"
++                          className={styles.commentInput}
++                          placeholder="Write a comment…"
++                          value={commentText}
++                          onChange={(e) => setCommentText(e.target.value)}
++                          onKeyDown={(e) => {
++                            if (e.key === "Enter") {
++                              commentPost(post._id!, commentText);
++                              setCommentText("");
++                            }
++                          }}
++                        />
++                        <button
++                          className={styles.sendCommentBtn}
++                          onClick={() => {
++                            commentPost(post._id!, commentText);
++                            setCommentText("");
++                          }}
++                        >
++                          ➤
++                        </button>
++                      </div>
++                    </div>
++                  )}
+                 </div>
+-              </div>
+-            ))}
++              );
++            })}
+ 
+             {posts.length === 0 && (
+               <div className={styles.emptyText}>No posts yet…</div>
+@@ -352,7 +514,6 @@ const sharePost = async (id: string) => {
+           <h3 className={styles.columnTitle}>Community chat 💬</h3>
+ 
+           <div className={styles.chatCard}>
+-
+             <div className={styles.messagesArea}>
+               {messages.map((m) => {
+                 const isMe = currentUser?._id === m.userId;
+@@ -360,7 +521,9 @@ const sharePost = async (id: string) => {
+                 return (
+                   <div
+                     key={m._id}
+-                    className={isMe ? styles.messageRowMe : styles.messageRowOther}
++                    className={
++                      isMe ? styles.messageRowMe : styles.messageRowOther
++                    }
+                   >
+                     {!isMe && (
+                       <img
+@@ -369,10 +532,22 @@ const sharePost = async (id: string) => {
+                       />
+                     )}
+ 
+-                    <div className={isMe ? styles.messageBubbleMe : styles.messageBubbleOther}>
+-                      {!isMe && <div className={styles.messageName}>{m.userName}</div>}
++                    <div
++                      className={
++                        isMe
++                          ? styles.messageBubbleMe
++                          : styles.messageBubbleOther
++                      }
++                    >
++                      {!isMe && (
++                        <div className={styles.messageName}>
++                          {m.userName}
++                        </div>
++                      )}
+                       <div className={styles.messageText}>{m.message}</div>
+-                      <div className={styles.messageTime}>{formatTime(m.createdAt)}</div>
++                      <div className={styles.messageTime}>
++                        {formatTime(m.createdAt)}
++                      </div>
+                     </div>
+ 
+                     {isMe && (
+@@ -389,7 +564,9 @@ const sharePost = async (id: string) => {
+                 <div className={styles.typingIndicator}>
+                   <span>{typingUser} is typing</span>
+                   <div className={styles.typingDots}>
+-                    <span></span><span></span><span></span>
++                    <span></span>
++                    <span></span>
++                    <span></span>
+                   </div>
+                 </div>
+               )}
+@@ -398,23 +575,50 @@ const sharePost = async (id: string) => {
+             </div>
+ 
+             <div className={styles.chatInputRow}>
++              <button
++                type="button"
++                className={styles.emojiBtn}
++                onClick={() => setShowChatEmoji((prev) => !prev)}
++              >
++                😀
++              </button>
++
++              {showChatEmoji && (
++                <div className={styles.emojiPickerChat}>
++                  <EmojiPicker onEmojiClick={handleChatEmojiClick} />
++                </div>
++              )}
++
+               <input
+                 type="text"
+                 className={styles.chatInput}
+                 placeholder="Write a message…"
+                 value={newMessage}
+-                onChange={(e) => setNewMessage(e.target.value)}
++                onChange={(e) => {
++                  setNewMessage(e.target.value);
++
++                  socketRef.current?.emit("typing", {
++                    userName: currentUser?.name,
++                  });
++
++                  if (typingTimeoutRef.current)
++                    clearTimeout(typingTimeoutRef.current);
++                  typingTimeoutRef.current = window.setTimeout(() => {
++                    socketRef.current?.emit("typing", { userName: null });
++                  }, 1200);
++                }}
+                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+               />
+ 
+-              <button className={styles.chatSendButton} onClick={handleSendMessage}>
++              <button
++                className={styles.chatSendButton}
++                onClick={handleSendMessage}
++              >
+                 ➤
+               </button>
+             </div>
+-
+           </div>
+         </div>
+-
+       </div>
+     </div>
+   );
+diff --git a/tsconfig.json b/tsconfig.json
+index 02fcbfb..abbec61 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -37,7 +37,7 @@
+     "**/*.mts",
+     ".next/types/**/*.ts",
+     ".next/dev/types/**/*.ts"
+-  ],
++, "scripts/fix-previous-values.cjs"  ],
+   "exclude": [
+     "node_modules",
+     ".next"

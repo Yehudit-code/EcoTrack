@@ -1,0 +1,65 @@
+diff a/src/app/api/company-requests/route.ts b/src/app/api/company-requests/route.ts	(rejected hunks)
+@@ -17,6 +17,8 @@ export async function GET(req: Request) {
+ 
+     const pipeline: any[] = [
+       { $match: match },
++
++      // 🔵 הבאת פרטי המשתמש (לקוח)
+       {
+         $lookup: {
+           from: "Users",
+@@ -25,13 +27,21 @@ export async function GET(req: Request) {
+           as: "userData",
+         },
+       },
++      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
++
++      // 🟢 הבאת פרטי החברה (החברה שהציעה את ההצעה)
+       {
+-        $unwind: {
+-          path: "$userData",
+-          preserveNullAndEmptyArrays: true,
++        $lookup: {
++          from: "Users",
++          localField: "companyId",
++          foreignField: "_id",
++          as: "companyData",
+         },
+       },
++      { $unwind: { path: "$companyData", preserveNullAndEmptyArrays: true } },
++
+       { $sort: { createdAt: -1 } },
++
+       {
+         $project: {
+           productName: 1,
+@@ -40,11 +50,20 @@ export async function GET(req: Request) {
+           paymentId: 1,
+           createdAt: 1,
+           userId: 1,
++          companyId: 1,
++
++          // פרטי המשתמש
+           "userData.name": 1,
+           "userData.email": 1,
+           "userData.phone": 1,
++
++          // פרטי החברה
++          companyName: "$companyData.name",
++          companyEmail: "$companyData.email",
++          companyCategory: "$companyData.companyCategory",
+         },
+-      },
++      }
++
+     ];
+ 
+     const items = await collection.aggregate(pipeline).toArray();
+@@ -59,6 +78,7 @@ export async function GET(req: Request) {
+   }
+ }
+ 
++
+ export async function POST(req: Request) {
+   try {
+     const { userId, companyId, productName, description, price } =
