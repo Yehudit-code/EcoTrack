@@ -7,7 +7,6 @@ export default function HomePage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <header className={styles.header}>
         <div className={styles.logo}>
           <svg width="32" height="32" viewBox="0 0 100 100" className={styles.logoIcon}>
@@ -28,7 +27,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.heroText}>

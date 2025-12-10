@@ -6,10 +6,14 @@ import { signInWithPopup } from "firebase/auth";
 import styles from "./SignIn.module.css";
 import RoleModal from "@/app/components/Modals/RoleModal";
 import CompanyCategoryModal from "@/app/components/Modals/CompanyCategoryModal";
-
 import Toast from "@/app/components/Toast/Toast";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function SignInForm() {
+  const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -32,20 +36,18 @@ export default function SignInForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
-        showToast("Signed in successfully!");
-        setTimeout(() => (window.location.href = "/home"), 900);
+        setUser(data.user);
+        router.push("/home");
       } else {
-        showToast(data.error || "error signing in");
+        showToast(data.error || "Error signing in");
       }
     } catch {
-      showToast("error in server");
+      showToast("Server error");
     } finally {
       setLoading(false);
     }
@@ -56,48 +58,27 @@ export default function SignInForm() {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // 1️⃣ בדיקה אם משתמש כבר קיים במערכת
       const checkRes = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
-        credentials: "include",
       });
 
       const checkData = await checkRes.json();
 
       if (checkData.exists) {
-        // 🔁 משתמש קיים – נעדכן אותו עם נתוני גוגל (בלי מודאל תפקיד)
-        const res = await fetch("/api/social-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL,
-            role: checkData.user.role, // שומרים את התפקיד הקיים (user / company)
-            companyCategory: checkData.user.companyCategory ?? null,
-          }),
-          credentials: "include",
-        });
-
-        const data = await res.json();
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
-        showToast("Welcome back!");
-        setTimeout(() => (window.location.href = "/home"), 900);
+        setUser(checkData.user);
+        router.push("/home");
         return;
       }
 
-      // 🆕 משתמש חדש – ממשיכים כרגיל ל־RoleModal
       setGoogleUser(user);
       setShowRoleModal(true);
-
     } catch (err) {
       console.error(err);
       showToast("Google error");
     }
   };
-
 
   const finishGoogleSignup = async (category: string | null) => {
     const res = await fetch("/api/social-login", {
@@ -106,22 +87,22 @@ export default function SignInForm() {
       body: JSON.stringify({
         email: googleUser.email,
         name: googleUser.displayName,
-        photo: googleUser.photoURL,
         photoURL: googleUser.photoURL,
-        provider: "google",
+        role: googleUser.role,
         companyCategory: category,
       }),
-      credentials: "include",
     });
 
     const data = await res.json();
 
-    localStorage.setItem("currentUser", JSON.stringify(data.user));
+    if (!res.ok) {
+      showToast(data.error || "Social login failed");
+      return;
+    }
 
-    window.location.href =
-      googleUser.role === "company" ? "home" : "/home";
+    setUser(data.user);
+    router.push("/home");
   };
-
 
   const handleRoleSelected = (role: "user" | "company") => {
     googleUser.role = role;
@@ -137,13 +118,11 @@ export default function SignInForm() {
   const handleCategorySelected = (category: string) => {
     googleUser.companyCategory = category;
     setShowCategoryModal(false);
-
     finishGoogleSignup(category);
   };
 
   return (
     <>
-      {/* 🟢 Toast כמו בשאר המערכת */}
       {toast && <Toast text={toast} />}
 
       <form className={styles.form} onSubmit={handleEmailSignIn}>
@@ -172,7 +151,7 @@ export default function SignInForm() {
         </button>
 
         <p className={styles.consentText}>
-          I allow my information to be used in accordance with utility providers in israel
+          I allow my information to be used in accordance with utility providers in Israel.
         </p>
       </form>
 
@@ -190,16 +169,11 @@ export default function SignInForm() {
         </button>
       </div>
 
-      {/* 🔵 ROLE MODAL */}
-      {showRoleModal && (
-        <RoleModal onSelect={handleRoleSelected} />
-      )}
+      {showRoleModal && <RoleModal onSelect={handleRoleSelected} />}
 
-      {/* 🟣 COMPANY CATEGORY MODAL */}
       {showCategoryModal && (
         <CompanyCategoryModal onSelect={handleCategorySelected} />
       )}
     </>
   );
-
 }

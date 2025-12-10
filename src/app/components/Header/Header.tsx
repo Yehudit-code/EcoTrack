@@ -60,13 +60,11 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      {/* לוגו */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      {/* ניווט */}
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}><FontAwesomeIcon icon={faHome} /><span>Home</span></Link>
         <Link href="/manage-data" className={styles.navLink}><FontAwesomeIcon icon={faDatabase} /><span>Manage Data</span></Link>
