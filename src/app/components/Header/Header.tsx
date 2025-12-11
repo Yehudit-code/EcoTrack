@@ -67,10 +67,10 @@ export default function Header() {
 
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}><FontAwesomeIcon icon={faHome} /><span>Home</span></Link>
-        <Link href="/manage-data" className={styles.navLink}><FontAwesomeIcon icon={faDatabase} /><span>Manage Data</span></Link>
-        <Link href="/indicators" className={styles.navLink}><FontAwesomeIcon icon={faChartBar} /><span>Analytics</span></Link>
-        <Link href="/social-sharing" className={styles.navLink}><FontAwesomeIcon icon={faUser} /><span>Social Sharing</span></Link>
-        <Link href="/about" className={styles.navLink}><FontAwesomeIcon icon={faInfoCircle} /><span>About</span></Link>
+        <Link href="/user/manage-data" className={styles.navLink}><FontAwesomeIcon icon={faDatabase} /><span>Manage Data</span></Link>
+        <Link href="/user/indicators" className={styles.navLink}><FontAwesomeIcon icon={faChartBar} /><span>Analytics</span></Link>
+        <Link href="/user/social-sharing" className={styles.navLink}><FontAwesomeIcon icon={faUser} /><span>Social Sharing</span></Link>
+       <Link href="/about" className={styles.navLink}><FontAwesomeIcon icon={faInfoCircle} /><span>About</span></Link>
       </nav>
 
       {/* פעמון + פרופיל */}

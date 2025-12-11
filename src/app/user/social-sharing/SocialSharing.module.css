@@ -1,7 +1,7 @@
 /* ==================== PAGE ==================== */
 .page {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: linear-gradient(135deg, #f9fbfd 0%, #f9fffa 100%);
   padding-top: 0;
 }
 
@@ -20,7 +20,7 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #050505;
+  color: #2d5c2d;
   letter-spacing: -0.3px;
 }
 
@@ -46,12 +46,13 @@
   gap: 12px;
   padding: 12px 10px;
   border-radius: 10px;
-  transition: background-color 0.15s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .saverItem:hover {
-  background-color: #f2f3f5;
+  background-color: #f0fdf4;
+  transform: translateX(4px);
 }
 
 .rankBadge {
@@ -85,8 +86,9 @@
 }
 
 .rankOther {
-  background: #e4e6eb;
-  color: #65676b;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #2d5c2d;
+  font-weight: 600;
 }
 
 .saverAvatar {
@@ -94,28 +96,29 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
+  border: 2px solid #9bc59b;
   flex-shrink: 0;
 }
 
 .saverName {
   font-size: 14px;
   font-weight: 600;
-  color: #050505;
+  color: #2d5c2d;
   line-height: 1.3;
 }
 
 .saverSaving {
   font-size: 12px;
-  color: #65676b;
+  color: #64748b;
   line-height: 1.3;
 }
 
 .card {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(155, 197, 155, 0.2);
 }
 
 /* ==================== CENTER COLUMN ==================== */
@@ -128,10 +131,16 @@
 
 .createPostCard {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   margin-top: -19px;
+  border: 1px solid rgba(155, 197, 155, 0.2);
+  transition: all 0.2s ease;
+}
+
+.createPostCard:hover {
+  box-shadow: 0 6px 20px rgba(155, 197, 155, 0.15);
 }
 
 /* יצירת פוסט */
@@ -147,6 +156,7 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 2px solid #9bc59b;
 }
 
 /* קונטיינר של הטקסט+כפתורים */
@@ -155,10 +165,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f0f2f5;
+  background: #f5f9f6;
   border-radius: 24px;
   padding: 8px 14px;
   position: relative;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.postInputWrapper:focus-within {
+  background: #ffffff;
+  border-color: #9bc59b;
+  box-shadow: 0 0 0 4px rgba(155, 197, 155, 0.15);
 }
 
 .postTextarea {
@@ -170,15 +188,15 @@
   line-height: 1.4;
   padding: 0;
   min-height: 32px;
+  color: #2d5c2d;
 }
 
 .postTextarea:focus {
   outline: none;
 }
 
-
 .postTextarea::placeholder {
-  color: #65676b;
+  color: #94a3b8;
 }
 
 /* שורת כפתורים ליד יצירת פוסט */
@@ -193,22 +211,23 @@
 .imageUploadBtn {
   width: 34px;
   height: 34px;
-  background: #ffffff;
+  background: linear-gradient(135deg, #e8f5e9, #f0fdf4);
   border-radius: 50%;
   font-size: 20px;
-  border: none;
+  border: 2px solid #9bc59b;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: 0.15s ease;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(155, 197, 155, 0.2);
 }
 
 .emojiBtn:hover,
 .imageUploadBtn:hover {
-  transform: scale(1.08);
-  background: #f3f3f3;
+  transform: scale(1.12);
+  background: linear-gradient(135deg, #9bc59b, #7ba87b);
+  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.3);
 }
 
 @keyframes fadeEmoji {
@@ -220,9 +239,10 @@
 .previewWrapper {
   position: relative;
   margin-top: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: #000;
+  border: 2px solid #9bc59b;
 }
 
 .previewImage {
@@ -235,36 +255,46 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(45, 92, 45, 0.85);
   border-radius: 50%;
   width: 32px;
   height: 32px;
   border: none;
   color: white;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .removeImageBtn:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(45, 92, 45, 1);
+  transform: scale(1.1);
 }
 
 .postButton {
   margin-top: 12px;
   width: 100%;
-  background: #1877f2;
+  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px;
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .postButton:hover {
-  background: #166fe5;
+  background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(155, 197, 155, 0.4);
+}
+
+.postButton:active {
+  transform: translateY(0);
 }
 
 .postInputWrapper {
@@ -282,7 +312,6 @@
   display: none !important;
 }
 
-
 /* ==================== POSTS ==================== */
 
 .postsList {
@@ -293,9 +322,28 @@
 
 .postCard {
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   padding: 20px;
+  border: 1px solid rgba(155, 197, 155, 0.2);
+  transition: all 0.3s ease;
+  animation: postFadeIn 0.4s ease;
+}
+
+@keyframes postFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.postCard:hover {
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.15);
+  border-color: rgba(155, 197, 155, 0.4);
 }
 
 .postHeader {
@@ -310,20 +358,30 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
+  border: 2px solid #9bc59b;
+  transition: all 0.2s ease;
+}
+
+.postAvatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.3);
 }
 
 /* טקסט פוסט */
 .postContent {
   font-size: 15px;
   margin-bottom: 14px;
+  color: #334155;
+  line-height: 1.6;
 }
 
 /* תמונה */
 .postImageWrapper {
   margin-bottom: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #f0f2f5;
+  background: #f8fdf8;
+  border: 2px solid #e8f5e9;
 }
 
 .postImage {
@@ -337,7 +395,7 @@
   justify-content: space-between;
   padding-top: 12px;
   margin-top: 8px;
-  border-top: 1px solid #e4e6eb;
+  border-top: 2px solid #e8f5e9;
   gap: 8px;
 }
 
@@ -346,21 +404,24 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #65676b;
+  color: #64748b;
   font-size: 15px;
   font-weight: 600;
-  padding: 8px;
-  border-radius: 6px;
-  transition: background 0.15s ease;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
 }
 
 .postActions button:hover {
-  background: #f0f2f5;
+  background: #f0fdf4;
+  color: #2d5c2d;
+  transform: translateY(-2px);
 }
 
-/* לייק כחול */
+/* לייק ירוק */
 .likedBtn {
-  color: #1877f2 !important;
+  color: #2d5c2d !important;
+  background: #e8f5e9 !important;
 }
 
 /* מידע על המשתמש (שם + תאריך) */
@@ -372,28 +433,27 @@
 
 .postUser {
   font-size: 15px;
-  font-weight: 600;
-  color: #050505;
+  font-weight: 700;
+  color: #2d5c2d;
   line-height: 1.2;
   margin-bottom: 2px;
 }
 
 .postTime {
   font-size: 13px;
-  color: #65676b;
+  color: #64748b;
   line-height: 1.2;
   margin-top: 2px;
 }
-
 
 /* ==================== COMMENTS SECTION ==================== */
 
 .commentsBox {
   margin-top: 12px;
-  background: #f7f8fa;
+  background: #f8fdf8;
   border-radius: 12px;
   padding: 14px;
-  border: 1px solid #e4e6eb;
+  border: 2px solid #e8f5e9;
 }
 
 .commentsList {
@@ -406,7 +466,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  animation: cmtFade 0.15s ease-out;
+  animation: cmtFade 0.3s ease-out;
 }
 
 @keyframes cmtFade {
@@ -419,12 +479,14 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #9bc59b;
 }
 
 .commentUser {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 4px;
+  color: #2d5c2d;
 }
 
 .commentText {
@@ -433,14 +495,16 @@
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(155, 197, 155, 0.1);
   max-width: 85%;
+  border: 1px solid #e8f5e9;
+  color: #334155;
 }
 
 .emptyComments {
   text-align: center;
   padding: 10px;
-  color: #999;
+  color: #94a3b8;
   font-size: 14px;
 }
 
@@ -454,23 +518,30 @@
 
 .commentInput {
   flex: 1;
-  border: none;
+  border: 2px solid #e8f5e9;
   padding: 10px 14px;
   border-radius: 20px;
-  background: #e9ebee;
+  background: #ffffff;
   font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.commentInput:hover {
+  border-color: #9bc59b;
 }
 
 .commentInput:focus {
   outline: none;
-  background: #dfe1e6;
+  border-color: #9bc59b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(155, 197, 155, 0.15);
 }
 
 .sendCommentBtn {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #1877f2;
+  background: linear-gradient(135deg, #9bc59b, #7ba87b);
   color: white;
   border: none;
   cursor: pointer;
@@ -478,6 +549,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(155, 197, 155, 0.3);
+}
+
+.sendCommentBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.4);
 }
 
 /* ==================== RIGHT COLUMN (CHAT) ==================== */
@@ -490,13 +568,14 @@
 
 .chatCard {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   height: calc(100vh - 180px);
   max-height: 700px;
   overflow: hidden;
+  border: 1px solid rgba(155, 197, 155, 0.2);
 }
 
 .messagesArea {
@@ -506,6 +585,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  background: linear-gradient(to bottom, #f8fdf8, #ffffff);
 }
 
 .messageRowOther,
@@ -513,7 +593,7 @@
   display: flex;
   gap: 8px;
   align-items: flex-end;
-  animation: messageSlideIn 0.2s ease-out;
+  animation: messageSlideIn 0.3s ease-out;
 }
 
 @keyframes messageSlideIn {
@@ -529,6 +609,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
+  border: 2px solid #9bc59b;
 }
 
 /* בועות צ'אט */
@@ -539,21 +620,23 @@
   border-radius: 18px;
   font-size: 15px;
   line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .messageBubbleOther {
-  background: #e4e6eb;
-  color: #000;
+  background: #f6fbf8;
+  color: #2d5c2d;
+  border: 1px solid #e8f5e9;
 }
 
 .messageBubbleMe {
-  background: #0084ff;
+  background: linear-gradient(135deg, #9bc59b, #7ba87b);
   color: #fff;
 }
 
 .messageName {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 4px;
 }
 
@@ -569,12 +652,25 @@
   gap: 8px;
 }
 
+.typingDots {
+  display: flex;
+  gap: 4px;
+}
+
 .typingDots span {
   width: 6px;
   height: 6px;
-  background: #65676b;
+  background: #9bc59b;
   border-radius: 50%;
   animation: typingBounce 1s infinite;
+}
+
+.typingDots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typingDots span:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
 @keyframes typingBounce {
@@ -584,33 +680,41 @@
 
 /* שורת כתיבה בצ'אט */
 .chatInputRow {
-  border-top: 1px solid #e4e6eb;
+  border-top: 2px solid #e8f5e9;
   padding: 16px;
   display: flex;
   gap: 10px;
   align-items: center;
-  background: #fff;
+  background: #ffffff;
   position: relative;
 }
 
 .chatInput {
   flex: 1;
-  border: none;
-  padding: 8px 14px;
-  background: #f0f2f5;
+  border: 2px solid #e9f1ea;
+  padding: 10px 14px;
+  background: #fcfffc;
   border-radius: 20px;
   font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.chatInput:hover {
+  border-color: #9bc59b;
 }
 
 .chatInput:focus {
-  background: #e4e6eb;
+  background: #ffffff;
+  border-color: #9bc59b;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(155, 197, 155, 0.15);
 }
 
 .chatSendButton {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #0084ff;
+  background: linear-gradient(135deg, #9bc59b, #7ba87b);
   color: white;
   border: none;
   cursor: pointer;
@@ -618,48 +722,58 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(155, 197, 155, 0.3);
+}
+
+.chatSendButton:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(155, 197, 155, 0.4);
 }
 
 /* רספונסיביות */
 @media (max-width: 1024px) {
-  .container { grid-template-columns: 1fr; }
-  .rightColumn, .leftColumn { position: static; }
+  .container { 
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .rightColumn, .leftColumn { 
+    position: static;
+    max-width: 100%;
+  }
+  .chatCard {
+    height: 500px;
+  }
 }
-
-/* ====== CUSTOM SMALL EMOJI PICKER ====== */
 
 /* ====== EMOJI PICKER לפוסט – מתחת לאייקון ====== */
 .emojiPickerPost {
   position: absolute;
   z-index: 9999;
-
-  top: 42px;        /* מתחת לשורת האייקונים */
-  right: 0;         /* צמוד לאייקון האמוג'י (שנמצא בצד ימין) */
-
+  top: 42px;
+  right: 0;
   transform: scale(0.75);
   transform-origin: top right;
-
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.3);
+  border: 2px solid #9bc59b;
 }
 
-/* ====== EMOJI PICKER בצ'אט – כמו שעבד לך ====== */
+/* ====== EMOJI PICKER בצ'אט ====== */
 .emojiPickerChat {
   position: absolute;
   z-index: 9999;
-
   bottom: 45px;
   left: 0;
-
   transform: scale(0.70);
   transform-origin: bottom left;
-
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.3);
+  border: 2px solid #9bc59b;
 }
 
 /* החלק הפנימי (ספריית EmojiPickerReact) */
@@ -671,7 +785,6 @@
   transform-origin: top left;
   overflow: hidden !important;
 }
-
 
 /* תיבת החיפוש */
 .EmojiPickerReact .epr-search-container {
@@ -690,8 +803,24 @@
   width: 6px;
 }
 .EmojiPickerReact ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #9bc59b;
   border-radius: 10px;
 }
 
+/* Custom scrollbar לכל העמוד */
+::-webkit-scrollbar {
+  width: 10px;
+}
 
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #9bc59b, #7ba87b);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #7ba87b, #6a956a);
+}

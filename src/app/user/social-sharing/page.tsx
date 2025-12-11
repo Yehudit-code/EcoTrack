@@ -14,6 +14,8 @@ import {
   updatePost,
   sendMessage,
 } from "@/app/services/server/social";
+import SkeletonPost from "@/app/components/Skeleton/SkeletonPost";
+import SkeletonSaver from "@/app/components/Skeleton/SkeletonSaver";
 
 interface Saver {
   name: string;
@@ -302,7 +304,11 @@ export default function SocialSharingPage() {
               ))}
 
               {savers.length === 0 && (
-                <li className={styles.emptyText}>No data yet…</li>
+                <>
+                  <SkeletonSaver />
+                  <SkeletonSaver />
+                  <SkeletonSaver />
+                </>
               )}
             </ul>
           </div>
@@ -467,9 +473,11 @@ export default function SocialSharingPage() {
                         ))}
 
                         {(!post.comments || post.comments.length === 0) && (
-                          <div className={styles.emptyComments}>
-                            No comments yet…
-                          </div>
+                          <>
+                            <SkeletonPost />
+                            <SkeletonPost />
+                            <SkeletonPost />
+                          </>
                         )}
                       </div>
 
@@ -504,7 +512,11 @@ export default function SocialSharingPage() {
             })}
 
             {posts.length === 0 && (
-              <div className={styles.emptyText}>No posts yet…</div>
+              <>
+                <SkeletonPost />
+                <SkeletonPost />
+                <SkeletonPost />
+              </>
             )}
           </div>
         </div>

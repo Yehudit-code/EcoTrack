@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+/* העלה משתמש באייקון שאת העלית */
+.leaf {
+  width: 50px;
+  height: 50px;
+  background-image: url("/images/leaf-icon.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: spin 1.2s linear infinite;
+}
+
+/* אנימציית סיבוב */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}

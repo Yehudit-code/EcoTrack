@@ -1,0 +1,41 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 8px 0;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #eaeaea, #f5f5f5, #eaeaea);
+  animation: loading 1.4s infinite;
+}
+
+.textArea {
+  flex: 1;
+}
+
+.nameLine,
+.savingLine {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eaeaea, #f5f5f5, #eaeaea);
+  animation: loading 1.4s infinite;
+}
+
+.nameLine {
+  width: 140px;
+  margin-bottom: 6px;
+}
+
+.savingLine {
+  width: 100px;
+}
+
+@keyframes loading {
+  0% { background-position: -100px; }
+  100% { background-position: 200px; }
+}
