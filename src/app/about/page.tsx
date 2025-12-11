@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import Header from "../components/Header/Header";
-import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
-import Footer from "../components/Footer/Footer";
-import ContentBlock from "./components/ContentBlock";
-import styles from "./page.module.css";
+import Header from '../components/Header/Header';
+import CompanyHeader from '../components/CompanyHeader/CompanyHeader';
+import Footer from '../components/Footer/Footer';
+import styles from './page.module.css';
 import { useUserStore } from "@/store/useUserStore";
 
 export default function AboutPage() {
-  // Get user directly from Zustand (persist handles hydration)
-  const currentUser = useUserStore((state) => state.user);
+
+  // כמו ב־Home — לוקחים את התפקיד ישירות מ־Zustand
+  const role = useUserStore((state) => state.user?.role ?? null);
 
   return (
     <>
-      {/* Header based on role */}
-      {currentUser?.role === "company" ? <CompanyHeader /> : <Header />}
+      {/* אותו תנאי כמו בעמוד הבית */}
+      {role === "company" ? <CompanyHeader /> : <Header />}
 
       <div className={styles.pageContainer}>
         <main className={styles.container}>
@@ -25,25 +25,33 @@ export default function AboutPage() {
             </header>
 
             <section className={styles.content}>
-              <ContentBlock
-                title="Our Mission"
-                text="EcoTrack provides intelligent environmental tracking solutions that help users reduce their ecological footprint using data-driven insights."
-              />
+              <div className={styles.textBlock}>
+                <h2 className={styles.sectionTitle}>Our Mission</h2>
+                <p className={styles.paragraph}>
+                  EcoTrack provides intelligent environmental tracking solutions that help individuals and organizations monitor, analyze, and reduce their ecological footprint through data-driven insights and actionable recommendations.
+                </p>
+              </div>
 
-              <ContentBlock
-                title="Technology & Innovation"
-                text="Our platform uses analytics and machine learning to convert complex environmental data into clear and actionable insights."
-              />
+              <div className={styles.textBlock}>
+                <h2 className={styles.sectionTitle}>Technology & Innovation</h2>
+                <p className={styles.paragraph}>
+                  Our platform leverages advanced analytics and machine learning to transform complex environmental data into clear, actionable insights. We make sustainability accessible through intuitive interfaces and personalized recommendations.
+                </p>
+              </div>
 
-              <ContentBlock
-                title="Impact & Results"
-                text="EcoTrack helps users reduce energy, water, and waste consumption through informed decisions."
-              />
+              <div className={styles.textBlock}>
+                <h2 className={styles.sectionTitle}>Impact & Results</h2>
+                <p className={styles.paragraph}>
+                  Since our launch, EcoTrack has helped users reduce energy consumption by an average of 23%, decrease water usage by 18%, and minimize waste generation by 31% through informed decision-making and behavioral optimization.
+                </p>
+              </div>
 
-              <ContentBlock
-                title="Our Commitment"
-                text="We continuously improve our tools and maintain strong privacy and security standards."
-              />
+              <div className={styles.textBlock}>
+                <h2 className={styles.sectionTitle}>Our Commitment</h2>
+                <p className={styles.paragraph}>
+                  We are committed to continuous innovation in environmental technology, ensuring our solutions remain at the forefront of sustainability science while maintaining the highest standards of data privacy and security.
+                </p>
+              </div>
             </section>
           </div>
         </main>

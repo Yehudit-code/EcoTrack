@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
 const client = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
+    apiKey: process.env.GROQ_API_KEY!,
 });
 
 export async function POST(req: Request) {
     try {
-        const { message } = await req.json();
+        const { message, history = [] } = await req.json();
 
         if (!message || typeof message !== "string") {
             return NextResponse.json(
@@ -16,33 +16,37 @@ export async function POST(req: Request) {
             );
         }
 
-        const completion = await client.chat.completions.create({
-            model: "llama-3.1-8b-instant", // המודל הזול והמהיר :contentReference[oaicite:2]{index=2}
+        // הכנת היסטוריית השיחה
+        const formattedHistory = Array.isArray(history)
+            ? history.map((msg: any) => ({
+                role: msg.sender === "user" ? "user" : "assistant",
+                content: msg.text,
+            }))
+            : [];
+
+        // 👇 עקיפת הטייפים של Groq — ככה זה עובד בלי שגיאות
+        const completion: any = await (client as any).chat.completions.create({
+            model: "llama-3.1-8b-instant",
             messages: [
                 {
                     role: "system",
                     content: `
 You are EcoTrack's sustainability intelligence assistant 🌿.
-You ONLY answer questions related to:
-- saving water
-- saving electricity
-- reducing waste
-- eco-friendly transportation
-- personal consumption improvement
-- sustainability motivation
-- environmental impact
-- the EcoTrack platform features
+You ALWAYS answer with practical, concise advice about:
+• saving water
+• saving electricity
+• reducing waste
+• eco-friendly transportation
+• EcoTrack features
 
-If the user asks anything not related, respond briefly and politely redirect:
-"I'm here to help you with EcoTrack and sustainable living 🌿. How can I help you reduce water, energy, waste, or transport impact?"
+If the user agrees ("yes give me", "yes", "ok"):
+→ Give 3–5 actionable tips immediately.
+If off-topic → politely redirect.
+          `.trim(),
+                },
 
-When users share success (like saving %, reducing CO₂, lowering water usage), celebrate warmly:
-"Wow!! Amazing job 🌟 You're making a real environmental impact!"
+                ...formattedHistory,
 
-Be warm, friendly, short, and motivational.
-  `.trim(),
-                }
-                ,
                 {
                     role: "user",
                     content: message,
@@ -53,18 +57,17 @@ Be warm, friendly, short, and motivational.
         });
 
         const reply =
-            completion.choices[0]?.message?.content ||
+            completion?.choices?.[0]?.message?.content ||
             "Sorry, I had trouble responding this time.";
 
         return NextResponse.json({ reply }, { status: 200 });
     } catch (err: any) {
-        console.error("❌ Groq API error:", err);
+        console.error("❌ EcoTrack AI error:", err);
 
-        // חשוב: תמיד להחזיר JSON כדי שה-frontend לא יקרוס
         return NextResponse.json(
             {
                 reply:
-                    "Oops! The EcoTrack AI had a problem talking to the server right now. Please try again later.",
+                    "Oops! The EcoTrack AI had a problem talking to the server. Please try again later.",
             },
             { status: 500 }
         );

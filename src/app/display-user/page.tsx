@@ -8,7 +8,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import dynamic from "next/dynamic";
 
 import styles from "./DisplayUsers.module.css";
-
+import LeafSpinner from "../components/Loading/LeafSpinner";
 const ConsumptionGraph = dynamic(() => import("../components/ConsumptionGraph"), { ssr: false });
 
 type User = {
@@ -98,7 +98,7 @@ const DisplayUsersPage = () => {
     setModalOpen(false);
   };
 
-  if (loading) return <p>Loading users...</p>;
+  if (loading) return <LeafSpinner />;
   if (error) return <p>Error: {error}</p>;
   if (!category) return <p>No category selected for your company.</p>;
 

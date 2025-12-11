@@ -1,0 +1,80 @@
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #e7e7e7, #f3f3f3, #e7e7e7);
+  animation: loading 1.4s infinite;
+}
+
+.meta {
+  flex: 1;
+}
+
+.lineShort, .lineLong, .textLine, .image, .footerBtn {
+  background: linear-gradient(90deg, #e7e7e7, #f3f3f3, #e7e7e7);
+  animation: loading 1.4s infinite;
+  border-radius: 8px;
+}
+
+.lineShort {
+  width: 120px;
+  height: 12px;
+  margin-bottom: 6px;
+}
+
+.lineLong {
+  width: 180px;
+  height: 12px;
+}
+
+.textLine {
+  width: 100%;
+  height: 12px;
+  margin-bottom: 10px;
+}
+
+.image {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  margin: 14px 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.footerBtn {
+  width: 28%;
+  height: 14px;
+  border-radius: 6px;
+}
+
+/* אנימציית מעבר */
+@keyframes loading {
+  0% { background-position: -100px; }
+  100% { background-position: 200px; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
