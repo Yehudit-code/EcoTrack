@@ -1,47 +1,97 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/app/services/server/mongodb";
+import { connectDB } from "@/app/lib/db";
+import { User } from "@/app/models/User";
+import { signJwt } from "@/app/lib/auth/jwt";
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    await connectDB();
 
-    if (!email) {
+    const {
+      email,
+      name,
+      photoURL,
+      role,
+      companyCategory,
+    } = await req.json();
+
+    if (!email || !name) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const db = await connectDB();
-    const usersCollection = db.collection("Users");
-    const user = await usersCollection.findOne({ email });
+    // Find existing user by email
+    let user = await User.findOne({ email });
 
-    // אם אין משתמש - לא ליצור קוקי
     if (!user) {
-      return NextResponse.json(
-        { exists: false, user: null },
-        { status: 200 }
-      );
+      // Create new user if not exists
+      user = await User.create({
+        name,
+        email,
+        role: role || "user",
+        companyCategory: role === "company" ? companyCategory : undefined,
+        photo: photoURL,
+        provider: "google",
+      });
+    } else {
+      // Update existing user without overriding custom uploaded photo
+      const hasCustomPhoto =
+        user.photo &&
+        typeof user.photo === "string" &&
+        !user.photo.startsWith("http");
+
+      user.name = name;
+      user.role = role || user.role;
+      user.companyCategory =
+        role === "company"
+          ? companyCategory ?? user.companyCategory
+          : user.companyCategory;
+
+      if (!hasCustomPhoto && photoURL) {
+        user.photo = photoURL;
+      }
+
+      user.provider = "google";
+      await user.save();
     }
 
-    // משתמש קיים - ליצור קוקי auth
-    const res = NextResponse.json(
-      { exists: true, user },
+    // Create JWT identical to regular signin/signup
+    const token = await signJwt({
+      userId: String(user._id),
+      email: user.email,
+      role: user.role,
+    });
+
+    const response = NextResponse.json(
+      {
+        user: {
+          _id: String(user._id),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          companyCategory: user.companyCategory,
+          photo: user.photo,
+        },
+      },
       { status: 200 }
     );
 
-    res.cookies.set("auth", user.email, {
-      path: "/",
-      maxAge: 60 * 60 * 24, // יום שלם
+    // Store JWT in httpOnly cookie
+    response.cookies.set("ecotrack-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
-    return res;
-
+    return response;
   } catch (error) {
-    console.log("Error in check-user:", error);
+    console.error("Social login error:", error);
     return NextResponse.json(
-      { exists: false, user: null },
+      { error: "Social login failed" },
       { status: 500 }
     );
   }

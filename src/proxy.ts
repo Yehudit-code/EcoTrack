@@ -43,6 +43,8 @@ export async function proxy(req: NextRequest) {
   let user;
   try {
     user = await validate(token);
+    console.log("JWT payload:", user);
+
   } catch {
     const url = req.nextUrl.clone();
     url.pathname = "/signIn";

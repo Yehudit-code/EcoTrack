@@ -1,27 +1,29 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
-import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
+import CompanyHeader from "@/app/components/CompanyHeader/CompanyHeader";
 import styles from "./Contact.module.css";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function ContactPage() {
+  const user = useUserStore((state) => state.user);
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
-  useEffect(() => {
-    const userStr = localStorage.getItem("currentUser");
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        setName(user.name || "");
-        setEmail(user.email || "");
-      } catch { }
-    }
-  }, []);
-
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Populate form from Zustand user
+  useEffect(() => {
+    if (!hasHydrated || !user) return;
+
+    setName(user.name || "");
+    setEmail(user.email || "");
+  }, [user, hasHydrated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +35,7 @@ export default function ContactPage() {
         {
           company_name: name,
           company_email: email,
-          message: message,
+          message,
         },
         "zvFzq-RxRb_BxCEqg"
       );
@@ -42,7 +44,6 @@ export default function ContactPage() {
       setMessage("");
 
       setTimeout(() => setSent(false), 3000);
-
     } catch (err: any) {
       alert("Error sending message: " + (err?.text || err?.message));
     }
@@ -54,10 +55,7 @@ export default function ContactPage() {
 
       <div className={styles.page}>
         <div className={styles.card}>
-          <h1 className={styles.title}>Contact Ecotrack</h1>
-          <p className={styles.subtitle}>
-            Have a question or feedback? We'd love to hear from you!
-          </p>
+          <h1 className={styles.title}>Contact EcoTrack</h1>
 
           <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>

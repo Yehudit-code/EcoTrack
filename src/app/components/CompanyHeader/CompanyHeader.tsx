@@ -1,27 +1,25 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useUserStore } from '@/store/useUserStore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
-import styles from './CompanyHeader.module.css';
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLeaf,
+  faHome,
+  faChartBar,
+  faDatabase,
+  faInfoCircle,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
-export default function Header() {
-  const user = useUserStore((s) => s.user);
-  const hasHydrated = useUserStore((s) => s._hasHydrated);
-  const [profilePic, setProfilePic] = useState('/images/default-profile-company.png');
+import styles from "./CompanyHeader.module.css";
+import { useUserStore } from "@/store/useUserStore";
 
-  useEffect(() => {
-    if (!hasHydrated || !user) return;
+export default function CompanyHeader() {
+  const user = useUserStore((state) => state.user);
 
-    setProfilePic(
-      user.photo ||
-      '/images/default-profile-company.png'
-    );
-  }, [user, hasHydrated]);
-
-  if (!hasHydrated) return null; // אל תציג את ההדר לפני שהמשתמש נטען
+  const profilePic =
+    user?.photo ||
+    "/images/default-profile-company.png";
 
   return (
     <header className={styles.header}>
@@ -35,14 +33,17 @@ export default function Header() {
           <FontAwesomeIcon icon={faHome} />
           <span>Home</span>
         </Link>
+
         <Link href="/company/display-users" className={styles.navLink}>
           <FontAwesomeIcon icon={faDatabase} />
           <span>Display Users</span>
         </Link>
+
         <Link href="/contact" className={styles.navLink}>
           <FontAwesomeIcon icon={faChartBar} />
           <span>Contact</span>
         </Link>
+
         <Link href="/about" className={styles.navLink}>
           <FontAwesomeIcon icon={faInfoCircle} />
           <span>About</span>
@@ -51,7 +52,19 @@ export default function Header() {
 
       <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
-          <img src={profilePic} alt="Profile" className={styles.profileImg} />
+          {user ? (
+            <div className={styles.profileContainer}>
+              <img
+                src={profilePic}
+                alt="Company Profile"
+                className={styles.profileImg}
+              />
+            </div>
+          ) : (
+            <div className={styles.defaultProfile}>
+              <FontAwesomeIcon icon={faUser} />
+            </div>
+          )}
         </Link>
       </div>
     </header>

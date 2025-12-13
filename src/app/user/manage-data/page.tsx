@@ -5,6 +5,7 @@ import styles from "./ManageData.module.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import MonthYearPicker from "./MonthYearPicker";
+import { useUserStore } from "@/store/useUserStore";
 
 import {
   fetchUserConsumptionByEmail,
@@ -47,10 +48,13 @@ interface LoadingState {
 
 export default function ManageDataPage() {
   const now = new Date();
+
+  const user = useUserStore((s) => s.user);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
+
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<FormState>({
     Electricity: "",
     Water: "",
@@ -63,35 +67,25 @@ export default function ManageDataPage() {
   const [messages, setMessages] = useState<MessageState>({});
   const [loading, setLoading] = useState<LoadingState>({});
 
-  /* ------------------------------ */
-  /* LOAD USER EMAIL                */
-  /* ------------------------------ */
+  /* ------------------------------
+     Load data after hydration
+  ------------------------------ */
   useEffect(() => {
-    const stored = localStorage.getItem("currentUser");
-    let email = null;
+    if (!hasHydrated) return;
 
-    if (stored) {
-      try {
-        email = JSON.parse(stored).email || null;
-      } catch {}
+    if (!user?.email) {
+      setMessages({ global: "User e-mail is missing." });
+      return;
     }
 
-    if (email) {
-      setUserEmail(email);
-      loadExistingData(email, selectedMonth, selectedYear);
-    } else {
-      setMessages((prev) => ({
-        ...prev,
-        global: "User e-mail is missing.",
-      }));
-    }
-  }, []);
+    loadExistingData(user.email, selectedMonth, selectedYear);
+  }, [hasHydrated, user, selectedMonth, selectedYear]);
 
-
-  /* ------------------------------ */
-  /* LOAD DATA FOR SELECTED MONTH   */
-  /* ------------------------------ */
-  async function loadExistingData(email: string, month: number, year: number) {
+  async function loadExistingData(
+    email: string,
+    month: number,
+    year: number
+  ) {
     try {
       const data = await fetchUserConsumptionByEmail(
         email,
@@ -120,26 +114,17 @@ export default function ManageDataPage() {
       setFormValues(newValues);
       setDocIds(newIds);
     } catch {
-      setMessages((prev) => ({
-        ...prev,
-        global: "Failed to load data for this month.",
-      }));
+      setMessages({ global: "Failed to load data for this month." });
     }
   }
 
-  /* ------------------------------ */
-  /* INPUT HANDLING                 */
-  /* ------------------------------ */
   function handleInputChange(category: MainCategory, value: string) {
     setFormValues((prev) => ({ ...prev, [category]: value }));
     setMessages((prev) => ({ ...prev, [category]: null }));
   }
 
-  /* ------------------------------ */
-  /* SAVE DATA PER CATEGORY         */
-  /* ------------------------------ */
   async function handleSave(category: MainCategory) {
-    if (!userEmail) {
+    if (!user?.email) {
       setMessages((prev) => ({
         ...prev,
         [category]: "User e-mail is missing.",
@@ -160,7 +145,7 @@ export default function ManageDataPage() {
 
     try {
       const base = {
-        userEmail,
+        userEmail: user.email,
         category: category as ConsumptionCategory,
         value: numericValue,
         month: selectedMonth,
@@ -177,11 +162,7 @@ export default function ManageDataPage() {
       }
 
       setDocIds((prev) => ({ ...prev, [category]: saved._id }));
-
-      setMessages((prev) => ({
-        ...prev,
-        [category]: "Saved!",
-      }));
+      setMessages((prev) => ({ ...prev, [category]: "Saved." }));
     } catch (err: any) {
       setMessages((prev) => ({
         ...prev,
@@ -192,9 +173,6 @@ export default function ManageDataPage() {
     }
   }
 
-  /* ------------------------------ */
-  /* CARD RENDER                    */
-  /* ------------------------------ */
   function renderCard(
     category: MainCategory,
     title: string,
@@ -204,10 +182,6 @@ export default function ManageDataPage() {
     return (
       <div className={styles.dataCard}>
         <h3>{title}</h3>
-
-        <p className={styles.cardDescription}>
-          Enter your monthly {title.toLowerCase()} usage.
-        </p>
 
         <div className={styles.inputGroup}>
           <label>{unitLabel}</label>
@@ -224,7 +198,7 @@ export default function ManageDataPage() {
           onClick={() => handleSave(category)}
           disabled={loading[category]}
         >
-          {loading[category] ? "Saving…" : "Save Data"}
+          {loading[category] ? "Saving..." : "Save Data"}
         </button>
 
         {messages[category] && (
@@ -234,47 +208,38 @@ export default function ManageDataPage() {
     );
   }
 
-  /* ------------------------------ */
-  /* PAGE UI                        */
-  /* ------------------------------ */
+  if (!hasHydrated) {
+    return <div className={styles.container}>Loading...</div>;
+  }
+
   return (
     <div className={styles.container}>
       <Header />
 
       <main className={styles.main}>
-        <div className={styles.contentBox}>
-          <h1 className={styles.title}>Manage Consumption Data</h1>
+        <h1 className={styles.title}>Manage Consumption Data</h1>
 
-          {/* NEW MONTH-YEAR PICKER */}
-          <MonthYearPicker
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onChange={(m, y) => {
-              setSelectedMonth(m);
-              setSelectedYear(y);
-              if (userEmail) loadExistingData(userEmail, m, y);
-            }}
-          />
+        <MonthYearPicker
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          onChange={(m, y) => {
+            setSelectedMonth(m);
+            setSelectedYear(y);
+          }}
+        />
 
-          {/* CARDS */}
-          <section className={styles.dataSection}>
-            {renderCard(
-              "Electricity",
-              "Electricity",
-              "Monthly electricity (kWh):",
-              "Enter kWh"
-            )}
-            {renderCard("Water", "Water", "Monthly water (m³):", "Enter m³")}
-            {renderCard("Gas", "Gas", "Monthly gas (m³):", "Enter m³")}
-            {renderCard(
-              "Transportation",
-              "Transportation",
-              "Monthly distance (km):",
-              "Enter km"
-            )}
-            {renderCard("Waste", "Waste", "Weekly waste (kg):", "Enter kg")}
-          </section>
-        </div>
+        <section className={styles.dataSection}>
+          {renderCard("Electricity", "Electricity", "kWh", "Enter kWh")}
+          {renderCard("Water", "Water", "m³", "Enter m³")}
+          {renderCard("Gas", "Gas", "m³", "Enter m³")}
+          {renderCard(
+            "Transportation",
+            "Transportation",
+            "km",
+            "Enter km"
+          )}
+          {renderCard("Waste", "Waste", "kg", "Enter kg")}
+        </section>
       </main>
 
       <Footer />

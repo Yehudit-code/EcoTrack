@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../components/Header/Header";
-import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
 import Footer from "../components/Footer/Footer";
 import ChatBubble from "../components/AIChat/ChatBubble";
 import ChatWindow from "../components/AIChat/ChatWindow";
@@ -65,14 +64,13 @@ export default function HomePage() {
 
   return (
     <>
-      {role === "company" ? <CompanyHeader /> : <Header />}
-
+      <Header />
       <div className={styles.container}>
         <main className={styles.main}>
           <div className={styles.heroSection}>
             <div className={styles.heroContent}>
               <h1 className={styles.mainTitle}>Welcome to EcoTrack</h1>
-             </div> 
+            </div>
           </div>
 
 
@@ -80,9 +78,8 @@ export default function HomePage() {
           <div className={styles.featuresSection}>
             <div
               id="feature-water"
-              className={`${styles.featureRow} ${styles.slideLeft} ${
-                visibleItems.has("feature-water") ? styles.visible : ""
-              }`}
+              className={`${styles.featureRow} ${styles.slideLeft} ${visibleItems.has("feature-water") ? styles.visible : ""
+                }`}
               ref={createObserverRef}
             >
               <div className={styles.featureImage}>
@@ -96,9 +93,8 @@ export default function HomePage() {
 
             <div
               id="feature-energy"
-              className={`${styles.featureRow} ${styles.slideRight} ${
-                visibleItems.has("feature-energy") ? styles.visible : ""
-              }`}
+              className={`${styles.featureRow} ${styles.slideRight} ${visibleItems.has("feature-energy") ? styles.visible : ""
+                }`}
               ref={createObserverRef}
             >
               <div className={styles.featureContent}>
@@ -112,9 +108,8 @@ export default function HomePage() {
 
             <div
               id="feature-transport"
-              className={`${styles.featureRow} ${styles.slideLeft} ${
-                visibleItems.has("feature-transport") ? styles.visible : ""
-              }`}
+              className={`${styles.featureRow} ${styles.slideLeft} ${visibleItems.has("feature-transport") ? styles.visible : ""
+                }`}
               ref={createObserverRef}
             >
               <div className={styles.featureImage}>
