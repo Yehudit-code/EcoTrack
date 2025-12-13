@@ -62,6 +62,7 @@ export default function UserDetailsPage({
     );
 
   return (
+    <div className={styles.PageBackground}>
     <div className={styles.container}>
       <h1 className={styles.title}>User Details</h1>
 
@@ -119,6 +120,7 @@ export default function UserDetailsPage({
           Create Payment Offer
         </button>
       </div>
+    </div>
     </div>
   );
 }

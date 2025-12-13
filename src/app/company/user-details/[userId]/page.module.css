@@ -1,63 +1,447 @@
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%) !important;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
-  padding: 40px;
-  max-width: 900px;
+  min-height: 100vh;
+  padding: 80px 40px 80px;   /* היה 140px → הקטנתי ל־80px */
+  max-width: 1000px;
   margin: 0 auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  position: relative;
+  overflow: hidden;
+  
+}
+
+.pageBackground {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  min-height: 100vh;
+  width: 100%;
+}
+
+
+/* רקע דקורטיבי מונפש */
+.container::before {
+  content: '';
+  position: absolute;
+  top: -15%;
+  right: -8%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(155, 197, 155, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatSlow 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(123, 168, 123, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatSlow 15s ease-in-out infinite reverse;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(40px, -40px) scale(1.1);
+  }
 }
 
 .title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 24px;
-  color: #0a3d2f;
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 48px;
+  background: linear-gradient(135deg, #2d5c2d 0%, #4a934a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1.5px;
+  text-align: center;
+  animation: fadeInDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card {
-  background: white;
-  border: 1px solid #daddd8;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 32px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border: 2px solid rgba(155, 197, 155, 0.25);
+  border-radius: 18px;              /* היה 24px */
+  padding: 26px;                   /* היה 36px */
+  margin-bottom: 24px;             /* היה 32px */
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08); /* קטן ועדין יותר */
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: cardSlideIn 0.6s ease backwards;
+  z-index: 1;
+}
+
+.card:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* קו עליון מונפש */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #9bc59b 0%, #7ba87b 50%, #9bc59b 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.card:hover {
+  transform: translateY(-6px);      /* היה -8px */
+  box-shadow: 0 12px 32px rgba(155, 197, 155, 0.2);
+  border-color: rgba(155, 197, 155, 0.45);
 }
 
 .cardTitle {
-  font-size: 20px;
-  color: #0a3d2f;
-  font-weight: 600;
-  margin-bottom: 16px;
+    font-size: 1.45rem;               /* היה 1.75rem */
+  margin-bottom: 18px;              /* היה 24px */
+  gap: 10px; 
+  color: #2d5c2d;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
 }
 
+.cardTitle::before {
+  content: '';
+  width: 5px;
+  height: 26px;
+  background: linear-gradient(180deg, #9bc59b 0%, #7ba87b 100%);
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.card p {
+  color: #334155;
+  position: relative;
+  transition: all 0.2s ease;
+    font-size: 0.95rem;               /* היה 1.0625rem */
+  line-height: 1.7;                 /* היה 2 */
+  margin-bottom: 10px;              /* היה 12px */
+  padding-left: 14px; 
+}
+
+.card p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: #9bc59b;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.card p:hover {
+  transform: translateX(6px);       /* היה 8px */
+  color: #2d5c2d;
+}
+
+.card p:hover::before {
+  background: #7ba87b;
+  transform: translateY(-50%) scale(1.3);
+}
+
+.card p strong {
+  font-weight: 700;
+  color: #2d5c2d;
+  margin-right: 8px;
+}
+
+/* טבלה מעוצבת */
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .th {
   text-align: left;
-  padding: 12px 0;
-  border-bottom: 2px solid #ccc;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #7ba87b;
+}
+
+.th:first-child {
+  border-radius: 12px 0 0 0;
+}
+
+.th:last-child {
+  border-radius: 0 12px 0 0;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #f8fdf8;
+}
+
+.table tbody tr:hover {
+  background: #e8f5e9;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(155, 197, 155, 0.15);
 }
 
 .td {
-  padding: 10px 0;
-  border-bottom: 1px solid #eaeaea;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8f5e9;
+  font-size: 1rem;
+  color: #334155;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:last-child .td {
+  border-bottom: none;
+}
+
+.table tbody tr:last-child .td:first-child {
+  border-radius: 0 0 0 12px;
+}
+
+.table tbody tr:last-child .td:last-child {
+  border-radius: 0 0 12px 0;
+}
+
+/* Empty state */
+.card > p:only-child {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 1.125rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #f8fdf8 0%, #f0fdf4 100%);
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+  margin: 0;
 }
 
 .btnContainer {
   display: flex;
-  justify-content: end;
-  margin-top: 32px;
+  justify-content: center;
+  margin-top: 48px;
+  animation: fadeInUp 0.8s ease backwards;
+  animation-delay: 0.4s;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .button {
-  padding: 12px 28px;
-  background: #1e7b52;
+  padding: 18px 48px;
+  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   color: white;
-  border-radius: 30px;
-  font-weight: 600;
-  transition: 0.2s;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1.125rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button:hover::before {
+  width: 400px;
+  height: 400px;
 }
 
 .button:hover {
-  background: #165f3f;
+  background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(155, 197, 155, 0.45);
+}
+
+.button:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.35);
+}
+
+/* Loading & Error States */
+.container > div:first-child {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(155, 197, 155, 0.2);
+  animation: pulseIn 0.6s ease;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes pulseIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    padding: 120px 24px 60px;
+  }
+
+  .title {
+    font-size: 2.25rem;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    padding: 28px;
+  }
+
+  .cardTitle {
+    font-size: 1.5rem;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .th,
+  .td {
+    padding: 12px 14px;
+  }
+
+  .button {
+    padding: 16px 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 100px 16px 40px;
+  }
+
+  .title {
+    font-size: 1.875rem;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .cardTitle {
+    font-size: 1.375rem;
+  }
+
+  .card p {
+    font-size: 0.9375rem;
+  }
+
+  .th,
+  .td {
+    padding: 10px 12px;
+    font-size: 0.8125rem;
+  }
+
+  .button {
+    width: 100%;
+    padding: 14px 24px;
+  }
 }

@@ -42,7 +42,9 @@ export default function SignInForm() {
 
       if (res.ok) {
         setUser(data.user);
+        console.log("➡️ Going to /home...");
         router.push("/home");
+        console.log("➡️ AFTER PUSH");
       } else {
         showToast(data.error || "Error signing in");
       }

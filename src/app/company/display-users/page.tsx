@@ -8,6 +8,7 @@ import {
   fetchUsersByCategory,
   toggleUserTalkStatus,
 } from "@/app/services/client/company/userDisplayService";
+import CompanyHeader from "@/app/components/CompanyHeader/CompanyHeader";
 
 export default function DisplayUsersPage() {
   const currentUser = useUserStore((state) => state.user);
@@ -32,7 +33,7 @@ export default function DisplayUsersPage() {
       setLoading(true);
       try {
         const allUsers = await fetchUsersByCategory(category);
-        setUsers(allUsers.slice(0, 3));
+        setUsers(allUsers);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -62,6 +63,8 @@ export default function DisplayUsersPage() {
 
   return (
     <div className={styles.container}>
+            <CompanyHeader />
+
       <h1 className={styles.title}>Top users in category: {category}</h1>
 
       <UsersList

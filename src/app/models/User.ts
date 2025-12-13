@@ -7,14 +7,17 @@ export interface IUser {
   name?: string;
   email: string;
   password: string;
-  role: UserRole; // "user" | "company"
+  role: UserRole;
   companyCategory?: string;
   country?: string;
   phone?: string;
   improvementScore?: number;
-  talked?: boolean;
   birthDate?: Date;
   photo?: string;
+
+  // חדש:
+  talkedByCompanies?: Map<string, boolean>;
+
   companies?: {
     electricity?: string;
     water?: string;
@@ -22,6 +25,7 @@ export interface IUser {
     recycling?: string;
     solar?: string;
   };
+
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -37,7 +41,14 @@ const UserSchema = new Schema({
   birthDate: Date,
   companyCategory: String,
   improvementScore: Number,
-  talked: { type: Boolean, default: false },
+
+  // ❌ במקום talked: Boolean
+  // ✔️ שדה חדש שמחזיק מצב לפי חברה
+  talkedByCompanies: {
+    type: Map,
+    of: Boolean,
+    default: {},
+  },
 });
 
 export const User = models.User || model("User", UserSchema, "Users");

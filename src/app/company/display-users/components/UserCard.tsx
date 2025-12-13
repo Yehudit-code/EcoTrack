@@ -27,14 +27,15 @@ export default function UserCard({ user, onToggleTalk }: any) {
           }}
         />
 
-        <div>
+        <div className={styles.userDetails}>
           <p className={styles.userName}>{user.name}</p>
-          <p className={styles.userInfo}>{user.phone}</p>
-          <p className={styles.userInfo}>{user.email}</p>
-          <p className={styles.userInfo}>
-            Current consumption: {user.value ?? "—"}
-          </p>
+
+          <div className={styles.userInfoList}>
+            <p className={styles.userInfo}>{user.email}</p>
+            <p className={styles.userInfo}>Current consumption: {user.value ?? "—"}</p>
+          </div>
         </div>
+
       </div>
 
       <div className={styles.graphBox}>
@@ -47,9 +48,8 @@ export default function UserCard({ user, onToggleTalk }: any) {
       </div>
 
       <button
-        className={`${styles.talkButton} ${
-          user.talked ? styles.talked : styles.notTalked
-        }`}
+        className={`${styles.talkButton} ${user.talked ? styles.talked : styles.notTalked
+          }`}
         onClick={() => onToggleTalk(user.email)}
       >
         {user.talked ? "Talked ✓" : "Mark as Talked"}

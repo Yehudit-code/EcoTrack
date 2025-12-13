@@ -3,7 +3,8 @@ import React from "react";
 import { Factory, Droplet, Bus, Recycle, Sun } from "lucide-react";
 import styles from "@/app/profile/page.module.css";
 
-export default function ProfileCompanies({ companies }: any) {
+export default function ProfileCompanies({ companies, role }: any) {
+    if (role === "company") return null; // ❌ לא להציג לחברה
   const c = companies || {};
 
   return (

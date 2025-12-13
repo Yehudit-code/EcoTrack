@@ -1,124 +1,531 @@
 .container {
-  padding: 24px;
+  min-height: 100vh;
+  padding: 140px 24px 60px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* רקע דקורטיבי מונפש */
+.container::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(155, 197, 155, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatBackground 25s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(123, 168, 123, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatBackground 20s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes floatBackground {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(50px, -50px) scale(1.15);
+  }
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 48px;
+  text-align: center;
+  background: linear-gradient(135deg, #2d5c2d 0%, #4a934a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+  animation: fadeInDown 0.8s ease;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .loading,
 .error,
 .noUsers {
   text-align: center;
-  margin-top: 60px;
-  color: #555;
+  margin-top: 100px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(155, 197, 155, 0.2);
+  animation: pulseIn 0.6s ease;
+}
+
+@keyframes pulseIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.error {
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.2);
 }
 
 .userList {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  max-width: 700px;
+  gap: 20px;
+  /* היה 32px */
+  max-width: 720px;
+  /* היה 900px */
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  background: #ffffff;
+  border-radius: 14px;
+  /* היה 18px */
+  padding: 20px;
+  /* היה 32px */
+  border: 1px solid rgba(155, 197, 155, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  /* צל קטן יותר */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: cardSlideIn 0.5s ease backwards;
+}
+
+.card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* קו עליון דקורטיבי */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #9bc59b 0%, #7ba87b 50%, #9bc59b 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.card:hover::before {
+  transform: scaleX(1);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(155, 197, 155, 0.25);
+  border-color: rgba(155, 197, 155, 0.5);
 }
 
 .userHeader {
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  /* היה 20px */
   cursor: pointer;
+  padding: 10px;
+  /* היה 16px */
+  border-radius: 12px;
+  /* היה 16px */
+  transition: all 0.3s ease;
+  margin: -10px -10px 10px -10px;
+}
+
+.userHeader:hover {
+  background: linear-gradient(135deg, #f8fdf8 0%, #f0fdf4 100%);
+  transform: translateX(8px);
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  /* היה 80px */
+  height: 60px;
   border-radius: 50%;
-  border: 1px solid #ccc;
+  border: 3px solid #9bc59b;
+  /* היה 4px */
+  flex-shrink: 0;
+  object-fit: cover;
+  box-shadow: 0 3px 10px rgba(155, 197, 155, 0.25);
+  transition: all 0.3s ease;
+}
+
+
+.userHeader:hover .avatar {
+  transform: scale(1.1) rotate(5deg);
+  border-color: #7ba87b;
+  box-shadow: 0 8px 24px rgba(155, 197, 155, 0.4);
 }
 
 .userName {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 1.2rem;
+  /* היה 1.5rem */
+  font-weight: 700;
+  color: #2d5c2d;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
 }
 
 .userInfo {
-  font-size: 14px;
-  color: #777;
+  font-size: 0.85rem;
+  /* היה 0.9375rem */
+  margin-bottom: 4px;
+  position: relative;
+  padding-left: 12px;
+}
+
+
+.userInfo:last-child {
+  margin-top: 4px;
+  font-weight: 700;
+  color: #2d5c2d;
+  font-size: 0.9rem;
+  /* היה 1rem */
+}
+
+
+.userInfo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: #9bc59b;
+  border-radius: 50%;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.userInfoList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .graphBox {
-  margin-top: 12px;
+  margin-top: 16px;
+  /* היה 24px */
+  padding: 14px;
+  background: linear-gradient(135deg, #f8fdf8 0%, #ffffff 100%);
+  border-radius: 12px;
+  /* היה 16px */
   display: flex;
   justify-content: center;
+  border: 1px solid #e8f5e9;
+  box-shadow: inset 0 2px 8px rgba(155, 197, 155, 0.08);
 }
 
 .talkButton {
-  margin-top: 12px;
-  padding: 8px 16px;
+  margin-top: 16px;
+  width: 100%;
+  padding: 10px 16px;
   font-weight: 600;
-  border-radius: 20px;
+  font-size: 0.95rem;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.talkButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.talkButton:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.talkButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.talkButton:active {
+  transform: translateY(-1px);
 }
 
 .talked {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
+}
+
+.talked:hover {
+  background: linear-gradient(135deg, #6a956a 0%, #598959 100%);
 }
 
 .notTalked {
-  background: #16a34a;
+  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
 }
 
+.notTalked:hover {
+  background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
+}
+
+/* MODAL */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal {
-  background: #fff;
-  padding: 24px;
-  width: 380px;
-  border-radius: 12px;
+  background: #ffffff;
+  padding: 36px;
+  width: 90%;
+  max-width: 480px;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(155, 197, 155, 0.3);
+  position: relative;
+}
+
+/* קו עליון דקורטיבי במודל */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #9bc59b 0%, #7ba87b 50%, #9bc59b 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modalTitle {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #2d5c2d;
+  text-align: center;
+  letter-spacing: -0.5px;
 }
 
 .modalGraph {
-  margin: 16px 0;
+  margin: 24px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fdf8 0%, #ffffff 100%);
+  border-radius: 16px;
+  border: 2px solid #e8f5e9;
 }
 
 .proposalBtn {
   width: 100%;
-  background: #16a34a;
+  background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  margin-top: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(155, 197, 155, 0.3);
+}
+
+.proposalBtn:hover {
+  background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(155, 197, 155, 0.4);
 }
 
 .closeBtn {
   width: 100%;
-  background: #ddd;
-  color: #000;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #334155;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 12px;
+  border: 2px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.closeBtn:hover {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    padding: 120px 16px 40px;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .userHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .userName {
+    font-size: 1.375rem;
+  }
+
+  .modal {
+    padding: 28px;
+  }
+
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .talkButton {
+    font-size: 0.9375rem;
+    padding: 14px 20px;
+  }
 }
