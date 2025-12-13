@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./Requests.module.css";
+import { useUserStore } from "@/store/useUserStore";
 
 interface CompanyRequestItem {
   _id: string;
@@ -17,30 +18,32 @@ interface CompanyRequestItem {
 }
 
 export default function CompanyRequestsPage() {
+  const user = useUserStore((state) => state.user);
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
+
   const [requests, setRequests] = useState<CompanyRequestItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      const company = JSON.parse(
-        localStorage.getItem("currentUser") || "{}"
-      );
-
-      if (!company._id) {
-        setLoading(false);
-        return;
-      }
-
-      const res = await fetch(
-        `/api/company-requests?companyId=${company._id}`
-      );
-      const data = await res.json();
-      setRequests(data);
+    if (!hasHydrated || !user || user.role !== "company") {
       setLoading(false);
+      return;
     }
 
+    const load = async () => {
+      try {
+        const res = await fetch(
+          `/api/company-requests?companyId=${user._id}`
+        );
+        const data = await res.json();
+        setRequests(Array.isArray(data) ? data : []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     load();
-  }, []);
+  }, [user, hasHydrated]);
 
   if (loading) {
     return <div className={styles.page}>Loading requests...</div>;
@@ -71,7 +74,9 @@ export default function CompanyRequestsPage() {
               <div className={styles.row}>
                 <span className={styles.label}>User</span>
                 <span className={styles.value}>
-                  {req.userData?.name || req.userData?.email || req.userId}
+                  {req.userData?.name ||
+                    req.userData?.email ||
+                    req.userId}
                 </span>
               </div>
 

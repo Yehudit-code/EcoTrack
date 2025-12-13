@@ -1,7 +1,6 @@
 "use client";
 
-import Header from "../components/Header/Header";
-import CompanyHeader from "../components/CompanyHeader/CompanyHeader";
+import Header from "@/app/components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import ContentBlock from "./components/ContentBlock";
 import styles from "./page.module.css";
@@ -14,7 +13,7 @@ export default function AboutPage() {
   return (
     <>
       {/* Header based on role */}
-      {currentUser?.role === "company" ? <CompanyHeader /> : <Header />}
+      {/* {currentUser?.role === "company" ? <CompanyHeader /> : <Header />} */}
 
       <div className={styles.pageContainer}>
         <main className={styles.container}>

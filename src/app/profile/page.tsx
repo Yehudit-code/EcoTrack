@@ -18,14 +18,14 @@ export default function ProfilePage() {
 
   const currentUser = useUserStore((s) => s.user);
   const hasHydrated = useUserStore((s) => s._hasHydrated);
-  const logout = useUserStore((s) => s.logout);
+  const logoutStore = useUserStore((s) => s.logout);
   const setUser = useUserStore((s) => s.setUser);
 
   const [editData, setEditData] = useState<any>({});
   const [proposalsCount, setProposalsCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load data once hydrated
+  // Load data once store is hydrated
   useEffect(() => {
     if (!hasHydrated || !currentUser) return;
 
@@ -43,7 +43,9 @@ export default function ProfilePage() {
     if (currentUser.role === "user") {
       fetch(`/api/company-requests?userId=${currentUser._id}`)
         .then((res) => res.json())
-        .then((data) => setProposalsCount(Array.isArray(data) ? data.length : 0));
+        .then((data) =>
+          setProposalsCount(Array.isArray(data) ? data.length : 0)
+        );
     }
   }, [currentUser, hasHydrated]);
 
@@ -54,7 +56,7 @@ export default function ProfilePage() {
     return <p className={styles.loading}>No user data.</p>;
 
   /* ----------------------------------------------------
-      שמירת עריכה
+      Save profile changes
   ---------------------------------------------------- */
   const handleSave = async () => {
     try {
@@ -78,19 +80,32 @@ export default function ProfilePage() {
     }
   };
 
+  /* ----------------------------------------------------
+      Proper logout (server + client)
+  ---------------------------------------------------- */
+  const handleLogout = async () => {
+    try {
+      // Invalidate JWT cookie on server
+      await fetch("/api/logout", { method: "POST" });
+    } catch {
+      // Even if request fails, continue client cleanup
+    }
+
+    // Clear Zustand store (and persisted state)
+    logoutStore();
+    localStorage.removeItem("ecotrack-user");
+
+    // Redirect to sign-in
+    router.replace("/signIn");
+  };
+
   return (
     <div className={styles.profilePage}>
       <button className={styles.backBtn} onClick={() => router.back()}>
         <ArrowLeft size={20} /> Back
       </button>
 
-      <button
-        className={styles.logoutBtn}
-        onClick={() => {
-          logout();
-          router.push("/");
-        }}
-      >
+      <button className={styles.logoutBtn} onClick={handleLogout}>
         <LogOut size={18} /> Logout
       </button>
 
