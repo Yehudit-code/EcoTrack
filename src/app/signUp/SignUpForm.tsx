@@ -163,26 +163,20 @@ export default function SignUpForm() {
       {toast && <Toast text={toast} />}
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.profileUpload}>
-          <div
-            className={styles.profileImageContainer}
-            onClick={handleProfileClick}
+        {/* ==== NEW IMAGE UPLOAD FIELD ==== */}
+        {/* ==== NEW IMAGE UPLOAD FIELD (ICON ONLY CLICKABLE) ==== */}
+        <div className={styles.fileRow}>
+          <span className={styles.fileText}>
+            {photoPreview ? "Image selected" : "Upload profile image"}
+          </span>
+
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => fileInputRef.current?.click()}
           >
-            {photoPreview ? (
-              <img
-                src={photoPreview}
-                alt="Profile"
-                className={styles.profileImage}
-              />
-            ) : (
-              <div className={styles.placeholder}>
-                <span className={styles.cameraIcon}>📷</span>
-              </div>
-            )}
-            <div className={styles.overlay}>
-              <span className={styles.changeText}>Change</span>
-            </div>
-          </div>
+            <img src="/images/upload.png" alt="upload" className={styles.uploadIcon} />
+          </button>
 
           <input
             type="file"
@@ -192,6 +186,12 @@ export default function SignUpForm() {
             className={styles.hiddenInput}
           />
         </div>
+
+        {photoPreview && (
+          <img src={photoPreview} alt="Preview" className={styles.thumbPreview} />
+        )}
+
+
 
         <input
           type="text"

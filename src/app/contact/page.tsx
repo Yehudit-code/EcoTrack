@@ -58,30 +58,51 @@ export default function ContactPage() {
           <h1 className={styles.title}>Contact EcoTrack</h1>
 
           <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
-            <input
-              type="text"
-              value={name}
-              disabled
-              className={styles.disabledInput}
-            />
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Company Name</label>
+              <div className={styles.inputWrapper}>
+                <svg className={styles.inputIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <input
+                  type="text"
+                  value={name}
+                  disabled
+                  className={styles.disabledInput}
+                />
+              </div>
+            </div>
 
-            <input
-              type="email"
-              value={email}
-              disabled
-              className={styles.disabledInput}
-            />
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Email Address</label>
+              <div className={styles.inputWrapper}>
+                <svg className={styles.inputIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <input
+                  type="email"
+                  value={email}
+                  disabled
+                  className={styles.disabledInput}
+                />
+              </div>
+            </div>
 
-            <textarea
-              placeholder="Write your message here..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className={styles.textarea}
-              required
-            />
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Your Message</label>
+              <textarea
+                placeholder="Tell us what's on your mind..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className={styles.textarea}
+                required
+              />
+            </div>
 
             <button type="submit" className={styles.button}>
-              Send
+              Send Message
             </button>
           </form>
 

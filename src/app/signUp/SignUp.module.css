@@ -1,50 +1,74 @@
+/* ==== PAGE BG ==== */
 .container {
+  min-height: 100vh;              /* פותר את הדבק למעלה + למטה */
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #ffffff;
-  font-family: "Segoe UI", Arial, sans-serif;
+  align-items: flex-start;        /* לא דבוק למרכז לגמרי */
+  padding-top: 60px;              /* מרווח מהעליון */
+  padding-bottom: 60px;           /* מרווח מהתחתון */
+  background: #f7f9fb;            /* רקע אחיד */
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;         /* חשוב למניעת גלילה מוזרה */
 }
 
+
+
+/* ==== CARD ==== */
 .formWrapper {
+  width: 380px;
+  background: #ffffff;
+  padding: 48px 50px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
   text-align: center;
-  background: #fffdf9;
-  padding: 40px 60px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 360px;
+  animation: fadeIn .25s ease-out;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==== TITLE ==== */
 .logo {
-  color: #3b6e3b;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  color: #2a783f;
+  margin-bottom: 6px;
 }
 
-/* כפתורי הרשמה חברתית */
+.logo span {
+  color: #3f7a3f;
+}
+
+/* ==== SOCIAL AUTH BUTTONS ==== */
 .authButtons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 6px;
 }
 
 .providerBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
   width: 100%;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background-color: #fff8eb;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: 0.2s;
 }
 
 .providerBtn:hover {
-  background-color: #f3f3f3;
+  background: #f5f5f5;
 }
 
 .icon {
@@ -52,57 +76,30 @@
   height: 18px;
 }
 
-/* קו מפריד */
+/* ==== DIVIDER ==== */
 .divider {
-  margin: 20px 0;
-  color: gray;
-  font-size: 14px;
+  color: #777;
+  font-size: 13px;
   display: flex;
   align-items: center;
-  text-align: center;
+  gap: 12px;
+  margin: 28px 0 22px;
 }
 
 .divider::before,
 .divider::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #ddd;
+  height: 1px;
+  background: #e3e3e3;
 }
 
-.divider:not(:empty)::before {
-  margin-right: 0.75em;
-}
-
-.divider:not(:empty)::after {
-  margin-left: 0.75em;
-}
-
-/* טופס הרשמה */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.inputField {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-}
-
-.inputField:focus {
-  border-color: #3b6e3b;
-}
-
+/* ==== PROFILE UPLOAD ==== */
 .profileUpload {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
-  position: relative;
+  margin-bottom: 16px;
 }
 
 .profileImageContainer {
@@ -111,14 +108,15 @@
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #3b6e3b;
+  border: 2px solid #3f7a3f;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s ease;
+  background: #f2f2f2;
 }
 
 .profileImageContainer:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(59, 110, 59, 0.3);
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(63,122,63,0.3);
 }
 
 .profileImage {
@@ -130,79 +128,92 @@
 .placeholder {
   width: 100%;
   height: 100%;
-  background: #f2f2f2;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 28px;
+  justify-content: center;
   color: #999;
+  font-size: 28px;
 }
 
 .overlay {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 30%;
-  background: rgba(59, 110, 59, 0.8);
+  height: 28%;
+  background: rgba(63,122,63,0.85);
   color: white;
   font-size: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity .25s ease;
 }
 
 .profileImageContainer:hover .overlay {
   opacity: 1;
 }
 
-.changeText {
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
 .hiddenInput {
   display: none;
 }
 
-/* בחירת תפקיד */
+/* ==== FORM INPUTS ==== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.inputField,
 .roleSelect {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background: #fafafa;
   font-size: 14px;
+  transition: 0.2s;
+}
+
+.inputField:focus,
+.roleSelect:focus {
+  border-color: #3f7a3f;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
   outline: none;
 }
 
-.roleSelect:focus {
-  border-color: #3b6e3b;
-}
-
-/* כפתור הרשמה */
+/* ==== SIGNUP BUTTON ==== */
 .signInButton {
-  background-color: #3b6e3b;
-  color: white;
-  padding: 10px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  font-size: 15px;
   font-weight: 600;
-  margin-top: 5px;
+  cursor: pointer;
+  color: white;
+  background: #3f7a3f;
+  transition: .2s;
 }
 
 .signInButton:hover {
-  background-color: #2e5b2e;
+  background: #366a36;
 }
 
+/* ==== CONSENT ==== */
 .consentText {
-  font-size: 9px;
-  color: #727272;
-  margin-top: 14px;
+  font-size: 10px;
+  color: #888;
+  margin-top: 4px;
   text-align: left;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
+/* ==== MODAL ==== */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -225,7 +236,6 @@
 .modalButtons {
   margin-top: 18px;
   display: flex;
-  justify-content: space-between;
   gap: 12px;
 }
 
@@ -249,9 +259,177 @@
   cursor: pointer;
 }
 
-.consentText {
-  font-size: 9px;
+
+/* ==== FILE UPLOAD PROFESSIONAL FIELD ==== */
+
+.uploadWrapper {
+  width: 100%;
   text-align: left;
-  margin-top: 3px;
-  color: #727272;
+  margin-bottom: 20px;
+}
+
+.uploadLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.uploadField {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #dcdcdc;
+  background: #fafafa;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.uploadField:hover {
+  border-color: #3f7a3f;
+  background: #f3f8f3;
+}
+
+.uploadField span {
+  color: #555;
+  font-size: 14px;
+}
+
+.uploadField button {
+  padding: 6px 12px;
+  border: none;
+  background: #3f7a3f;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: .2s;
+}
+
+.uploadField button:hover {
+  background: #356b35;
+}
+
+.thumbPreview {
+  margin-top: 10px;
+  width: 70px;
+  height: 70px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #dcdcdc;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* ==== FILE INPUT FIELD (Like regular input) ==== */
+
+.inputFileRow {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background: #fafafa;
+  font-size: 14px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.inputFileRow:hover {
+  border-color: #3f7a3f;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
+}
+
+.fileIcon {
+  font-size: 18px;
+  opacity: 0.85;
+}
+
+.fileText {
+  color: #555;
+  font-size: 14px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* Thumbnail image */
+.thumbPreview {
+  margin-top: 8px;
+  width: 70px;
+  height: 70px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #dcdcdc;
+}
+
+/* ==== FILE ROW (regular field) ==== */
+.fileRow {
+  width: 100%;
+  height: 50px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: 0.2s;
+}
+
+.fileRow:hover {
+  border-color: #3f7a3f;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(63,122,63,0.15);
+}
+
+.fileText {
+  font-size: 14px;
+  color: #555;
+}
+
+/* ==== ICON BUTTON (ONLY THE ICON IS CLICKABLE) ==== */
+.iconButton {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.iconButton:hover {
+  background: rgba(63,122,63,0.10);
+}
+
+.uploadIcon {
+  width: 15px;
+  height: 15px;
+}
+
+/* Hidden input */
+.hiddenInput {
+  display: none;
+}
+
+/* Preview thumbnail */
+.thumbPreview {
+  margin-top: 10px;
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #ddd;
 }

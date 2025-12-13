@@ -1,5 +1,4 @@
 import { connectDB } from "@/app/services/server/mongodb";
-import { ObjectId } from "mongodb";
 
 export async function GET() {
   try {
@@ -10,31 +9,29 @@ export async function GET() {
     const users = await usersCollection.find({}).toArray();
     const results: any[] = [];
 
-    // ⬅️ תאריך תחילת החודש
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
     for (const user of users) {
       const habits = await habitsCollection
-        .find({
-          userId: new ObjectId(user._id),
-          createdAt: { $gte: monthStart }, // ⬅️ רק מהחודש הנוכחי
-        })
+        .find({ userEmail: user.email })
+        .sort({ year: 1, month: 1 }) // לא חובה כאן, אבל מסודר יפה
         .toArray();
 
-      if (!habits.length) continue;
+      if (habits.length === 0) continue;
 
-      const percents = habits
-        .filter((h: any) => h.previousValue && h.previousValue > 0)
-        .map(
-          (h: any) =>
-            ((h.previousValue - h.value) / h.previousValue) * 100
-        );
+      const savings: number[] = [];
+
+      for (const h of habits) {
+        if (h.previousValue && h.previousValue > 0) {
+          const savingPercent =
+            ((h.previousValue - h.value) / h.previousValue) * 100;
+
+          savings.push(savingPercent);
+        }
+      }
+
+      if (savings.length === 0) continue;
 
       const avgSaving =
-        percents.length > 0
-          ? percents.reduce((a: number, b: number) => a + b, 0) / percents.length
-          : 0;
+        savings.reduce((a, b) => a + b, 0) / savings.length;
 
       results.push({
         name: user.name || "Unknown",
@@ -44,11 +41,11 @@ export async function GET() {
       });
     }
 
-    // מיון מהגדול לקטן
+    // ממיין מהכי חוסך (אחוז גבוה) להכי פחות
     results.sort((a, b) => b.avgSaving - a.avgSaving);
 
-    // מחזיר רק את 4 המובילים
     return Response.json(results.slice(0, 4));
+
   } catch (err) {
     console.error("❌ Error in /api/savers:", err);
     return Response.json({ error: "failed" }, { status: 500 });

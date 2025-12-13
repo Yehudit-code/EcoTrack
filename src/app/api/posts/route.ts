@@ -41,10 +41,11 @@ export async function POST(req: Request) {
             content,
             imageUrl: imageUrl || null,
             createdAt: new Date(),
-            likes: 0,
+            likes: [],
             comments: [],
             shares: 0,
         };
+
 
         const result = await postsCollection.insertOne(newPost);
 
@@ -80,11 +81,35 @@ export async function PATCH(req: Request) {
         const _id = new ObjectId(postId);
 
         if (action === "like") {
+            const { userId } = body;
+            if (!userId) {
+                return Response.json(
+                    { error: "Missing userId for like" },
+                    { status: 400 }
+                );
+            }
+
+            const post = await postsCollection.findOne({ _id });
+            if (!post) {
+                return Response.json({ error: "Post not found" }, { status: 404 });
+            }
+
+            // אם אין מערך לייקים ניצור אחד
+            let likes = Array.isArray(post.likes) ? post.likes : [];
+
+            // Toggle
+            if (likes.includes(userId)) {
+                likes = likes.filter((id: string) => id !== userId);
+            } else {
+                likes.push(userId);
+            }
+
             await postsCollection.updateOne(
                 { _id },
-                { $inc: { likes: 1 } }
+                { $set: { likes } }
             );
         }
+
 
         if (action === "share") {
             await postsCollection.updateOne(

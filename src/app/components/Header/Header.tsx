@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import NotificationMenu from "@/app/components/NotificationMenu/NotificationMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLeaf,
@@ -26,6 +27,7 @@ export default function Header() {
   const [profilePic, setProfilePic] = useState("/images/default-profile.png");
   const [proposalsCount, setProposalsCount] = useState(0);
 
+  // סגירה בלחיצה מחוץ
   useEffect(() => {
     if (!hasHydrated || !user) return;
 
@@ -106,6 +108,7 @@ export default function Header() {
           </Link>
         )}
 
+        {/* פרופיל */}
         <Link href="/profile" className={styles.profileLink}>
           <img src={profilePic} alt="Profile" className={styles.profileImg} />
         </Link>
