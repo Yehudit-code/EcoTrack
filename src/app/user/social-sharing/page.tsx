@@ -5,6 +5,7 @@ import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
 import { io, Socket } from "socket.io-client";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { useUserStore } from "@/store/useUserStore";
 
 import {
   getSavers,
@@ -14,8 +15,11 @@ import {
   updatePost,
   sendMessage,
 } from "@/app/services/server/social";
+
 import SkeletonPost from "@/app/components/Skeleton/SkeletonPost";
 import SkeletonSaver from "@/app/components/Skeleton/SkeletonSaver";
+
+/* ===================== Types ===================== */
 
 interface Saver {
   name: string;
@@ -40,7 +44,7 @@ interface Post {
   imageUrl?: string | null;
   createdAt?: string;
 
-  // יכול להיות או מספר (ישן) או מערך userIds (חדש)
+  // legacy (number) OR new (array of userIds)
   likes: number | string[];
   comments: CommentObj[];
   shares: number;
@@ -55,75 +59,64 @@ interface Message {
   createdAt?: string;
 }
 
-interface CurrentUser {
-  _id: string;
-  name: string;
-  email: string;
-  photo?: string;
-}
+/* ===================== Component ===================== */
 
 export default function SocialSharingPage() {
+  const user = useUserStore((s) => s.user);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
+
   const [savers, setSavers] = useState<Saver[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [typingUser, setTypingUser] = useState<string | null>(null);
 
   const [newPostText, setNewPostText] = useState("");
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
 
-  const [typingUser, setTypingUser] = useState<string | null>(null);
-
-  // 🎯 אמוג'י פוסט + צ'אט
   const [showPostEmoji, setShowPostEmoji] = useState(false);
   const [showChatEmoji, setShowChatEmoji] = useState(false);
 
-  // 💬 תגובות לפוסט
   const [openCommentsPostId, setOpenCommentsPostId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const typingTimeoutRef = useRef<number | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<number | null>(null);
+
+  /* ===================== Initial Load ===================== */
 
   useEffect(() => {
-    const stored = localStorage.getItem("currentUser");
-    if (stored) setCurrentUser(JSON.parse(stored));
-  }, []);
+    if (!hasHydrated) return;
 
-  useEffect(() => {
-    getSavers().then((data) =>
-      Array.isArray(data) ? setSavers(data) : setSavers([])
-    );
-  }, []);
+    getSavers().then((data) => {
+      setSavers(Array.isArray(data) ? data : []);
+    });
 
-  useEffect(() => {
     loadPosts();
     loadMessages();
-  }, []);
+  }, [hasHydrated]);
 
-  const loadPosts = async () => {
+  async function loadPosts() {
     const data = await getPosts();
     setPosts(Array.isArray(data) ? data : []);
-  };
+  }
 
-  const loadMessages = async () => {
+  async function loadMessages() {
     const data = await getMessages();
     setMessages(Array.isArray(data) ? data : []);
-  };
+  }
+
+  /* ===================== Socket ===================== */
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     const socket = io("http://localhost:4000", {
       transports: ["websocket", "polling"],
-      autoConnect: true,
     });
 
     socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("🔌 Socket connected");
-    });
 
     socket.on("new_message", (msg) => {
       setMessages((prev) => [...prev, msg]);
@@ -134,101 +127,90 @@ export default function SocialSharingPage() {
       setTimeout(() => setTypingUser(null), 2000);
     });
 
-    socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
-    });
-
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [hasHydrated]);
 
-  // ⭐ יצירת פוסט
-  const handleCreatePost = async () => {
-    if (!currentUser) return;
+  /* ===================== Posts ===================== */
+
+  async function handleCreatePost() {
+    if (!user) return;
     if (!newPostText.trim() && !newPostImage) return;
 
     const created = await createPost({
-      userId: currentUser._id,
-      userName: currentUser.name,
-      userPhoto: currentUser.photo,
+      userId: user._id,
+      userName: user.name,
+      userPhoto: user.photo,
       content: newPostText,
       imageUrl: newPostImage,
     });
 
     setPosts((prev) => [created, ...prev]);
-
     setNewPostText("");
     setNewPostImage(null);
     setShowPostEmoji(false);
-  };
+  }
 
-  // ⭐ לייק לפי משתמש אחד
-  const likePost = async (id: string) => {
-    if (!currentUser) return;
+  async function likePost(postId: string) {
+    if (!user) return;
 
     const updated = await updatePost("like", {
-      postId: id,
-      userId: currentUser._id,
+      postId,
+      userId: user._id,
     });
 
     setPosts((prev) =>
       prev.map((p) => (p._id === updated._id ? updated : p))
     );
-  };
+  }
 
-  // ⭐ תגובה לפוסט
-  const commentPost = async (id: string, text: string) => {
-    if (!currentUser) return;
-    if (!text.trim()) return;
+  async function commentPost(postId: string, text: string) {
+    if (!user || !text.trim()) return;
 
     const updated = await updatePost("comment", {
-      postId: id,
+      postId,
       comment: text,
-      userName: currentUser?.name,
-      userPhoto: currentUser?.photo,
+      userName: user.name,
+      userPhoto: user.photo,
     });
 
     setPosts((prev) =>
       prev.map((p) => (p._id === updated._id ? updated : p))
     );
-  };
+  }
 
-  // ⭐ שיתוף אמיתי
-  const sharePost = async (id: string) => {
-    const shareUrl = `${window.location.origin}/social-sharing?post=${id}`;
+  async function sharePost(postId: string) {
+    const shareUrl = `${window.location.origin}/user/social-sharing?post=${postId}`;
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: "EcoTrack – Community post",
-          text: "Check out this eco-saving post on EcoTrack 🌱",
+          text: "Check out this eco-saving post 🌱",
           url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        alert("Post link copied to clipboard");
       }
-    } catch (err) {
-      console.log("Share cancelled or failed:", err);
-    }
+    } catch {}
 
-    const updated = await updatePost("share", { postId: id });
+    const updated = await updatePost("share", { postId });
 
     setPosts((prev) =>
       prev.map((p) => (p._id === updated._id ? updated : p))
     );
-  };
+  }
 
-  // ⭐ שליחת הודעה בצ׳אט
-  const handleSendMessage = async () => {
-    if (!currentUser) return;
-    if (!newMessage.trim()) return;
+  /* ===================== Chat ===================== */
+
+  async function handleSendMessage() {
+    if (!user || !newMessage.trim()) return;
 
     const created = await sendMessage({
-      userId: currentUser._id,
-      userName: currentUser.name,
-      userPhoto: currentUser.photo,
+      userId: user._id,
+      userName: user.name,
+      userPhoto: user.photo,
       message: newMessage.trim(),
     });
 
@@ -237,299 +219,168 @@ export default function SocialSharingPage() {
     setShowChatEmoji(false);
 
     socketRef.current?.emit("send_message", created);
-  };
+  }
 
-  // ⭐ פורמט זמן
-  const formatTime = (iso?: string) => {
+  /* ===================== Utils ===================== */
+
+  function formatTime(iso?: string) {
     if (!iso) return "";
-    const d = new Date(iso);
-    return d.toLocaleString("en-GB", {
+    return new Date(iso).toLocaleString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
       day: "2-digit",
       month: "2-digit",
     });
+  }
+
+  const handlePostEmojiClick = (emoji: EmojiClickData) => {
+    setNewPostText((prev) => prev + emoji.emoji);
   };
 
-  const handlePostEmojiClick = (emojiData: EmojiClickData) => {
-    setNewPostText((prev) => prev + emojiData.emoji);
+  const handleChatEmojiClick = (emoji: EmojiClickData) => {
+    setNewMessage((prev) => prev + emoji.emoji);
   };
 
-  const handleChatEmojiClick = (emojiData: EmojiClickData) => {
-    setNewMessage((prev) => prev + emojiData.emoji);
-  };
+  if (!hasHydrated) {
+    return <div className={styles.page}>Loading...</div>;
+  }
+
+  /* ===================== JSX ===================== */
 
   return (
     <div className={styles.page}>
       <Header />
 
       <div className={styles.container}>
-
-        {/* ---------------- LEFT ---------------- */}
+        {/* LEFT */}
         <div className={styles.leftColumn}>
-          <h3 className={styles.columnTitle}>The best savers 🏆</h3>
+          <h3 className={styles.columnTitle}>The best savers</h3>
 
-          <div className={styles.card}>
-            <ul className={styles.saversList}>
-              {savers.map((u, i) => (
-                <li key={i} className={styles.saverItem}>
-                  <span
-                    className={`
-                      ${styles.rankBadge}
-                      ${i === 0
-                        ? styles.rank1
-                        : i === 1
-                          ? styles.rank2
-                          : i === 2
-                            ? styles.rank3
-                            : styles.rankOther
-                      }
-                    `}
-                  >
-                    {i + 1}
-                  </span>
-
-                  <img
-                    src={u.photo || "/images/default-profile.png"}
-                    className={styles.saverAvatar}
-                  />
-
-                  <div>
-                    <div className={styles.saverName}>{u.name}</div>
-                    <div className={styles.saverSaving}>
-                      Saved {u.avgSaving}% on average
+          <ul className={styles.saversList}>
+            {savers.length === 0
+              ? [1, 2, 3].map((i) => <SkeletonSaver key={i} />)
+              : savers.map((u, i) => (
+                  <li key={i} className={styles.saverItem}>
+                    <span className={styles.rankBadge}>{i + 1}</span>
+                    <img
+                      src={u.photo || "/images/default-profile.png"}
+                      className={styles.saverAvatar}
+                    />
+                    <div>
+                      <div className={styles.saverName}>{u.name}</div>
+                      <div className={styles.saverSaving}>
+                        Saved {u.avgSaving}% on average
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-
-              {savers.length === 0 && (
-                <>
-                  <SkeletonSaver />
-                  <SkeletonSaver />
-                  <SkeletonSaver />
-                </>
-              )}
-            </ul>
-          </div>
+                  </li>
+                ))}
+          </ul>
         </div>
 
-        {/* ---------------- CENTER ---------------- */}
+        {/* CENTER */}
         <div className={styles.centerColumn}>
-          <h3 className={styles.columnTitle}>Community feed ✨</h3>
+          <h3 className={styles.columnTitle}>Community feed</h3>
 
-          {/* יצירת פוסט */}
+          {/* Create post */}
           <div className={styles.createPostCard}>
-            <div className={styles.createPostTop}>
-              <img
-                src={currentUser?.photo || "/images/default-profile.png"}
-                className={styles.createAvatar}
-              />
+            <img
+              src={user?.photo || "/images/default-profile.png"}
+              className={styles.createAvatar}
+            />
 
-              <div className={styles.postInputWrapper}>
-                <textarea
-                  className={styles.postTextarea}
-                  placeholder="Share your eco achievement… 💡"
-                  value={newPostText}
-                  onChange={(e) => setNewPostText(e.target.value)}
-                />
+            <textarea
+              className={styles.postTextarea}
+              placeholder="Share your eco achievement…"
+              value={newPostText}
+              onChange={(e) => setNewPostText(e.target.value)}
+            />
 
-                <div className={styles.postIcons}>
-                  <button
-                    type="button"
-                    className={styles.emojiBtn}
-                    onClick={() => setShowPostEmoji((prev) => !prev)}
-                  >
-                    😀
-                  </button>
-
-                  <button
-                    type="button"
-                    className={styles.imageUploadBtn}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    📷
-                  </button>
-
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    className={styles.hiddenFile}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onloadend = () =>
-                        setNewPostImage(reader.result as string);
-                      reader.readAsDataURL(file);
-                    }}
-                  />
-                </div>
-
-
-                {showPostEmoji && (
-                  <div className={styles.emojiPickerPost}>
-                    <EmojiPicker onEmojiClick={handlePostEmojiClick} />
-                  </div>
-                )}
-              </div>
+            <div className={styles.postActionsRow}>
+              <button onClick={() => setShowPostEmoji((p) => !p)}>😀</button>
+              <button onClick={() => fileInputRef.current?.click()}>📷</button>
+              <button onClick={handleCreatePost}>Post</button>
             </div>
 
-            {newPostImage && (
-              <div className={styles.previewWrapper}>
-                <img src={newPostImage} className={styles.previewImage} />
-                <button
-                  className={styles.removeImageBtn}
-                  onClick={() => setNewPostImage(null)}
-                >
-                  ❌
-                </button>
-              </div>
+            {showPostEmoji && (
+              <EmojiPicker onEmojiClick={handlePostEmojiClick} />
             )}
 
-            <button className={styles.postButton} onClick={handleCreatePost}>
-              Post
-            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className={styles.hiddenFile}
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onloadend = () =>
+                  setNewPostImage(reader.result as string);
+                reader.readAsDataURL(file);
+              }}
+            />
           </div>
 
-          {/* פוסטים */}
+          {/* Posts */}
           <div className={styles.postsList}>
-            {posts.map((post) => {
-              const likesCount = Array.isArray(post.likes)
-                ? post.likes.length
-                : post.likes ?? 0;
-
-              const isLiked =
-                currentUser &&
-                Array.isArray(post.likes) &&
-                post.likes.includes(currentUser._id);
-
-              return (
-                <div key={post._id} className={styles.postCard}>
-                  <div className={styles.postHeader}>
-                    <img
-                      src={post.userPhoto || "/images/default-profile.png"}
-                      className={styles.postAvatar}
-                    />
-                    <div className={styles.postMeta}>
-                      <div className={styles.postUser}>{post.userName}</div>
-                      <div className={styles.postTime}>{formatTime(post.createdAt)}</div>
-                    </div>
-                  </div>
-
-                  <div className={styles.postContent}>{post.content}</div>
-
-                  {post.imageUrl && (
-                    <div className={styles.postImageWrapper}>
-                      <img src={post.imageUrl} className={styles.postImage} />
-                    </div>
-                  )}
-
-                  <div className={styles.postActions}>
-                    <button
-                      onClick={() => likePost(post._id!)}
-                      className={isLiked ? styles.likedBtn : undefined}
-                    >
-                      {isLiked ? "💙 Liked" : "👍 Like"} ({likesCount})
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setOpenCommentsPostId(
-                          openCommentsPostId === post._id ? null : post._id!
-                        )
-                      }
-                    >
-                      💬 Comment ({post.comments?.length ?? 0})
-                    </button>
-
-                    <button onClick={() => sharePost(post._id!)}>
-                      ↗ Share ({post.shares ?? 0})
-                    </button>
-                  </div>
-
-                  {/* קופסת תגובות */}
-                  {openCommentsPostId === post._id && (
-                    <div className={styles.commentsBox}>
-                      <div className={styles.commentsList}>
-                        {post.comments.map((c, i) => (
-                          <div key={i} className={styles.commentItem}>
-                            <img
-                              src={
-                                c.userPhoto || "/images/default-profile.png"
-                              }
-                              className={styles.commentAvatar}
-                            />
-                            <div>
-                              <div className={styles.commentUser}>
-                                {c.userName}
-                              </div>
-                              <div className={styles.commentText}>
-                                {c.text}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        {(!post.comments || post.comments.length === 0) && (
-                          <>
-                            <SkeletonPost />
-                            <SkeletonPost />
-                            <SkeletonPost />
-                          </>
-                        )}
-                      </div>
-
-                      <div className={styles.commentInputRow}>
-                        <input
-                          type="text"
-                          className={styles.commentInput}
-                          placeholder="Write a comment…"
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              commentPost(post._id!, commentText);
-                              setCommentText("");
-                            }
-                          }}
-                        />
-                        <button
-                          className={styles.sendCommentBtn}
-                          onClick={() => {
-                            commentPost(post._id!, commentText);
-                            setCommentText("");
-                          }}
-                        >
-                          ➤
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {posts.length === 0 && (
+            {posts.length === 0 ? (
               <>
                 <SkeletonPost />
                 <SkeletonPost />
-                <SkeletonPost />
               </>
+            ) : (
+              posts.map((post) => {
+                const likesCount = Array.isArray(post.likes)
+                  ? post.likes.length
+                  : post.likes;
+
+                return (
+                  <div key={post._id} className={styles.postCard}>
+                    <div className={styles.postHeader}>
+                      <img
+                        src={post.userPhoto || "/images/default-profile.png"}
+                        className={styles.postAvatar}
+                      />
+                      <div>
+                        <div>{post.userName}</div>
+                        <div>{formatTime(post.createdAt)}</div>
+                      </div>
+                    </div>
+
+                    <div className={styles.postContent}>{post.content}</div>
+
+                    <div className={styles.postActions}>
+                      <button onClick={() => likePost(post._id!)}>
+                        Like ({likesCount})
+                      </button>
+                      <button
+                        onClick={() =>
+                          setOpenCommentsPostId(
+                            openCommentsPostId === post._id ? null : post._id!
+                          )
+                        }
+                      >
+                        Comment ({post.comments?.length ?? 0})
+                      </button>
+                      <button onClick={() => sharePost(post._id!)}>
+                        Share ({post.shares})
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
 
-        {/* ---------------- RIGHT ---------------- */}
+        {/* RIGHT */}
         <div className={styles.rightColumn}>
-          <h3 className={styles.columnTitle}>Community chat 💬</h3>
+          <h3 className={styles.columnTitle}>Community chat</h3>
 
           <div className={styles.chatCard}>
             <div className={styles.messagesArea}>
               {messages.map((m) => {
-                const isMe = currentUser?._id === m.userId;
-
+                const isMe = user?._id === m.userId;
                 return (
                   <div
                     key={m._id}
@@ -537,97 +388,35 @@ export default function SocialSharingPage() {
                       isMe ? styles.messageRowMe : styles.messageRowOther
                     }
                   >
-                    {!isMe && (
-                      <img
-                        src={m.userPhoto || "/images/default-profile.png"}
-                        className={styles.chatAvatar}
-                      />
-                    )}
-
-                    <div
-                      className={
-                        isMe
-                          ? styles.messageBubbleMe
-                          : styles.messageBubbleOther
-                      }
-                    >
-                      {!isMe && (
-                        <div className={styles.messageName}>
-                          {m.userName}
-                        </div>
-                      )}
-                      <div className={styles.messageText}>{m.message}</div>
-                      <div className={styles.messageTime}>
-                        {formatTime(m.createdAt)}
-                      </div>
-                    </div>
-
-                    {isMe && (
-                      <img
-                        src={m.userPhoto || "/images/default-profile.png"}
-                        className={styles.chatAvatar}
-                      />
-                    )}
+                    <div>{m.message}</div>
+                    <div>{formatTime(m.createdAt)}</div>
                   </div>
                 );
               })}
 
               {typingUser && (
                 <div className={styles.typingIndicator}>
-                  <span>{typingUser} is typing</span>
-                  <div className={styles.typingDots}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
+                  {typingUser} is typing…
                 </div>
               )}
-
-              <div ref={messagesEndRef} />
             </div>
 
             <div className={styles.chatInputRow}>
-              <button
-                type="button"
-                className={styles.emojiBtn}
-                onClick={() => setShowChatEmoji((prev) => !prev)}
-              >
-                😀
-              </button>
-
+              <button onClick={() => setShowChatEmoji((p) => !p)}>😀</button>
               {showChatEmoji && (
-                <div className={styles.emojiPickerChat}>
-                  <EmojiPicker onEmojiClick={handleChatEmojiClick} />
-                </div>
+                <EmojiPicker onEmojiClick={handleChatEmojiClick} />
               )}
-
               <input
-                type="text"
-                className={styles.chatInput}
-                placeholder="Write a message…"
                 value={newMessage}
                 onChange={(e) => {
                   setNewMessage(e.target.value);
-
                   socketRef.current?.emit("typing", {
-                    userName: currentUser?.name,
+                    userName: user?.name,
                   });
-
-                  if (typingTimeoutRef.current)
-                    clearTimeout(typingTimeoutRef.current);
-                  typingTimeoutRef.current = window.setTimeout(() => {
-                    socketRef.current?.emit("typing", { userName: null });
-                  }, 1200);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
-
-              <button
-                className={styles.chatSendButton}
-                onClick={handleSendMessage}
-              >
-                ➤
-              </button>
+              <button onClick={handleSendMessage}>Send</button>
             </div>
           </div>
         </div>

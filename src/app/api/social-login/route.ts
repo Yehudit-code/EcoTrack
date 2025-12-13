@@ -1,84 +1,98 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/app/services/server/mongodb";
-import bcrypt from "bcryptjs";
+import { connectDB } from "@/app/lib/db";
+import { User } from "@/app/models/User";
+import { signJwt } from "@/app/lib/auth/jwt";
 
 export async function POST(req: Request) {
   try {
-    const { email, name, photoURL, role, companyCategory } = await req.json();
+    await connectDB();
 
-    const db = await connectDB();
-    const usersCollection = db.collection("Users");
+    const {
+      email,
+      name,
+      photoURL,
+      role,
+      companyCategory,
+    } = await req.json();
 
-    let user = await usersCollection.findOne({ email });
-
-    // 🟢 אם המשתמש קיים – לעדכן אותו!
-    if (user) {
-      const updatedUser = {
-        ...user,
-        name: name || user.name,
-        photo: photoURL || user.photo,
-        photoURL: photoURL || user.photoURL,
-        provider: "google",
-        role: role || user.role,
-        companyCategory: companyCategory ?? user.companyCategory,
-      };
-
-      await usersCollection.updateOne(
-        { email },
-        { $set: updatedUser }
+    if (!email || !name) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
       );
-
-      user = updatedUser;
     }
 
-    if (user) {
-      // האם למשתמש יש תמונה שהועלתה ידנית? (base64 או קובץ)
+    // Find existing user by email
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = await User.create({
+        name,
+        email,
+        role: role || "user",
+        companyCategory: role === "company" ? companyCategory : undefined,
+        photo: photoURL,
+        provider: "google",
+      });
+    } else {
+      // Update existing user without overriding custom uploaded photo
       const hasCustomPhoto =
         user.photo &&
         typeof user.photo === "string" &&
         !user.photo.startsWith("http");
 
-      const updatedUser = {
-        ...user,
-        name: name || user.name,
+      user.name = name;
+      user.role = role || user.role;
+      user.companyCategory =
+        role === "company"
+          ? companyCategory ?? user.companyCategory
+          : user.companyCategory;
 
-        // 🟢 אם יש תמונה שהמשתמש העלה — אל תדרסי!
-        photo: hasCustomPhoto
-          ? user.photo
-          : photoURL || user.photo,
+      if (!hasCustomPhoto && photoURL) {
+        user.photo = photoURL;
+      }
 
-        // 🟢 שמירת תמונת גוגל בנפרד
-        photoURL: photoURL || user.photoURL,
-
-        provider: "google",
-        role: role || user.role,
-        companyCategory: companyCategory ?? user.companyCategory,
-      };
-
-      await usersCollection.updateOne(
-        { email },
-        { $set: updatedUser }
-      );
-
-      user = updatedUser;
+      user.provider = "google";
+      await user.save();
     }
 
+    // Create JWT identical to regular signin/signup
+    const token = await signJwt({
+      userId: String(user._id),
+      email: user.email,
+      role: user.role,
+    });
 
-    const res = NextResponse.json(
-      { user, message: "Social login successful" },
+    const response = NextResponse.json(
+      {
+        user: {
+          _id: String(user._id),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          companyCategory: user.companyCategory,
+          photo: user.photo,
+        },
+      },
       { status: 200 }
     );
 
-    res.cookies.set("auth", user.email, {
-      path: "/",
-      maxAge: 60 * 60 * 24,
+    // Store JWT in httpOnly cookie
+    response.cookies.set("ecotrack-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
-    return res;
-
+    return response;
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Social login error:", error);
+    return NextResponse.json(
+      { error: "Social login failed" },
+      { status: 500 }
+    );
   }
 }

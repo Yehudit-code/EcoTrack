@@ -11,88 +11,106 @@ import {
   faDatabase,
   faInfoCircle,
   faUser,
-  faBell,
+  faShoppingCart,
+  faUsers,
+  faEnvelope
 } from "@fortawesome/free-solid-svg-icons";
 
+import { useUserStore } from "@/store/useUserStore";
 import { getProfileImage } from "@/app/lib/getProfileImage";
 import styles from "./Header.module.css";
 
 export default function Header() {
+  const user = useUserStore((s) => s.user);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
+
   const [profilePic, setProfilePic] = useState("/images/default-profile.png");
   const [proposalsCount, setProposalsCount] = useState(0);
-  const [notifications, setNotifications] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   // סגירה בלחיצה מחוץ
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
+    if (!hasHydrated || !user) return;
+
+    setProfilePic(getProfileImage(user));
+
+    if (user.role === "user") {
+      fetch(`/api/company-requests?userId=${user._id}`)
+        .then((res) => res.json())
+        .then((data) =>
+          setProposalsCount(Array.isArray(data) ? data.length : 0)
+        )
+        .catch(() => setProposalsCount(0));
     }
+  }, [user, hasHydrated]);
 
-    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownOpen]);
-
-
-  // טעינת נתוני המשתמש וההצעות
-  useEffect(() => {
-    const userData = localStorage.getItem("currentUser");
-    if (!userData) return;
-
-    const parsed = JSON.parse(userData);
-    const pic = getProfileImage(parsed);
-    setProfilePic(pic);
-
-    fetch(`/api/company-requests?userId=${parsed._id}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setNotifications(data);
-        setProposalsCount(data.length);
-      })
-      .catch(() => {
-        setNotifications([]);
-        setProposalsCount(0);
-      });
-  }, []);
+  if (!hasHydrated) return null;
 
   return (
     <header className={styles.header}>
+      {/* Logo */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
+      {/* Navigation */}
       <nav className={styles.nav}>
-        <Link href="/home" className={styles.navLink}><FontAwesomeIcon icon={faHome} /><span>Home</span></Link>
-        <Link href="/user/manage-data" className={styles.navLink}><FontAwesomeIcon icon={faDatabase} /><span>Manage Data</span></Link>
-        <Link href="/user/indicators" className={styles.navLink}><FontAwesomeIcon icon={faChartBar} /><span>Analytics</span></Link>
-        <Link href="/user/social-sharing" className={styles.navLink}><FontAwesomeIcon icon={faUser} /><span>Social Sharing</span></Link>
-        <Link href="/about" className={styles.navLink}><FontAwesomeIcon icon={faInfoCircle} /><span>About</span></Link>
+        <Link href="/home" className={styles.navLink}>
+          <FontAwesomeIcon icon={faHome} />
+          <span>Home</span>
+        </Link>
+
+        {user?.role === "user" && (
+          <>
+            <Link href="/user/manage-data" className={styles.navLink}>
+              <FontAwesomeIcon icon={faDatabase} />
+              <span>Manage Data</span>
+            </Link>
+
+            <Link href="/user/indicators" className={styles.navLink}>
+              <FontAwesomeIcon icon={faChartBar} />
+              <span>Analytics</span>
+            </Link>
+
+            <Link href="/user/social-sharing" className={styles.navLink}>
+              <FontAwesomeIcon icon={faUser} />
+              <span>Social Sharing</span>
+            </Link>
+          </>
+        )}
+
+        {user?.role === "company" && (
+          <>
+            <Link href="/company/display-users" className={styles.navLink}>
+              <FontAwesomeIcon icon={faUsers} />
+              <span>Display Users</span>
+            </Link>
+
+            <Link href="/contact" className={styles.navLink}>
+              <FontAwesomeIcon icon={faEnvelope} />
+              <span>Contact</span>
+            </Link>
+          </>
+        )}
+
+        <Link href="/about" className={styles.navLink}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          <span>About</span>
+        </Link>
       </nav>
 
-      {/* פעמון + פרופיל */}
-      <div className={styles.rightSection} ref={menuRef}>
-        {/* פעמון */}
-        <div
-          className={styles.bellWrapper}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-        >
-          <img src="/images/bell.png" className={styles.bellIcon} />
-
-          {proposalsCount > 0 && (
-            <span className={styles.bellBadge}>{proposalsCount}</span>
-          )}
-        </div>
-
-
-        <NotificationMenu open={dropdownOpen} />
+      {/* User section */}
+      <div className={styles.userSection}>
+        {user?.role === "user" && proposalsCount > 0 && (
+          <Link href="/proposals-inbox" className={styles.cartLink}>
+            <FontAwesomeIcon icon={faShoppingCart} />
+            <span className={styles.badge}>{proposalsCount}</span>
+          </Link>
+        )}
 
         {/* פרופיל */}
         <Link href="/profile" className={styles.profileLink}>
-          <img src={profilePic} className={styles.profileImg} />
+          <img src={profilePic} alt="Profile" className={styles.profileImg} />
         </Link>
       </div>
     </header>

@@ -1,9 +1,9 @@
 'use client';
 
-import Header from '../components/Header/Header';
-import CompanyHeader from '../components/CompanyHeader/CompanyHeader';
-import Footer from '../components/Footer/Footer';
-import styles from './page.module.css';
+import Header from "@/app/components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import ContentBlock from "./components/ContentBlock";
+import styles from "./page.module.css";
 import { useUserStore } from "@/store/useUserStore";
 
 export default function AboutPage() {
@@ -13,8 +13,8 @@ export default function AboutPage() {
 
   return (
     <>
-      {/* אותו תנאי כמו בעמוד הבית */}
-      {role === "company" ? <CompanyHeader /> : <Header />}
+      {/* Header based on role */}
+      {/* {currentUser?.role === "company" ? <CompanyHeader /> : <Header />} */}
 
       <div className={styles.pageContainer}>
         <main className={styles.container}>
