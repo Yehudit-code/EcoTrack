@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Header from '@/app/components/Header/Header';
 import Footer from '@/app/components/Footer/Footer';
-import styles from './page.module.css';
+import styles from '@/app/user/indicators/page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTint, faBolt, faCar, faTrash, faTable, faChartBar } from '@fortawesome/free-solid-svg-icons';
 import { consumptionService, ConsumptionData as ServiceConsumptionData } from '@/app/services/client/ConsumptionService';

@@ -86,7 +86,7 @@ export default function HomePage() {
 
             <div
               className={styles.infoBox}
-              onClick={() => router.push('/indicators')}
+              onClick={() => router.push('/user/indicators')}
             >
               <h3>Live Consumption</h3>
               <p>

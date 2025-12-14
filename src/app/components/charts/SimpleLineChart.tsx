@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/app/indicators/page.module.css"; 
+import styles from "@/app/user/indicators/page.module.css"; 
 
 interface SimpleLineChartProps {
   data: { month: string; value: number }[];
