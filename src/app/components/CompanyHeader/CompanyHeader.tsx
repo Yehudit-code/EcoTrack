@@ -27,27 +27,28 @@ export default function Header() {
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      <nav className={styles.nav}>
-        <Link href="/home" className={styles.navLink}>
-          <FontAwesomeIcon icon={faHome} />
-          <span>Home</span>
-        </Link>
+     <nav className={styles.nav}>
+  <Link href="/home" className={styles.navLink}>
+    <FontAwesomeIcon icon={faHome} className={styles.navIcon} />
+    <span className={styles.navText}>Home</span>
+  </Link>
 
-        <Link href="/company/display-users" className={styles.navLink}>
-          <FontAwesomeIcon icon={faDatabase} />
-          <span>Display Users</span>
-        </Link>
+  <Link href="/company/display-users" className={styles.navLink}>
+    <FontAwesomeIcon icon={faDatabase} className={styles.navIcon} />
+    <span className={styles.navText}>Display Users</span>
+  </Link>
 
-        <Link href="/contact" className={styles.navLink}>
-          <FontAwesomeIcon icon={faChartBar} />
-          <span>Contact</span>
-        </Link>
+  <Link href="/contact" className={styles.navLink}>
+    <FontAwesomeIcon icon={faChartBar} className={styles.navIcon} />
+    <span className={styles.navText}>Contact</span>
+  </Link>
 
-        <Link href="/about" className={styles.navLink}>
-          <FontAwesomeIcon icon={faInfoCircle} />
-          <span>About</span>
-        </Link>
-      </nav>
+  <Link href="/about" className={styles.navLink}>
+    <FontAwesomeIcon icon={faInfoCircle} className={styles.navIcon} />
+    <span className={styles.navText}>About</span>
+  </Link>
+</nav>
+
 
       <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
