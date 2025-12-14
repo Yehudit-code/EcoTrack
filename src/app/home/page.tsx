@@ -9,7 +9,7 @@ import styles from "./page.module.css";
 import { useUserStore } from "@/store/useUserStore";
 
 export default function HomePage() {
-  const role = useUserStore((state) => state.user?.role ?? null); // Role from Zustand
+  const role = useUserStore((state) => state.user?.role ?? null);
 
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(new Set<string>());

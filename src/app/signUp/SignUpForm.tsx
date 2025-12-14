@@ -99,7 +99,6 @@ export default function SignUpForm() {
         return;
       }
 
-      // 🆕 משתמש חדש – ממשיכים כרגיל ל־RoleModal
       setGoogleUser(user);
       setShowRoleModal(true);
     } catch (err) {
@@ -163,8 +162,6 @@ export default function SignUpForm() {
       {toast && <Toast text={toast} />}
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        {/* ==== NEW IMAGE UPLOAD FIELD ==== */}
-        {/* ==== NEW IMAGE UPLOAD FIELD (ICON ONLY CLICKABLE) ==== */}
         <div className={styles.fileRow}>
           <span className={styles.fileText}>
             {photoPreview ? "Image selected" : "Upload profile image"}

@@ -22,11 +22,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find existing user by email
+    // Find user by email
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create new user if not exists
+      // Create new user (Google sign-up)
       user = await User.create({
         name,
         email,
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         provider: "google",
       });
     } else {
-      // Update existing user without overriding custom uploaded photo
+      // Update existing user without overriding a custom uploaded photo
       const hasCustomPhoto =
         user.photo &&
         typeof user.photo === "string" &&
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
 
-    // Store JWT in httpOnly cookie
+    // Store JWT in httpOnly cookie (used by proxy/middleware)
     response.cookies.set("ecotrack-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

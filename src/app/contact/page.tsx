@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
-import CompanyHeader from "@/app/components/CompanyHeader/CompanyHeader";
 import styles from "./Contact.module.css";
 import { useUserStore } from "@/store/useUserStore";
+import Header from "../components/Header/Header";
 
 export default function ContactPage() {
   const user = useUserStore((state) => state.user);
@@ -51,7 +51,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <CompanyHeader />
+      <Header />
 
       <div className={styles.page}>
         <div className={styles.card}>

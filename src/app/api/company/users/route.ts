@@ -1,11 +1,16 @@
 // src/app/api/company/users/route.ts
 
-import { NextResponse, NextRequest } from "next/server";
-import { IUser, User } from "@/app/models/User";
-import { connectDB } from "@/app/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { User, IUser } from "@/app/models/User";
 import { ConsumptionHabit } from "@/app/models/ConsumptionHabit";
+import { connectDB } from "@/app/lib/db";
 import { requireAuth } from "@/app/lib/auth/serverAuth";
 
+/* ------------------------------------------------------------------ */
+/* Types                                                              */
+/* ------------------------------------------------------------------ */
+
+// Shape of a ConsumptionHabit document when using .lean()
 interface HabitDoc {
   userEmail: string;
   month: number;
@@ -13,59 +18,76 @@ interface HabitDoc {
   value: number;
 }
 
-export async function GET(req: Request) {
+// IUser adapted for .lean() (Map -> plain object)
+type LeanUser = Omit<IUser, "talkedByCompanies"> & {
+  talkedByCompanies?: Record<string, boolean>;
+};
+
+/* ------------------------------------------------------------------ */
+/* GET /api/company/users                                              */
+/* ------------------------------------------------------------------ */
+
+export async function GET(req: NextRequest) {
   try {
     const auth = await requireAuth("company");
     if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized access" },
+        { status: 401 }
+      );
     }
 
     await connectDB();
 
-    // Get company info
+    // Company identity
     const companyEmail = auth.user.email;
     const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
     if (!companyDoc) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Company not found" },
+        { status: 404 }
+      );
     }
 
     const companyId = companyDoc._id.toString();
 
     const { searchParams } = new URL(req.url);
-    const all = searchParams.get("all");
+    const category = searchParams.get("category");
 
-    let users: any[] = [];
-
-    if (all === "true") {
-      const habits = await ConsumptionHabit.find({}).lean<HabitDoc[]>();
-      return NextResponse.json({ users: habits });
+    if (!category) {
+      return NextResponse.json(
+        { error: "Missing category parameter" },
+        { status: 400 }
+      );
     }
 
-    const category = searchParams.get("category") || "electricity";
-
-    // Fetch category habits
-    const matching = await ConsumptionHabit.find({
-      category: { $regex: new RegExp(`^${category}$`, "i") }
+    // Fetch consumption habits by category (case-insensitive)
+    const habits = await ConsumptionHabit.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") },
     }).lean<HabitDoc[]>();
 
-    // Group by userEmail
-    const userMap = new Map<string, HabitDoc[]>();
-    matching.forEach((doc) => {
-      if (!userMap.has(doc.userEmail)) userMap.set(doc.userEmail, []);
-      userMap.get(doc.userEmail)!.push(doc);
-    });
+    // Group habits by userEmail
+    const habitsByUser = new Map<string, HabitDoc[]>();
+    for (const h of habits) {
+      if (!habitsByUser.has(h.userEmail)) {
+        habitsByUser.set(h.userEmail, []);
+      }
+      habitsByUser.get(h.userEmail)!.push(h);
+    }
 
-    users = await Promise.all(
-      Array.from(userMap.entries()).map(async ([email, records]) => {
-        const userDoc = await User.findOne({ email }).lean<IUser | null>();
+    const users = await Promise.all(
+      Array.from(habitsByUser.entries()).map(async ([email, records]) => {
+        const userDoc = await User.findOne({ email }).lean<LeanUser | null>();
         if (!userDoc) return null;
 
-        const maxValueRecord = records.reduce<HabitDoc | null>(
-          (max, curr) => (!max || curr.value > max.value ? curr : max),
-          null
+        // Highest consumption value
+        const maxValue = records.reduce(
+          (max, r) => (r.value > max ? r.value : max),
+          0
         );
 
-        const sorted = [...records]
+        // Last 3 months (chronological)
+        const lastThree = [...records]
           .sort((a, b) => b.year - a.year || b.month - a.month)
           .slice(0, 3)
           .reverse();
@@ -77,26 +99,26 @@ export async function GET(req: Request) {
           phone: userDoc.phone || "",
           photo: userDoc.photo || "",
           improvementScore: userDoc.improvementScore || 0,
-          valuesByMonth: sorted.map((r) => ({
+          valuesByMonth: lastThree.map((r) => ({
             month: r.month,
             year: r.year,
-            value: r.value
+            value: r.value,
           })),
-          maxValue: maxValueRecord?.value ?? 0,
-          talked: userDoc.talkedByCompanies?.get(companyId) || false
+          maxValue,
+          talked: Boolean(userDoc.talkedByCompanies?.[companyId]),
         };
       })
     );
 
-    users = users.filter((u) => u !== null);
-
-    users = users
-      .sort((a, b) => (b.maxValue ?? 0) - (a.maxValue ?? 0))
+    // Remove nulls, sort by maxValue, take top 3
+    const result = users
+      .filter(Boolean)
+      .sort((a, b) => (b!.maxValue ?? 0) - (a!.maxValue ?? 0))
       .slice(0, 3);
 
-    return NextResponse.json({ users });
+    return NextResponse.json(result);
   } catch (err) {
-    console.error("GET /company/users error:", err);
+    console.error("GET /api/company/users error:", err);
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }
@@ -104,20 +126,29 @@ export async function GET(req: Request) {
   }
 }
 
-// PATCH — NO TS ERRORS
+/* ------------------------------------------------------------------ */
+/* PATCH /api/company/users/[email]/talked                             */
+/* ------------------------------------------------------------------ */
+
 export async function PATCH(req: NextRequest) {
   try {
     const auth = await requireAuth("company");
     if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized access" },
+        { status: 401 }
+      );
     }
 
     await connectDB();
 
     const companyEmail = auth.user.email;
-    const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
+    const companyDoc = await User.findOne({ email: companyEmail });
     if (!companyDoc) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Company not found" },
+        { status: 404 }
+      );
     }
 
     const companyId = companyDoc._id.toString();
@@ -127,15 +158,23 @@ export async function PATCH(req: NextRequest) {
     const userEmail = match ? decodeURIComponent(match[1]) : null;
 
     if (!userEmail) {
-      return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing email parameter" },
+        { status: 400 }
+      );
     }
 
     const user = await User.findOne({ email: userEmail });
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
     }
 
-    if (!user.talkedByCompanies) user.talkedByCompanies = new Map<string, boolean>();
+    if (!user.talkedByCompanies) {
+      user.talkedByCompanies = new Map<string, boolean>();
+    }
 
     const current = user.talkedByCompanies.get(companyId) || false;
     user.talkedByCompanies.set(companyId, !current);
@@ -144,10 +183,10 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      talked: user.talkedByCompanies.get(companyId)
+      talked: user.talkedByCompanies.get(companyId),
     });
   } catch (err) {
-    console.error("PATCH /company/users error:", err);
+    console.error("PATCH /api/company/users error:", err);
     return NextResponse.json(
       { error: "Failed to update talk status" },
       { status: 500 }

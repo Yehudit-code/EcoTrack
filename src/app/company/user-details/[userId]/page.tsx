@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import styles from "./page.module.css";
-import { fetchCompanyFilteredUserDetails } from "@/app/services/client/consumptionClient";
+import { fetchCompanyFilteredUserDetails } from "@/app/services/client/company/consumptionClient";
 
 export default function UserDetailsPage({
   params,
