@@ -3,19 +3,8 @@
 import { useEffect, useState } from "react";
 import styles from "./Requests.module.css";
 import { useUserStore } from "@/store/useUserStore";
-
-interface CompanyRequestItem {
-  _id: string;
-  productName: string;
-  price: number;
-  status: "sent" | "paid" | "declined";
-  userId: string;
-  userData?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-}
+import { fetchCompanyRequests } from "@/app/services/client/company/companyRequestsService";
+import type { CompanyRequestItem } from "@/app/types/companyRequests";
 
 export default function CompanyRequestsPage() {
   const user = useUserStore((state) => state.user);
@@ -23,30 +12,37 @@ export default function CompanyRequestsPage() {
 
   const [requests, setRequests] = useState<CompanyRequestItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hasHydrated || !user || user.role !== "company") {
+    // Guard: wait for hydration and valid company user
+    if (!hasHydrated) return;
+
+    if (!user || user.role !== "company") {
       setLoading(false);
       return;
     }
 
-    const load = async () => {
+    const loadRequests = async () => {
       try {
-        const res = await fetch(
-          `/api/company-requests?companyId=${user._id}`
-        );
-        const data = await res.json();
-        setRequests(Array.isArray(data) ? data : []);
+        const data = await fetchCompanyRequests(user._id);
+        setRequests(data);
+      } catch (err) {
+        setError("Failed to load payment requests");
       } finally {
         setLoading(false);
       }
     };
 
-    load();
-  }, [user, hasHydrated]);
+    loadRequests();
+  }, [hasHydrated, user]);
 
   if (loading) {
     return <div className={styles.page}>Loading requests...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.page}>{error}</div>;
   }
 
   return (
@@ -61,45 +57,67 @@ export default function CompanyRequestsPage() {
         <div className={styles.list}>
           {requests.map((req) => (
             <div key={req._id} className={styles.card}>
-              <div className={styles.row}>
-                <span className={styles.label}>Product</span>
-                <span className={styles.value}>{req.productName}</span>
-              </div>
-
-              <div className={styles.row}>
-                <span className={styles.label}>Price</span>
-                <span className={styles.value}>{req.price} ₪</span>
-              </div>
-
-              <div className={styles.row}>
-                <span className={styles.label}>User</span>
-                <span className={styles.value}>
-                  {req.userData?.name ||
-                    req.userData?.email ||
-                    req.userId}
-                </span>
-              </div>
-
-              <div className={styles.statusRow}>
-                <span className={styles.label}>Status</span>
-                <span
-                  className={`${styles.status} ${
-                    req.status === "sent"
-                      ? styles.statusPending
-                      : req.status === "paid"
-                      ? styles.statusSuccess
-                      : styles.statusDeclined
-                  }`}
-                >
-                  {req.status === "sent" && "Pending payment"}
-                  {req.status === "paid" && "Paid"}
-                  {req.status === "declined" && "Declined"}
-                </span>
-              </div>
+              <InfoRow label="Product" value={req.productName} />
+              <InfoRow label="Price" value={`${req.price} ₪`} />
+              <InfoRow
+                label="User"
+                value={
+                  req.userData?.name ||
+                  req.userData?.email ||
+                  req.userId
+                }
+              />
+              <StatusRow status={req.status} />
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ---------- Sub-components ---------- */
+
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className={styles.row}>
+      <span className={styles.label}>{label}</span>
+      <span className={styles.value}>{value}</span>
+    </div>
+  );
+}
+
+function StatusRow({
+  status,
+}: {
+  status: "sent" | "paid" | "declined";
+}) {
+  const statusClass =
+    status === "sent"
+      ? styles.statusPending
+      : status === "paid"
+      ? styles.statusSuccess
+      : styles.statusDeclined;
+
+  const statusText =
+    status === "sent"
+      ? "Pending payment"
+      : status === "paid"
+      ? "Paid"
+      : "Declined";
+
+  return (
+    <div className={styles.statusRow}>
+      <span className={styles.label}>Status</span>
+      <span className={`${styles.status} ${statusClass}`}>
+        {statusText}
+      </span>
     </div>
   );
 }

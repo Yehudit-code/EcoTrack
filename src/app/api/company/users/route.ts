@@ -1,28 +1,23 @@
-// src/app/api/company/users/route.ts
-
-import { NextResponse, NextRequest } from "next/server";
-import { IUser, User } from "@/app/models/User";
-import { connectDB } from "@/app/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { User, IUser } from "@/app/models/User";
 import { ConsumptionHabit } from "@/app/models/ConsumptionHabit";
+import { connectDB } from "@/app/lib/db";
 import { requireAuth } from "@/app/lib/auth/serverAuth";
+import type { HabitDoc, LeanUser } from "@/app/types/companyUsers";
 
-interface HabitDoc {
-  userEmail: string;
-  month: number;
-  year: number;
-  value: number;
-}
+/* ------------------------------------------------------------------ */
+/* GET /api/company/users                                              */
+/* ------------------------------------------------------------------ */
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const auth = await requireAuth("company");
     if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectDB();
 
-    // Get company info
     const companyEmail = auth.user.email;
     const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
     if (!companyDoc) {
@@ -30,126 +25,65 @@ export async function GET(req: Request) {
     }
 
     const companyId = companyDoc._id.toString();
-
     const { searchParams } = new URL(req.url);
-    const all = searchParams.get("all");
+    const category = searchParams.get("category");
 
-    let users: any[] = [];
-
-    if (all === "true") {
-      const habits = await ConsumptionHabit.find({}).lean<HabitDoc[]>();
-      return NextResponse.json({ users: habits });
+    if (!category) {
+      return NextResponse.json(
+        { error: "Missing category" },
+        { status: 400 }
+      );
     }
 
-    const category = searchParams.get("category") || "electricity";
-
-    // Fetch category habits
-    const matching = await ConsumptionHabit.find({
-      category: { $regex: new RegExp(`^${category}$`, "i") }
+    const habits = await ConsumptionHabit.find({
+      category: { $regex: new RegExp(`^${category}$`, "i") },
     }).lean<HabitDoc[]>();
 
-    // Group by userEmail
-    const userMap = new Map<string, HabitDoc[]>();
-    matching.forEach((doc) => {
-      if (!userMap.has(doc.userEmail)) userMap.set(doc.userEmail, []);
-      userMap.get(doc.userEmail)!.push(doc);
-    });
+    const grouped = new Map<string, HabitDoc[]>();
+    for (const h of habits) {
+      if (!grouped.has(h.userEmail)) grouped.set(h.userEmail, []);
+      grouped.get(h.userEmail)!.push(h);
+    }
 
-    users = await Promise.all(
-      Array.from(userMap.entries()).map(async ([email, records]) => {
-        const userDoc = await User.findOne({ email }).lean<IUser | null>();
-        if (!userDoc) return null;
+    const users = await Promise.all(
+      Array.from(grouped.entries()).map(async ([email, records]) => {
+        const user = await User.findOne({ email }).lean<LeanUser | null>();
+        if (!user) return null;
 
-        const maxValueRecord = records.reduce<HabitDoc | null>(
-          (max, curr) => (!max || curr.value > max.value ? curr : max),
-          null
+        const maxValue = records.reduce(
+          (m, r) => (r.value > m ? r.value : m),
+          0
         );
 
-        const sorted = [...records]
+        const lastThree = [...records]
           .sort((a, b) => b.year - a.year || b.month - a.month)
           .slice(0, 3)
           .reverse();
 
         return {
-          _id: userDoc._id.toString(),
-          name: userDoc.name || email,
+          _id: user._id.toString(),
+          name: user.name || email,
           email,
-          phone: userDoc.phone || "",
-          photo: userDoc.photo || "",
-          improvementScore: userDoc.improvementScore || 0,
-          valuesByMonth: sorted.map((r) => ({
-            month: r.month,
-            year: r.year,
-            value: r.value
-          })),
-          maxValue: maxValueRecord?.value ?? 0,
-          talked: userDoc.talkedByCompanies?.get(companyId) || false
+          phone: user.phone || "",
+          photo: user.photo || "",
+          improvementScore: user.improvementScore || 0,
+          valuesByMonth: lastThree,
+          maxValue,
+          talked: Boolean(user.talkedByCompanies?.[companyId]),
         };
       })
     );
 
-    users = users.filter((u) => u !== null);
-
-    users = users
-      .sort((a, b) => (b.maxValue ?? 0) - (a.maxValue ?? 0))
-      .slice(0, 3);
-
-    return NextResponse.json({ users });
+    return NextResponse.json(
+      users
+        .filter(Boolean)
+        .sort((a, b) => b!.maxValue - a!.maxValue)
+        .slice(0, 3)
+    );
   } catch (err) {
     console.error("GET /company/users error:", err);
     return NextResponse.json(
       { error: "Failed to fetch users" },
-      { status: 500 }
-    );
-  }
-}
-
-// PATCH — NO TS ERRORS
-export async function PATCH(req: NextRequest) {
-  try {
-    const auth = await requireAuth("company");
-    if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
-    }
-
-    await connectDB();
-
-    const companyEmail = auth.user.email;
-    const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
-    if (!companyDoc) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
-    }
-
-    const companyId = companyDoc._id.toString();
-
-    const url = new URL(req.url);
-    const match = url.pathname.match(/\/api\/company\/users\/(.+)\/talked/);
-    const userEmail = match ? decodeURIComponent(match[1]) : null;
-
-    if (!userEmail) {
-      return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
-    }
-
-    const user = await User.findOne({ email: userEmail });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    if (!user.talkedByCompanies) user.talkedByCompanies = new Map<string, boolean>();
-
-    const current = user.talkedByCompanies.get(companyId) || false;
-    user.talkedByCompanies.set(companyId, !current);
-
-    await user.save();
-
-    return NextResponse.json({
-      success: true,
-      talked: user.talkedByCompanies.get(companyId)
-    });
-  } catch (err) {
-    console.error("PATCH /company/users error:", err);
-    return NextResponse.json(
-      { error: "Failed to update talk status" },
       { status: 500 }
     );
   }
