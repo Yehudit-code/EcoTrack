@@ -8,14 +8,11 @@ import { useUserStore } from "@/store/useUserStore";
 
 export default function AboutPage() {
 
-  // כמו ב־Home — לוקחים את התפקיד ישירות מ־Zustand
   const role = useUserStore((state) => state.user?.role ?? null);
 
   return (
     <>
-      {/* Header based on role */}
-      {/* {currentUser?.role === "company" ? <CompanyHeader /> : <Header />} */}
-
+      <Header />
       <div className={styles.pageContainer}>
         <main className={styles.container}>
           <div className={styles.contentWrapper}>

@@ -1,188 +1,155 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
-import styles from "./Pay.module.css";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 
-interface PaymentDto {
-  _id: string;
-  amount: number;
-  status: string;
-  productName: string;
-  companyName: string;
-  userName: string;
-  userEmail: string;
-  userId: string;
-  fullUser?: any;
-}
+import styles from "./Pay.module.css";
 
-export default function PayPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = use(params);
+import { ArrowLeft, LogOut, Phone, Calendar, Edit3 } from "lucide-react";
+
+import ProfileAvatar from "@/app/components/Profile/ProfileAvatar";
+import ProfileInfo from "@/app/components/Profile/ProfileInfo";
+import ProfileCompanies from "@/app/components/Profile/ProfileCompanies";
+import ProfileModal from "@/app/components/Profile/ProfileModal";
+
+import {
+  getUserProposalsCount,
+  updateUserProfile,
+  logoutUser,
+} from "@/app/services/client/profile/profileService";
+
+export default function ProfilePage() {
   const router = useRouter();
 
+  const currentUser = useUserStore((s) => s.user);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
+  const logoutStore = useUserStore((s) => s.logout);
   const setUser = useUserStore((s) => s.setUser);
 
-  const [payment, setPayment] = useState<PaymentDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [cardData, setCardData] = useState({
-    number: "",
-    exp: "",
-    cvv: "",
-  });
-  const [error, setError] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  const [proposalsCount, setProposalsCount] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Load payment details
+  /* ---------- Load profile data ---------- */
   useEffect(() => {
-    async function load() {
-      const res = await fetch(`/api/payments/${id}`);
-      const data: PaymentDto = await res.json();
+    if (!hasHydrated || !currentUser) return;
 
-      // Optional: hydrate Zustand user if backend returned full user
-      if (data.fullUser) {
-        setUser(data.fullUser);
-      }
-
-      setPayment(data);
-
-      if (data.status === "paid") {
-        router.push(`/pay/success?userId=${data.userId}`);
-        return;
-      }
-
-      setLoading(false);
-    }
-
-    load();
-  }, [id, router, setUser]);
-
-  function isValidCardNumber(num: string) {
-    return /^\d{16}$/.test(num.replace(/\s+/g, ""));
-  }
-
-  function isValidExp(exp: string) {
-    if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
-    const [mm, yy] = exp.split("/").map(Number);
-    if (mm < 1 || mm > 12) return false;
-
-    const now = new Date();
-    const expDate = new Date(2000 + yy, mm);
-    return expDate > now;
-  }
-
-  function isValidCVV(cvv: string) {
-    return /^\d{3}$/.test(cvv);
-  }
-
-  async function handlePayment() {
-    if (
-      !isValidCardNumber(cardData.number) ||
-      !isValidExp(cardData.exp) ||
-      !isValidCVV(cardData.cvv)
-    ) {
-      showError();
-      return;
-    }
-
-    const res = await fetch("/api/payments/confirm", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentId: id }),
+    setEditData({
+      ...currentUser,
+      companies: currentUser.companies || {
+        electricity: "",
+        water: "",
+        transport: "",
+        recycling: "",
+        solar: "",
+      },
     });
 
-    if (res.ok) {
-      router.push(`/pay/success?userId=${payment!.userId}`);
-    } else {
-      showError();
+    if (currentUser.role === "user") {
+      getUserProposalsCount(currentUser._id)
+        .then(setProposalsCount)
+        .catch(() => setProposalsCount(0));
     }
-  }
+  }, [currentUser, hasHydrated]);
 
-  function showError() {
-    setError(true);
-    setTimeout(() => setError(false), 2500);
-  }
+  if (!hasHydrated)
+    return <p className={styles.loading}>Loading profile...</p>;
 
-  if (loading || !payment) {
-    return <div className={styles.wrapper}>Loading...</div>;
-  }
+  if (!currentUser)
+    return <p className={styles.loading}>No user data.</p>;
 
-  const amount = payment.amount;
-  const commission = amount * 0.1;
-  const companyGets = amount - commission;
+  /* ---------- Save profile ---------- */
+  const handleSave = async () => {
+    try {
+      const updatedUser = { ...currentUser, ...editData };
+
+      await updateUserProfile(updatedUser);
+
+      setUser(updatedUser);
+      setIsEditing(false);
+    } catch {
+      alert("Error updating profile");
+    }
+  };
+
+  /* ---------- Logout ---------- */
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // Ignore server error, continue client cleanup
+    }
+
+    logoutStore();
+    localStorage.removeItem("ecotrack-user");
+    router.replace("/signIn");
+  };
 
   return (
-    <div className={styles.wrapper}>
-      <div className={`${styles.errorPopup} ${error ? styles.show : ""}`}>
-        Invalid credit card details — please check and try again
-      </div>
+    <div className={styles.profilePage}>
+      <button className={styles.backBtn} onClick={() => router.back()}>
+        <ArrowLeft size={20} /> Back
+      </button>
 
-      <div className={styles.card}>
-        <h1 className={styles.title}>Complete Your Payment</h1>
+      <button className={styles.logoutBtn} onClick={handleLogout}>
+        <LogOut size={18} /> Logout
+      </button>
 
-        <div className={styles.section}>
-          <div className={styles.label}>Customer:</div>
-          <div className={styles.value}>{payment.userName}</div>
-
-          <div className={styles.label}>Email:</div>
-          <div className={styles.value}>{payment.userEmail}</div>
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.label}>Product:</div>
-          <div className={styles.value}>{payment.productName}</div>
-
-          <div className={styles.label}>Amount:</div>
-          <div className={styles.value}>{amount} ₪</div>
-
-          <div className={styles.subValue}>EcoTrack fee: 10%</div>
-          <div className={styles.subValue}>
-            Company receives: {companyGets} ₪
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.label}>Company:</div>
-          <div className={styles.value}>{payment.companyName}</div>
-        </div>
-
-        <div className={styles.form}>
-          <input
-            className={styles.input}
-            placeholder="Card Number"
-            value={cardData.number}
-            onChange={(e) =>
-              setCardData({ ...cardData, number: e.target.value })
-            }
+      <div className={styles.profileCard}>
+        <div className={styles.headerSection}>
+          <ProfileAvatar
+            photo={currentUser.photo}
+            role={currentUser.role}
+            proposalsCount={proposalsCount}
           />
 
-          <div className={styles.row}>
-            <input
-              className={styles.input}
-              placeholder="MM/YY"
-              value={cardData.exp}
-              onChange={(e) =>
-                setCardData({ ...cardData, exp: e.target.value })
-              }
-            />
-            <input
-              className={styles.input}
-              placeholder="CVV"
-              value={cardData.cvv}
-              onChange={(e) =>
-                setCardData({ ...cardData, cvv: e.target.value })
-              }
-            />
-          </div>
+          <ProfileInfo user={currentUser} />
         </div>
 
-        <button className={styles.btnPay} onClick={handlePayment}>
-          Pay Now
-        </button>
+        <div className={styles.content}>
+          <div className={styles.section}>
+            <h3>Personal Information</h3>
+
+            <div className={styles.row}>
+              <Phone size={18} /> Phone:
+              <strong>{currentUser.phone || "Not provided"}</strong>
+            </div>
+
+            <div className={styles.row}>
+              <Calendar size={18} /> Birth Date:
+              <strong>{currentUser.birthDate || "—"}</strong>
+            </div>
+
+            <div className={styles.row}>
+              <Calendar size={18} /> Member Since:
+              <strong>
+                {currentUser.createdAt
+                  ? new Date(currentUser.createdAt).toLocaleDateString()
+                  : "—"}
+              </strong>
+            </div>
+
+            <button
+              className={styles.editBtn}
+              onClick={() => setIsEditing(true)}
+            >
+              <Edit3 size={16} /> Edit Profile
+            </button>
+          </div>
+
+          <ProfileCompanies companies={currentUser.companies} />
+        </div>
       </div>
+
+      {isEditing && (
+        <ProfileModal
+          editData={editData}
+          setEditData={setEditData}
+          onSave={handleSave}
+          onCancel={() => setIsEditing(false)}
+        />
+      )}
     </div>
   );
 }

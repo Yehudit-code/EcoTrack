@@ -96,7 +96,7 @@ export default function ProfilePage() {
     localStorage.removeItem("ecotrack-user");
 
     // Redirect to sign-in
-    router.replace("/signIn");
+    router.replace("/");
   };
 
   return (

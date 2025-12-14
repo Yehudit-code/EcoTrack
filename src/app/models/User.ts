@@ -15,7 +15,6 @@ export interface IUser {
   birthDate?: Date;
   photo?: string;
 
-  // חדש:
   talkedByCompanies?: Map<string, boolean>;
 
   companies?: {
@@ -41,9 +40,6 @@ const UserSchema = new Schema({
   birthDate: Date,
   companyCategory: String,
   improvementScore: Number,
-
-  // ❌ במקום talked: Boolean
-  // ✔️ שדה חדש שמחזיק מצב לפי חברה
   talkedByCompanies: {
     type: Map,
     of: Boolean,
