@@ -11,13 +11,11 @@ import {
   faDatabase,
   faInfoCircle,
   faUser,
-  faShoppingCart,
-  faUsers,
-  faEnvelope
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useUserStore } from "@/store/useUserStore";
 import { getProfileImage } from "@/app/lib/getProfileImage";
+
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -26,34 +24,54 @@ export default function Header() {
 
   const [profilePic, setProfilePic] = useState("/images/default-profile.png");
   const [proposalsCount, setProposalsCount] = useState(0);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // סגירה בלחיצה מחוץ
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // 🔹 סגירה בלחיצה מחוץ לתפריט
   useEffect(() => {
-    if (!hasHydrated || !user) return;
-
-    setProfilePic(getProfileImage(user));
-
-    if (user.role === "user") {
-      fetch(`/api/company-requests?userId=${user._id}`)
-        .then((res) => res.json())
-        .then((data) =>
-          setProposalsCount(Array.isArray(data) ? data.length : 0)
-        )
-        .catch(() => setProposalsCount(0));
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
     }
-  }, [user, hasHydrated]);
+
+    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
+
+  // 🔹 טעינת תמונת פרופיל + מספר הודעות
+  useEffect(() => {
+  if (!hasHydrated || !user) return;
+
+  setProfilePic(getProfileImage(user));
+
+  if (user.role === "user") {
+    fetch(`/api/company-requests?userId=${user._id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const pending = Array.isArray(data)
+          ? data.filter((item) => item.status !== "paid")
+          : [];
+
+        setProposalsCount(pending.length);
+      })
+      .catch(() => setProposalsCount(0));
+  }
+}, [user, hasHydrated]);
+
 
   if (!hasHydrated) return null;
 
   return (
     <header className={styles.header}>
-      {/* Logo */}
+      {/* לוגו */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      {/* Navigation */}
+      {/* ניווט */}
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}>
           <FontAwesomeIcon icon={faHome} />
@@ -79,38 +97,34 @@ export default function Header() {
           </>
         )}
 
-        {user?.role === "company" && (
-          <>
-            <Link href="/company/display-users" className={styles.navLink}>
-              <FontAwesomeIcon icon={faUsers} />
-              <span>Display Users</span>
-            </Link>
-
-            <Link href="/contact" className={styles.navLink}>
-              <FontAwesomeIcon icon={faEnvelope} />
-              <span>Contact</span>
-            </Link>
-          </>
-        )}
-
         <Link href="/about" className={styles.navLink}>
           <FontAwesomeIcon icon={faInfoCircle} />
           <span>About</span>
         </Link>
       </nav>
 
-      {/* User section */}
-      <div className={styles.userSection}>
-        {user?.role === "user" && proposalsCount > 0 && (
-          <Link href="/proposals-inbox" className={styles.cartLink}>
-            <FontAwesomeIcon icon={faShoppingCart} />
-            <span className={styles.badge}>{proposalsCount}</span>
-          </Link>
+      {/* פעמון + פרופיל */}
+      <div className={styles.rightSection} ref={menuRef}>
+        {/* 🔔 פעמון התראות */}
+        {user?.role === "user" && (
+          <div
+            className={styles.bellWrapper}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <img src="/images/bell.png" className={styles.bellIcon} />
+
+            {proposalsCount > 0 && (
+              <span className={styles.bellBadge}>{proposalsCount}</span>
+            )}
+          </div>
         )}
+
+        {/* תפריט ההתראות */}
+        {dropdownOpen && <NotificationMenu open={dropdownOpen} />}
 
         {/* פרופיל */}
         <Link href="/profile" className={styles.profileLink}>
-          <img src={profilePic} alt="Profile" className={styles.profileImg} />
+          <img src={profilePic} className={styles.profileImg} />
         </Link>
       </div>
     </header>

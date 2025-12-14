@@ -1,28 +1,24 @@
 'use client';
+
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLeaf,
+  faHome,
+  faChartBar,
+  faDatabase,
+  faInfoCircle,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './CompanyHeader.module.css';
+import { useUserStore } from '@/store/useUserStore';
 
 export default function Header() {
-  const [profilePic, setProfilePic] = useState<string>('/images/default-profile.png');
+  const user = useUserStore((state) => state.user);
 
-  useEffect(() => {
-    const userData = localStorage.getItem('currentUser');
-    if (userData) {
-      const parsed = JSON.parse(userData);
-
-      const pic =
-        parsed.photo ||
-        parsed.photoURL ||
-        '/images/default-profile-company.png';
-
-      setProfilePic(pic);
-
-      localStorage.setItem('profilePic', pic);
-    }
-  }, []);
+  const profilePic =
+    user?.photo ||
+    '/images/default-profile-company.png';
 
   return (
     <header className={styles.header}>
@@ -36,14 +32,17 @@ export default function Header() {
           <FontAwesomeIcon icon={faHome} />
           <span>Home</span>
         </Link>
-        <Link href="/company/display-user" className={styles.navLink}>
+
+        <Link href="/company/display-users" className={styles.navLink}>
           <FontAwesomeIcon icon={faDatabase} />
           <span>Display Users</span>
         </Link>
+
         <Link href="/contact" className={styles.navLink}>
           <FontAwesomeIcon icon={faChartBar} />
           <span>Contact</span>
         </Link>
+
         <Link href="/about" className={styles.navLink}>
           <FontAwesomeIcon icon={faInfoCircle} />
           <span>About</span>
@@ -52,15 +51,19 @@ export default function Header() {
 
       <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
-          {profilePic ? (
-            <div className={styles.profileContainer}>
-              <img src={profilePic} alt="Company Profile" className={styles.profileImg} />
-            </div>
-          ) : (
-            <div className={styles.defaultProfile}>
-              <FontAwesomeIcon icon={faUser} />
-            </div>
-          )}
+          <div className={styles.profileContainer}>
+            {profilePic ? (
+              <img
+                src={profilePic}
+                alt="Profile"
+                className={styles.profileImg}
+              />
+            ) : (
+              <div className={styles.defaultProfile}>
+                <FontAwesomeIcon icon={faUser} />
+              </div>
+            )}
+          </div>
         </Link>
       </div>
     </header>

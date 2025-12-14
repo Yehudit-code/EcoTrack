@@ -21,6 +21,7 @@ export default function NotificationMenu({ open }: { open: boolean }) {
   const [items, setItems] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // 🚀 טעינת ההתראות עבור המשתמש
   useEffect(() => {
     if (!hasHydrated || !user?._id) return;
 
@@ -30,7 +31,7 @@ export default function NotificationMenu({ open }: { open: boolean }) {
       .then((res) => res.json())
       .then((data: RequestItem[]) => {
         const pending = Array.isArray(data)
-          ? data.filter((i) => i.status !== "paid")
+          ? data.filter((req) => req.status !== "paid")
           : [];
         setItems(pending);
       })
@@ -60,7 +61,6 @@ export default function NotificationMenu({ open }: { open: boolean }) {
 
             <div className={styles.bottomRow}>
               <span className={styles.price}>{item.price}₪</span>
-
               <Link
                 href={`/pay/${item.paymentId}`}
                 className={styles.payButton}

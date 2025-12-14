@@ -1,45 +1,31 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./chat.module.css";
-
-interface ChatMessage {
-  sender: "user" | "ai";
-  text: string;
-}
+import { useChatStore } from "@/store/useChatStore";
 
 export default function ChatWindow({ onClose }: { onClose: () => void }) {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    // טוען היסטוריה מהלוקאל סטורג'
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("eco_ai_chat");
-      return saved ? JSON.parse(saved) : [
-        { sender: "ai", text: "Hi! I'm your EcoTrack assistant 🌿\nHow can I help you today?" }
-      ];
-    }
-    return [];
-  });
+  const messages = useChatStore((state) => state.messages);
+  const isTyping = useChatStore((state) => state.isTyping);
+  const addMessage = useChatStore((state) => state.addMessage);
+  const setTyping = useChatStore((state) => state.setTyping);
 
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // גלילה תמיד להודעה האחרונה
+  // גלילה אוטומטית להודעה האחרונה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    localStorage.setItem("eco_ai_chat", JSON.stringify(messages));
   }, [messages, isTyping]);
 
   async function sendMessage() {
     if (!input.trim() || isTyping) return;
 
     const userText = input.trim();
-    const newUserMsg: ChatMessage = { sender: "user", text: userText };
-    const updatedMessages = [...messages, newUserMsg];
 
-    setMessages(updatedMessages);
+    addMessage({ sender: "user", text: userText });
     setInput("");
-    setIsTyping(true);
+    setTyping(true);
 
     try {
       const res = await fetch("/api/eco-ai", {
@@ -47,50 +33,53 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userText,
-          history: updatedMessages,
+          history: messages,
         }),
       });
 
       const data = await res.json();
       const replyText = data.reply || "The AI had trouble responding.";
 
-      setMessages((prev) => [...prev, { sender: "ai", text: replyText }]);
+      addMessage({ sender: "ai", text: replyText });
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "Network error – please try again later." }
-      ]);
+      addMessage({
+        sender: "ai",
+        text: "Network error – please try again later.",
+      });
     } finally {
-      setIsTyping(false);
+      setTyping(false);
     }
   }
 
   function handleKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    if (e.key === "Enter") sendMessage();
   }
 
   return (
     <div className={styles.chatWindow}>
       <div className={styles.header}>
         <span>EcoTrack AI Assistant</span>
-        <button className={styles.closeButton} onClick={onClose}>✖</button>
+        <button className={styles.closeButton} onClick={onClose}>
+          ✖
+        </button>
       </div>
 
       <div className={styles.messages}>
         {messages.map((m, i) => (
-          <div key={i} className={m.sender === "user" ? styles.userMsg : styles.aiMsg}>
+          <div
+            key={i}
+            className={m.sender === "user" ? styles.userMsg : styles.aiMsg}
+          >
             <span className={styles.msgText}>{m.text}</span>
           </div>
         ))}
 
-        {/* אנימציית AI is typing */}
         {isTyping && (
           <div className={styles.aiMsg}>
             <div className={styles.typingIndicator}>
-              <span></span><span></span><span></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
           </div>
         )}

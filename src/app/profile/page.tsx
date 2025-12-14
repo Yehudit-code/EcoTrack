@@ -54,6 +54,9 @@ export default function ProfilePage() {
   if (!currentUser)
     return <p className={styles.loading}>No user data.</p>;
 
+  // ------------------------------
+  // SAVE EDITED PROFILE
+  // ------------------------------
   const handleSave = async () => {
     try {
       const updatedUser = { ...currentUser, ...editData };
@@ -76,15 +79,16 @@ export default function ProfilePage() {
     }
   };
 
+  // ------------------------------
+  // LOGOUT — Zustand only ✔️
+  // ------------------------------
   const handleLogout = async () => {
     try {
       await fetch("/api/logout", { method: "POST" });
     } catch {}
 
-    logoutStore();
-    localStorage.removeItem("ecotrack-user");
+    logoutStore(); // Zustand מוחק את ה־persist לבד
 
-    // Redirect to sign-in
     router.replace("/");
   };
 
@@ -113,7 +117,6 @@ export default function ProfilePage() {
           </div>
 
           <div className={styles.content}>
-
             {/* PERSONAL INFO */}
             <div className={styles.section}>
               <h3>Personal Information</h3>
@@ -123,7 +126,6 @@ export default function ProfilePage() {
                 <strong>{currentUser.phone || "Not provided"}</strong>
               </div>
 
-              {/* hide birth date for companies */}
               {currentUser.role === "user" && (
                 <div className={styles.row}>
                   <Calendar size={18} /> Birth Date:
@@ -140,12 +142,15 @@ export default function ProfilePage() {
                 </strong>
               </div>
 
-              <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
+              <button
+                className={styles.editBtn}
+                onClick={() => setIsEditing(true)}
+              >
                 <Edit3 size={16} /> Edit Profile
               </button>
             </div>
 
-            {/* COMPANIES — only for users */}
+            {/* COMPANIES (user only) */}
             {currentUser.role === "user" && (
               <ProfileCompanies
                 companies={currentUser.companies}
@@ -153,7 +158,7 @@ export default function ProfilePage() {
               />
             )}
 
-            {/* BANK INFO — only for company */}
+            {/* BANK INFO (company only) */}
             {currentUser.role === "company" && (
               <div className={styles.section}>
                 <h3>Bank Account Details</h3>

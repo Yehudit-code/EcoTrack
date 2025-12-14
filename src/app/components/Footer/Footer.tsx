@@ -43,8 +43,8 @@ const Footer: React.FC = () => {
             <h4>Quick Links</h4>
             <ul className={styles.linkList}>
               <li><a href="/">Home</a></li>
-              <li><a href="/indicators">Consumption Tracking</a></li>
-              <li><a href="/manage-data">Manage Data</a></li>
+              <li><a href="/user/indicators">Consumption Tracking</a></li>
+              <li><a href="/user/manage-data">Manage Data</a></li>
               <li><a href="/about">About Us</a></li>
             </ul>
           </div>
@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
               </div>
               <div className={styles.contactItem}>
                 <FontAwesomeIcon icon={faEnvelope} />
-                <span>contact@ecotrack.com</span>
+                <span>ecotrack33@ecotrack.com</span>
               </div>
             </div>
           </div>

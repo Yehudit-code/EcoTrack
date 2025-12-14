@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import styles from "./Pay.module.css";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore"; // ← הוספנו
 
 interface PaymentDto {
   _id: string;
@@ -23,6 +24,8 @@ export default function PayPage({
   const { id } = use(params);
   const router = useRouter();
 
+  const setUser = useUserStore((s) => s.setUser); // ← Zustand setter
+
   const [payment, setPayment] = useState<PaymentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [cardData, setCardData] = useState({
@@ -40,14 +43,12 @@ export default function PayPage({
       const res = await fetch(`/api/payments/${id}`);
       const data = await res.json();
 
-      // עדכון currentUser
       if (data.fullUser) {
-        localStorage.setItem("currentUser", JSON.stringify(data.fullUser));
+        setUser(data.fullUser);
       }
 
       setPayment(data);
 
-      // אם כבר שולם → הפניה מיידית ל-success
       if (data.status === "paid") {
         router.push(`/pay/success?userId=${data.userId}`);
         return;
@@ -57,7 +58,7 @@ export default function PayPage({
     }
 
     load();
-  }, [id, router]);
+  }, [id, router, setUser]);
 
   // ───────────────────────────────────────────────
   // 🛡️ בדיקות תקינות לשדות כרטיס
@@ -77,7 +78,7 @@ export default function PayPage({
     const year = 2000 + yy;
     const expDate = new Date(year, mm);
 
-    return expDate > now; // תוקף עתידי
+    return expDate > now;
   }
 
   function isValidCVV(cvv: string) {
@@ -88,7 +89,6 @@ export default function PayPage({
   // 2️⃣ שליחת תשלום
   // ───────────────────────────────────────────────
   async function handlePayment() {
-    // בדיקות תקינות:
     if (
       !isValidCardNumber(cardData.number) ||
       !isValidExp(cardData.exp) ||
