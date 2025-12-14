@@ -1,155 +1,219 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/useUserStore";
-
+import { use, useEffect, useState } from "react";
 import styles from "./Pay.module.css";
+import { useRouter } from "next/navigation";
 
-import { ArrowLeft, LogOut, Phone, Calendar, Edit3 } from "lucide-react";
+interface PaymentDto {
+  _id: string;
+  amount: number;
+  status: string;
+  productName: string;
+  companyName: string;
+  userName: string;
+  userEmail: string;
+  userId: string;
+}
 
-import ProfileAvatar from "@/app/components/Profile/ProfileAvatar";
-import ProfileInfo from "@/app/components/Profile/ProfileInfo";
-import ProfileCompanies from "@/app/components/Profile/ProfileCompanies";
-import ProfileModal from "@/app/components/Profile/ProfileModal";
-
-import {
-  getUserProposalsCount,
-  updateUserProfile,
-  logoutUser,
-} from "@/app/services/client/profile/profileService";
-
-export default function ProfilePage() {
+export default function PayPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const router = useRouter();
 
-  const currentUser = useUserStore((s) => s.user);
-  const hasHydrated = useUserStore((s) => s._hasHydrated);
-  const logoutStore = useUserStore((s) => s.logout);
-  const setUser = useUserStore((s) => s.setUser);
+  const [payment, setPayment] = useState<PaymentDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cardData, setCardData] = useState({
+    number: "",
+    exp: "",
+    cvv: "",
+  });
+  const [error, setError] = useState(false);
 
-  const [editData, setEditData] = useState<any>({});
-  const [proposalsCount, setProposalsCount] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-
-  /* ---------- Load profile data ---------- */
+  // ───────────────────────────────────────────────
+  // 1️⃣ טוען פרטי תשלום ואם כבר שולם → שולח ישר ל-success
+  // ───────────────────────────────────────────────
   useEffect(() => {
-    if (!hasHydrated || !currentUser) return;
+    async function load() {
+      const res = await fetch(`/api/payments/${id}`);
+      const data = await res.json();
 
-    setEditData({
-      ...currentUser,
-      companies: currentUser.companies || {
-        electricity: "",
-        water: "",
-        transport: "",
-        recycling: "",
-        solar: "",
-      },
+      // עדכון currentUser
+      if (data.fullUser) {
+        localStorage.setItem("currentUser", JSON.stringify(data.fullUser));
+      }
+
+      setPayment(data);
+
+      // אם כבר שולם → הפניה מיידית ל-success
+      if (data.status === "paid") {
+        router.push(`/pay/success?userId=${data.userId}`);
+        return;
+      }
+
+      setLoading(false);
+    }
+
+    load();
+  }, [id, router]);
+
+  // ───────────────────────────────────────────────
+  // 🛡️ בדיקות תקינות לשדות כרטיס
+  // ───────────────────────────────────────────────
+  function isValidCardNumber(num: string) {
+    const digits = num.replace(/\s+/g, "");
+    return /^\d{16}$/.test(digits);
+  }
+
+  function isValidExp(exp: string) {
+    if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
+
+    const [mm, yy] = exp.split("/").map((v) => parseInt(v, 10));
+    if (mm < 1 || mm > 12) return false;
+
+    const now = new Date();
+    const year = 2000 + yy;
+    const expDate = new Date(year, mm);
+
+    return expDate > now; // תוקף עתידי
+  }
+
+  function isValidCVV(cvv: string) {
+    return /^\d{3}$/.test(cvv);
+  }
+
+  // ───────────────────────────────────────────────
+  // 2️⃣ שליחת תשלום
+  // ───────────────────────────────────────────────
+  async function handlePayment() {
+    // בדיקות תקינות:
+    if (
+      !isValidCardNumber(cardData.number) ||
+      !isValidExp(cardData.exp) ||
+      !isValidCVV(cardData.cvv)
+    ) {
+      showError();
+      return;
+    }
+
+    const res = await fetch("/api/payments/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentId: id }),
     });
 
-    if (currentUser.role === "user") {
-      getUserProposalsCount(currentUser._id)
-        .then(setProposalsCount)
-        .catch(() => setProposalsCount(0));
+    if (res.ok) {
+      router.push(`/pay/success?userId=${payment!.userId}`);
+    } else {
+      showError();
     }
-  }, [currentUser, hasHydrated]);
+  }
 
-  if (!hasHydrated)
-    return <p className={styles.loading}>Loading profile...</p>;
+  function showError() {
+    setError(true);
+    setTimeout(() => setError(false), 2500);
+  }
 
-  if (!currentUser)
-    return <p className={styles.loading}>No user data.</p>;
+  if (loading || !payment) {
+    return <div className={styles.wrapper}>Loading...</div>;
+  }
 
-  /* ---------- Save profile ---------- */
-  const handleSave = async () => {
-    try {
-      const updatedUser = { ...currentUser, ...editData };
-
-      await updateUserProfile(updatedUser);
-
-      setUser(updatedUser);
-      setIsEditing(false);
-    } catch {
-      alert("Error updating profile");
-    }
-  };
-
-  /* ---------- Logout ---------- */
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } catch {
-      // Ignore server error, continue client cleanup
-    }
-
-    logoutStore();
-    localStorage.removeItem("ecotrack-user");
-    router.replace("/signIn");
-  };
+  const amount = payment.amount || 0;
+  const commission = amount * 0.1;
+  const companyGets = amount - commission;
 
   return (
-    <div className={styles.profilePage}>
-      <button className={styles.backBtn} onClick={() => router.back()}>
-        <ArrowLeft size={20} /> Back
-      </button>
-
-      <button className={styles.logoutBtn} onClick={handleLogout}>
-        <LogOut size={18} /> Logout
-      </button>
-
-      <div className={styles.profileCard}>
-        <div className={styles.headerSection}>
-          <ProfileAvatar
-            photo={currentUser.photo}
-            role={currentUser.role}
-            proposalsCount={proposalsCount}
-          />
-
-          <ProfileInfo user={currentUser} />
-        </div>
-
-        <div className={styles.content}>
-          <div className={styles.section}>
-            <h3>Personal Information</h3>
-
-            <div className={styles.row}>
-              <Phone size={18} /> Phone:
-              <strong>{currentUser.phone || "Not provided"}</strong>
-            </div>
-
-            <div className={styles.row}>
-              <Calendar size={18} /> Birth Date:
-              <strong>{currentUser.birthDate || "—"}</strong>
-            </div>
-
-            <div className={styles.row}>
-              <Calendar size={18} /> Member Since:
-              <strong>
-                {currentUser.createdAt
-                  ? new Date(currentUser.createdAt).toLocaleDateString()
-                  : "—"}
-              </strong>
-            </div>
-
-            <button
-              className={styles.editBtn}
-              onClick={() => setIsEditing(true)}
-            >
-              <Edit3 size={16} /> Edit Profile
-            </button>
-          </div>
-
-          <ProfileCompanies companies={currentUser.companies} />
-        </div>
+    <div className={styles.wrapper}>
+      <div className={`${styles.errorPopup} ${error ? styles.show : ""}`}>
+        Invalid credit card details — please check and try again
       </div>
 
-      {isEditing && (
-        <ProfileModal
-          editData={editData}
-          setEditData={setEditData}
-          onSave={handleSave}
-          onCancel={() => setIsEditing(false)}
-        />
-      )}
+      <div className={styles.card}>
+        <h1 className={styles.title}>Complete Your Payment</h1>
+
+        {/* User Info */}
+        <div className={styles.section}>
+          <div className={styles.label}>Customer:</div>
+          <div className={styles.value}>{payment.userName}</div>
+
+          <div className={styles.label} style={{ marginTop: "6px" }}>
+            Email:
+          </div>
+          <div className={styles.value}>{payment.userEmail}</div>
+        </div>
+
+        {/* Product */}
+        <div className={styles.section}>
+          <div className={styles.label}>Product:</div>
+          <div className={styles.value}>{payment.productName}</div>
+
+          <div className={styles.label} style={{ marginTop: "10px" }}>
+            Amount:
+          </div>
+          <div className={styles.value}>{amount} ₪</div>
+
+          <div className={styles.subValue}>EcoTrack fee: 10%</div>
+          <div className={styles.subValue}>
+            Company receives: {companyGets} ₪
+          </div>
+        </div>
+
+        {/* Company */}
+        <div className={styles.section}>
+          <div className={styles.label}>Company:</div>
+          <div className={styles.value}>{payment.companyName}</div>
+        </div>
+
+        {/* Payment form */}
+        <div className={styles.form}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Card Number</label>
+            <input
+              className={styles.input}
+              placeholder="xxxx xxxx xxxx xxxx"
+              maxLength={19}
+              value={cardData.number}
+              onChange={(e) =>
+                setCardData({ ...cardData, number: e.target.value })
+              }
+            />
+          </div>
+
+          <div className={styles.row}>
+            <div className={styles.inputGroup} style={{ flex: 1 }}>
+              <label className={styles.label}>Expiry</label>
+              <input
+                className={styles.input}
+                placeholder="MM/YY"
+                maxLength={5}
+                value={cardData.exp}
+                onChange={(e) =>
+                  setCardData({ ...cardData, exp: e.target.value })
+                }
+              />
+            </div>
+
+            <div className={styles.inputGroup} style={{ width: "100px" }}>
+              <label className={styles.label}>CVV</label>
+              <input
+                className={styles.input}
+                placeholder="123"
+                maxLength={3}
+                value={cardData.cvv}
+                onChange={(e) =>
+                  setCardData({ ...cardData, cvv: e.target.value })
+                }
+              />
+            </div>
+          </div>
+        </div>
+
+        <button className={styles.btnPay} onClick={handlePayment}>
+          Pay Now
+        </button>
+      </div>
     </div>
   );
 }

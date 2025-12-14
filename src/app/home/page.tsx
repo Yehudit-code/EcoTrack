@@ -1,105 +1,145 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
-import ChatBubble from "../components/AIChat/ChatBubble";
-import ChatWindow from "../components/AIChat/ChatWindow";
-import styles from "./page.module.css";
-import { useUserStore } from "@/store/useUserStore";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
+import { useRouter } from 'next/navigation';
+
+import Header from '../components/Header/Header';
+import CompanyHeader from '../components/CompanyHeader/CompanyHeader';
+import Footer from '../components/Footer/Footer';
+import ChatBubble from '../components/AIChat/ChatBubble';
+import ChatWindow from '../components/AIChat/ChatWindow';
+import ImageComponent from '../components/ImageComponent/ImageComponent';
+
+import styles from './page.module.css';
+import { useUserStore } from '@/store/useUserStore';
 
 export default function HomePage() {
-  const role = useUserStore((state) => state.user?.role ?? null);
+  const { user, _hasHydrated } = useUserStore();
+  const role = user?.role ?? null;
 
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [visibleItems, setVisibleItems] = useState(new Set<string>());
+  // כל ה־Hooks חייבים להיות כאן תמיד
+  const [visibleItems, setVisibleItems] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
-
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const router = useRouter();
 
-  const intersectionCallback = useCallback((entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        setVisibleItems((prev) => new Set([...prev, entry.target.id]));
-      }
-    });
-  }, []);
+  const intersectionCallback = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setVisibleItems((prev) => new Set([...prev, entry.target.id]));
+        }
+      });
+    },
+    []
+  );
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+
     observerRef.current = new IntersectionObserver(intersectionCallback, {
       threshold: 0.05,
       rootMargin: "200px 0px -100px 0px",
     });
 
-    const elements = document.querySelectorAll('[id^="feature-"]');
+    const elements = document.querySelectorAll("[id^='feature-']");
     elements.forEach((el) => observerRef.current?.observe(el));
 
     return () => observerRef.current?.disconnect();
-  }, [intersectionCallback]);
+  }, [_hasHydrated, intersectionCallback]);
 
-  const createObserverRef = useCallback((el: HTMLDivElement | null) => {
-    if (el) observerRef.current?.observe(el);
-  }, []);
-
-  const dailyTips = [
-    "Turn off the tap while brushing your teeth - save up to 8 liters per minute!",
-    "Switch to LED bulbs - they use 75% less energy.",
-    "Shorten your showers to save water.",
-    "Unplug electronics when not in use.",
-    "Use cold water for washing clothes.",
-    "Walk or bike for short trips.",
-    "Fix leaky faucets immediately.",
-    "Use a programmable thermostat.",
-    "Recycle properly.",
-    "Choose reusable bags.",
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTipIndex((prev) => (prev + 1) % dailyTips.length);
-    }, 600000);
-
-    return () => clearInterval(interval);
-  }, [dailyTips.length]);
+  // 🔥 התנאי חייב להיות כאן — אחרי כל ההוקים
+  if (!_hasHydrated) return null;
 
   return (
     <>
-      <Header />
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <div className={styles.heroSection}>
-            <div className={styles.heroContent}>
-              <h1 className={styles.mainTitle}>Welcome to EcoTrack</h1>
+      {/* ---------- HEADER ---------- */}
+      {role === 'company' ? <CompanyHeader /> : <Header />}
+
+      {/* ---------- HERO IMAGE ---------- */}
+      <ImageComponent />
+
+      {/* ---------- HERO SECTION ---------- */}
+      <section className={styles.heroSection}></section>
+
+      {/* ---------- INFO BOXES (USER ONLY) ---------- */}
+      {role === 'user' && (
+        <section className={styles.infoBoxesSection}>
+          <h2 className={styles.infoBoxesTitle}>How to Use EcoTrack</h2>
+
+          <div className={styles.infoBoxesGrid}>
+            <div
+              className={styles.infoBox}
+              onClick={() => router.push('/manage-data')}
+            >
+              <h3>Manage Data</h3>
+              <p>
+                Enter your monthly energy, water, and transport consumption
+                easily.
+              </p>
+            </div>
+
+            <div
+              className={styles.infoBox}
+              onClick={() => router.push('/indicators')}
+            >
+              <h3>Live Consumption</h3>
+              <p>
+                Track your usage in real time and compare between months.
+              </p>
+            </div>
+
+            <div
+              className={styles.infoBox}
+              onClick={() => router.push('/social-sharing')}
+            >
+              <h3>Social Sharing</h3>
+              <p>
+                Share posts, interact, and get inspired by the eco community.
+              </p>
             </div>
           </div>
+        </section>
+      )}
 
-
-          {/* Features */}
+      {/* ---------- MAIN CONTENT ---------- */}
+      <div className={styles.container}>
+        <main className={styles.main}>
+          {/* ---------- FEATURES ---------- */}
           <div className={styles.featuresSection}>
             <div
               id="feature-water"
-              className={`${styles.featureRow} ${styles.slideLeft} ${visibleItems.has("feature-water") ? styles.visible : ""
-                }`}
-              ref={createObserverRef}
+              className={`${styles.featureRow} ${styles.slideLeft} ${
+                visibleItems.has('feature-water') ? styles.visible : ''
+              }`}
             >
               <div className={styles.featureImage}>
                 <img src="/images/מים.png" alt="Water Conservation" />
               </div>
               <div className={styles.featureContent}>
                 <h3>Smart Water Management</h3>
-                <p>Advanced systems reduce water consumption significantly.</p>
+                <p>
+                  Advanced systems help reduce water consumption significantly.
+                </p>
               </div>
             </div>
 
             <div
               id="feature-energy"
-              className={`${styles.featureRow} ${styles.slideRight} ${visibleItems.has("feature-energy") ? styles.visible : ""
-                }`}
-              ref={createObserverRef}
+              className={`${styles.featureRow} ${styles.slideRight} ${
+                visibleItems.has('feature-energy') ? styles.visible : ''
+              }`}
             >
               <div className={styles.featureContent}>
                 <h3>Energy Analytics</h3>
-                <p>Get insights into electricity usage and optimization.</p>
+                <p>
+                  Get insights into electricity usage and optimize your energy.
+                </p>
               </div>
               <div className={styles.featureImage}>
                 <img src="/images/חשמל.png" alt="Energy Management" />
@@ -108,24 +148,61 @@ export default function HomePage() {
 
             <div
               id="feature-transport"
-              className={`${styles.featureRow} ${styles.slideLeft} ${visibleItems.has("feature-transport") ? styles.visible : ""
-                }`}
-              ref={createObserverRef}
+              className={`${styles.featureRow} ${styles.slideLeft} ${
+                visibleItems.has('feature-transport') ? styles.visible : ''
+              }`}
             >
               <div className={styles.featureImage}>
                 <img src="/images/אופניים.png" alt="Eco Transport" />
               </div>
               <div className={styles.featureContent}>
                 <h3>Sustainable Transportation</h3>
-                <p>Track eco-friendly commuting habits.</p>
+                <p>Track eco-friendly commuting habits and reduce emissions.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ---------- VIDEOS SECTION ---------- */}
+          <div className={styles.videosSection}>
+            <div className={styles.videosOverlayText}>
+              <h2 className={styles.overlayGreen}>Let's keep our world</h2>
+              <h2 className={styles.overlayWhite}>CLEAN</h2>
+            </div>
+
+            <div className={styles.videosContainer}>
+              <div className={styles.videoWrapper}>
+                <iframe
+                  src="https://www.youtube.com/embed/2H_YyklnpFM?autoplay=1&mute=1&loop=1&playlist=2H_YyklnpFM"
+                  title="Eco Video 1"
+                  allow="autoplay"
+                />
+              </div>
+
+              <div className={styles.videoWrapper}>
+                <iframe
+                  src="https://www.youtube.com/embed/au1M6TggB_U?autoplay=1&mute=1&loop=1&playlist=au1M6TggB_U"
+                  title="Eco Video 2"
+                  allow="autoplay"
+                />
+              </div>
+
+              <div className={styles.videoWrapper}>
+                <iframe
+                  src="https://www.youtube.com/embed/G9NRzrx7m4U?autoplay=1&mute=1&loop=1&playlist=G9NRzrx7m4U"
+                  title="Eco Video 3"
+                  allow="autoplay"
+                />
               </div>
             </div>
           </div>
         </main>
       </div>
 
+      {/* ---------- CHAT ---------- */}
       {open && <ChatWindow onClose={() => setOpen(false)} />}
       <ChatBubble onClick={() => setOpen(true)} />
+
+      {/* ---------- FOOTER ---------- */}
       <Footer />
     </>
   );

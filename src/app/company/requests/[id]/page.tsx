@@ -1,137 +1,153 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./CreateRequest.module.css";
+import emailjs from "@emailjs/browser";
+
+import Toast from "@/app/components/Toast/Toast";
 import { useUserStore } from "@/store/useUserStore";
-import { fetchCompanyRequests } from "@/app/services/client/company/companyRequestsService";
-import type { CompanyRequestItem } from "@/app/types/companyRequests";
 
-/* ---------- Types ---------- */
+export default function CreateRequestPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const router = useRouter();
+  const { id } = use(params);
 
-type PageState =
-  | { status: "loading" }
-  | { status: "error"; message: string }
-  | { status: "ready"; data: CompanyRequestItem[] };
+  // Zustand user
+  const currentUser = useUserStore((state) => state.user);
 
-type RequestStatus = CompanyRequestItem["status"];
+  // UI state
+  const [user, setUser] = useState<any>(null);
+  const [product, setProduct] = useState("");
+  const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(true);
 
-/* ---------- Page ---------- */
+  // Toast state
+  const [toast, setToast] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
 
-export default function CompanyRequestsPage() {
-  const user = useUserStore((s) => s.user);
-  const hasHydrated = useUserStore((s) => s._hasHydrated);
+  const showToast = (text: string, type: "success" | "error" = "success") => {
+    setToast({ text, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
-  const [state, setState] = useState<PageState>({ status: "loading" });
-
+  // Load user details (the target user, not company)
   useEffect(() => {
-    if (!hasHydrated) return;
+    async function loadUser() {
+      const res = await fetch(`/api/users/${id}`);
+      const data = await res.json();
+      setUser(data.user);
+      setLoading(false);
+    }
+    loadUser();
+  }, [id]);
 
-    if (!user || user.role !== "company") {
-      setState({ status: "ready", data: [] });
+  // Handle sending offer
+  async function handleSend() {
+    if (!product || !price) {
+      showToast("Please fill in all fields", "error");
       return;
     }
 
-    fetchCompanyRequests(user._id)
-      .then((data) => {
-        setState({ status: "ready", data });
-      })
-      .catch(() => {
-        setState({
-          status: "error",
-          message: "Failed to load payment requests",
-        });
-      });
-  }, [hasHydrated, user?._id, user?.role]);
+    // Ensure company user exists in Zustand
+    if (!currentUser || !currentUser._id) {
+      showToast("Company information is missing", "error");
+      return;
+    }
 
-  if (state.status === "loading") {
-    return <div className={styles.page}>Loading requests...</div>;
+    // 1) Save request + payment in DB
+    const saveRes = await fetch("/api/company-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: id,
+        companyId: currentUser._id,
+        userEmail: user.email,
+        productName: product,
+        price: Number(price),
+      }),
+    });
+
+    if (!saveRes.ok) {
+      showToast("Error saving request", "error");
+      return;
+    }
+
+    const saveJson = await saveRes.json();
+    const paymentId = saveJson.paymentId;
+
+    // 2) Send email via EmailJS
+    try {
+      const origin =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : "https://ecotrack.com";
+
+      const paymentLink = `${origin}/pay/${paymentId}`;
+
+      await emailjs.send(
+        "service_eo7p18q",
+        "template_yh50ja8",
+        {
+          user_name: user.name,
+          product_name: product,
+          price: price,
+          user_email: user.email,
+          reply_to: user.email,
+          payment_link: paymentLink,
+        },
+        "zvFzq-RxRb_BxCEqg"
+      );
+    } catch (err) {
+      showToast("Error sending email", "error");
+      return;
+    }
+
+    showToast("Offer sent successfully", "success");
+
+    setTimeout(() => {
+      router.push("/company/requests");
+    }, 1200);
   }
 
-  if (state.status === "error") {
-    return <div className={styles.page}>{state.message}</div>;
-  }
+  if (loading || !user) return <div>Loading...</div>;
 
   return (
-    <div className={styles.page}>
-      <h1 className={styles.title}>Payment offers sent</h1>
+    <div className={styles.wrapper}>
+      {toast && <Toast text={toast.text} type={toast.type} />}
 
-      {state.data.length === 0 ? (
-        <div className={styles.empty}>
-          You haven&apos;t sent any payment offers yet.
+      <div className={styles.card}>
+        <h1 className={styles.title}>Create payment offer</h1>
+
+        <div className={styles.label}>User name</div>
+        <div className={styles.value}>{user?.name || "Not found"}</div>
+
+        <div className={styles.inputGroup}>
+          <label>Product name</label>
+          <input
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+          />
         </div>
-      ) : (
-        <div className={styles.list}>
-          {state.data.map((req) => (
-            <RequestCard key={req._id} request={req} />
-          ))}
+
+        <div className={styles.inputGroup}>
+          <label>Price (₪)</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
         </div>
-      )}
-    </div>
-  );
-}
 
-/* ---------- Sub-components ---------- */
-
-function RequestCard({ request }: { request: CompanyRequestItem }) {
-  return (
-    <div className={styles.card}>
-      <InfoRow label="Product" value={request.productName} />
-      <InfoRow label="Price" value={`${request.price} ₪`} />
-      <InfoRow
-        label="User"
-        value={
-          request.userData?.name ||
-          request.userData?.email ||
-          request.userId
-        }
-      />
-      <StatusRow status={request.status} />
-    </div>
-  );
-}
-
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className={styles.row}>
-      <span className={styles.label}>{label}</span>
-      <span className={styles.value}>{value}</span>
-    </div>
-  );
-}
-
-const STATUS_MAP: Record<
-  RequestStatus,
-  { text: string; className: string }
-> = {
-  sent: {
-    text: "Pending payment",
-    className: styles.statusPending,
-  },
-  paid: {
-    text: "Paid",
-    className: styles.statusSuccess,
-  },
-  declined: {
-    text: "Declined",
-    className: styles.statusDeclined,
-  },
-};
-
-function StatusRow({ status }: { status: RequestStatus }) {
-  const { text, className } = STATUS_MAP[status];
-
-  return (
-    <div className={styles.statusRow}>
-      <span className={styles.label}>Status</span>
-      <span className={`${styles.status} ${className}`}>
-        {text}
-      </span>
+        <button className={styles.btn} onClick={handleSend}>
+          Send offer
+        </button>
+      </div>
     </div>
   );
 }

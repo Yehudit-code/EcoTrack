@@ -18,9 +18,9 @@ export default function PaymentSuccessPage() {
 
         <button
           className={styles.button}
-          onClick={() => router.push("/home")}
+          onClick={() => router.push("/signin")}
         >
-          Back to home
+          Back to sign in
         </button>
       </div>
     </div>
