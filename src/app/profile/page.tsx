@@ -83,7 +83,9 @@ export default function ProfilePage() {
 
     logoutStore();
     localStorage.removeItem("ecotrack-user");
-    router.replace("/signIn");
+
+    // Redirect to sign-in
+    router.replace("/");
   };
 
   return (

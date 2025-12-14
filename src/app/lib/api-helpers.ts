@@ -1,4 +1,3 @@
-// src/lib/api-helpers.ts
 import { NextResponse } from "next/server";
 
 export function ok<T>(data: T, init: number = 200) {

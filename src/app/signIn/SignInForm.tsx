@@ -16,38 +16,49 @@ export default function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showRoleModal, setShowRoleModal] = useState(false);
   const [googleUser, setGoogleUser] = useState<any>(null);
+
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2000);
   };
 
+  /* ===============================
+     EMAIL + PASSWORD SIGN IN
+  =============================== */
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return showToast("Please enter email and password");
+
+    if (!email || !password) {
+      showToast("Please enter email and password");
+      return;
+    }
+
     setLoading(true);
+
     try {
       const res = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
-      if (res.ok) {
-        setUser(data.user);
-        console.log("➡️ Going to /home...");
-        router.push("/home");
-        console.log("➡️ AFTER PUSH");
-      } else {
-        showToast(data.error || "Error signing in");
+      if (!res.ok) {
+        showToast(data.error || "Sign in failed");
+        return;
       }
+
+      setUser(data.user);
+      router.push("/home");
     } catch {
       showToast("Server error");
     } finally {
@@ -55,42 +66,56 @@ export default function SignInForm() {
     }
   };
 
+  /* ===============================
+     GOOGLE SIGN IN (FIREBASE)
+  =============================== */
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const firebaseUser = result.user;
 
+      // Save Firebase user temporarily
+      setGoogleUser(firebaseUser);
+
+      // Check if user already exists in DB
       const checkRes = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
+        body: JSON.stringify({ email: firebaseUser.email }),
       });
 
       const checkData = await checkRes.json();
 
+      // User exists → still MUST create JWT
       if (checkData.exists) {
-        setUser(checkData.user);
-        router.push("/home");
+        await finishGoogleSignup(null);
         return;
       }
 
-      setGoogleUser(user);
+      // New user → ask for role
       setShowRoleModal(true);
     } catch (err) {
       console.error(err);
-      showToast("Google error");
+      showToast("Google sign-in failed");
     }
   };
 
+  /* ===============================
+     FINISH GOOGLE LOGIN / SIGNUP
+     (Creates JWT + cookie)
+  =============================== */
   const finishGoogleSignup = async (category: string | null) => {
+    if (!googleUser) return;
+
     const res = await fetch("/api/social-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         email: googleUser.email,
         name: googleUser.displayName,
         photoURL: googleUser.photoURL,
-        role: googleUser.role,
+        role: googleUser.role || "user",
         companyCategory: category,
       }),
     });
@@ -98,7 +123,7 @@ export default function SignInForm() {
     const data = await res.json();
 
     if (!res.ok) {
-      showToast(data.error || "Social login failed");
+      showToast(data.error || "Google login failed");
       return;
     }
 
@@ -106,6 +131,9 @@ export default function SignInForm() {
     router.push("/home");
   };
 
+  /* ===============================
+     ROLE SELECTION
+  =============================== */
   const handleRoleSelected = (role: "user" | "company") => {
     googleUser.role = role;
     setShowRoleModal(false);
@@ -123,6 +151,9 @@ export default function SignInForm() {
     finishGoogleSignup(category);
   };
 
+  /* ===============================
+     RENDER
+  =============================== */
   return (
     <>
       {toast && <Toast text={toast} />}
@@ -151,10 +182,6 @@ export default function SignInForm() {
         <button className={styles.signInButton} disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </button>
-
-        <p className={styles.consentText}>
-          I allow my information to be used in accordance with utility providers in Israel.
-        </p>
       </form>
 
       <div className={styles.divider}>
@@ -172,7 +199,6 @@ export default function SignInForm() {
       </div>
 
       {showRoleModal && <RoleModal onSelect={handleRoleSelected} />}
-
       {showCategoryModal && (
         <CompanyCategoryModal onSelect={handleCategorySelected} />
       )}

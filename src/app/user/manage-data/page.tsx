@@ -13,7 +13,7 @@ import {
   updateConsumption,
   ConsumptionCategory,
   ConsumptionHabitDto,
-} from "@/app/services/client/consumptionClient";
+} from "@/app/services/client/company/consumptionClient";
 
 type MainCategory =
   | "Electricity"

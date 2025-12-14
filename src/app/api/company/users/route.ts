@@ -12,149 +12,118 @@ interface HabitDoc {
   year: number;
   value: number;
 }
+
 const categoryMap: Record<string, string> = {
   electricity: "Electricity",
   water: "Water",
   gas: "Gas",
   transportation: "Transportation",
-  waste: "Waste"
+  waste: "Waste",
 };
 
 export async function GET(req: Request) {
   try {
+    // --- Auth ---
     const auth = await requireAuth("company");
-    console.log("Auth result:", auth);
-
     if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectDB();
 
-    const companyEmail = auth.user.email;
-    const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
-    if (!companyDoc) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
-    }
+    // --- Get company ---
+    const companyDoc = await User.findOne({ email: auth.user.email }).lean<IUser | null>();
+    if (!companyDoc) return NextResponse.json({ error: "Company not found" }, { status: 404 });
 
     const companyId = companyDoc._id.toString();
 
+    // --- Get category ---
     const { searchParams } = new URL(req.url);
-    const all = searchParams.get("all");
-
-    if (all === "true") {
-      const habits = await ConsumptionHabit.find({}).lean<HabitDoc[]>();
-      return NextResponse.json({ users: habits });
-    }
-
     const rawCategory = searchParams.get("category") || "electricity";
-    console.log("🔥 Raw category:", rawCategory);
-
     const category = categoryMap[rawCategory.toLowerCase()] || rawCategory;
-    console.log("🔥 Final category:", category);
 
-    const matching = await ConsumptionHabit.find({ category }).lean<HabitDoc[]>();
-    console.log("🔥 Matching docs:", matching.length);
+    // --- Fetch habits ---
+    const habits = await ConsumptionHabit.find({ category }).lean<HabitDoc[]>();
 
-    const userMap = new Map<string, HabitDoc[]>();
-    matching.forEach((doc) => {
-      if (!userMap.has(doc.userEmail)) userMap.set(doc.userEmail, []);
-      userMap.get(doc.userEmail)!.push(doc);
+    // --- Group by email ---
+    const grouped = new Map<string, HabitDoc[]>();
+    habits.forEach((h) => {
+      if (!grouped.has(h.userEmail)) grouped.set(h.userEmail, []);
+      grouped.get(h.userEmail)!.push(h);
     });
 
-    const users = await Promise.all(
-      Array.from(userMap.entries()).map(async ([email, records]) => {
+    // --- Build final user objects ---
+    let users = await Promise.all(
+      Array.from(grouped.entries()).map(async ([email, records]) => {
         const userDoc = await User.findOne({ email }).lean<IUser | null>();
 
-        const maxValueRecord = records.reduce<HabitDoc | null>(
-          (max, curr) => (!max || curr.value > max.value ? curr : max),
-          null
-        );
-
-        const sorted = [...records]
+        const sorted = records
           .sort((a, b) => b.year - a.year || b.month - a.month)
           .slice(0, 3)
           .reverse();
 
-        const fallbackName = email.split("@")[0];
+        const maxValueRecord = records.reduce(
+          (max, r) => (max === null || r.value > max.value ? r : max),
+          null as HabitDoc | null
+        );
 
         return {
           _id: userDoc?._id?.toString() || null,
-          name: userDoc?.name || fallbackName,
+          name: userDoc?.name || email.split("@")[0],
           email,
           phone: userDoc?.phone || "",
           photo: userDoc?.photo || "",
           improvementScore: userDoc?.improvementScore || 0,
-          valuesByMonth: sorted.map((r) => ({
-            month: r.month,
-            year: r.year,
-            value: r.value,
-          })),
+          valuesByMonth: sorted,
           maxValue: maxValueRecord?.value ?? 0,
-          talked: userDoc?.talkedByCompanies?.[companyId] || false
+          talked: userDoc?.talkedByCompanies?.[companyId] || false,
         };
       })
     );
 
+    users = users.filter((u) => u._id !== null).sort((a, b) => b.maxValue - a.maxValue).slice(0, 3);
+
     return NextResponse.json({ users });
   } catch (err) {
     console.error("GET /company/users error:", err);
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
-} // ←←← סגירה נכונה של GET כאן!!!
+}
 
-
-
-
-// --------------------------------------------------
-// PATCH
-// --------------------------------------------------
+// --- PATCH ---
 export async function PATCH(req: NextRequest) {
   try {
     const auth = await requireAuth("company");
-    if (!auth.ok) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
-    }
+    if (!auth.ok) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectDB();
 
-    const companyEmail = auth.user.email;
-    const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
-    if (!companyDoc) {
-  return NextResponse.json({ error: "Company not found" }, { status: 404 });
-}
+    const companyDoc = await User.findOne({ email: auth.user.email }).lean<IUser | null>();
+    if (!companyDoc) return NextResponse.json({ error: "Company not found" }, { status: 404 });
+
     const companyId = companyDoc._id.toString();
 
     const url = new URL(req.url);
     const match = url.pathname.match(/\/api\/company\/users\/(.+)\/talked/);
     const userEmail = match ? decodeURIComponent(match[1]) : null;
 
+    if (!userEmail) return NextResponse.json({ error: "Missing user email" }, { status: 400 });
+
     const user = await User.findOne({ email: userEmail });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    if (!user.talkedByCompanies) user.talkedByCompanies = {};
+    const current = user.talkedByCompanies?.[companyId] || false;
 
-    const current = user.talkedByCompanies[companyId] || false;
-    user.talkedByCompanies[companyId] = !current;
+    user.talkedByCompanies = {
+      ...user.talkedByCompanies,
+      [companyId]: !current,
+    };
 
     await user.save();
 
-    return NextResponse.json({
-      success: true,
-      talked: user.talkedByCompanies[companyId]
-    });
+    return NextResponse.json({ success: true, talked: !current });
   } catch (err) {
     console.error("PATCH /company/users error:", err);
-    return NextResponse.json(
-      { error: "Failed to update talk status" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update talk status" }, { status: 500 });
   }
 }
-
-

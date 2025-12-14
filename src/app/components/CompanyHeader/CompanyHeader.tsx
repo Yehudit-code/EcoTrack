@@ -1,25 +1,28 @@
-"use client";
+'use client';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLeaf, faHome, faChartBar, faDatabase, faInfoCircle, faUser } from '@fortawesome/free-solid-svg-icons';
+import styles from './CompanyHeader.module.css';
 
-import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLeaf,
-  faHome,
-  faChartBar,
-  faDatabase,
-  faInfoCircle,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+export default function Header() {
+  const [profilePic, setProfilePic] = useState<string>('/images/default-profile.png');
 
-import styles from "./CompanyHeader.module.css";
-import { useUserStore } from "@/store/useUserStore";
+  useEffect(() => {
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
+      const parsed = JSON.parse(userData);
 
-export default function CompanyHeader() {
-  const user = useUserStore((state) => state.user);
+      const pic =
+        parsed.photo ||
+        parsed.photoURL ||
+        '/images/default-profile-company.png';
 
-  const profilePic =
-    user?.photo ||
-    "/images/default-profile-company.png";
+      setProfilePic(pic);
+
+      localStorage.setItem('profilePic', pic);
+    }
+  }, []);
 
   return (
     <header className={styles.header}>
@@ -33,17 +36,14 @@ export default function CompanyHeader() {
           <FontAwesomeIcon icon={faHome} />
           <span>Home</span>
         </Link>
-
-        <Link href="/company/display-users" className={styles.navLink}>
+        <Link href="/company/display-user" className={styles.navLink}>
           <FontAwesomeIcon icon={faDatabase} />
           <span>Display Users</span>
         </Link>
-
         <Link href="/contact" className={styles.navLink}>
           <FontAwesomeIcon icon={faChartBar} />
           <span>Contact</span>
         </Link>
-
         <Link href="/about" className={styles.navLink}>
           <FontAwesomeIcon icon={faInfoCircle} />
           <span>About</span>
@@ -52,13 +52,9 @@ export default function CompanyHeader() {
 
       <div className={styles.userSection}>
         <Link href="/profile" className={styles.profileLink}>
-          {user ? (
+          {profilePic ? (
             <div className={styles.profileContainer}>
-              <img
-                src={profilePic}
-                alt="Company Profile"
-                className={styles.profileImg}
-              />
+              <img src={profilePic} alt="Company Profile" className={styles.profileImg} />
             </div>
           ) : (
             <div className={styles.defaultProfile}>
