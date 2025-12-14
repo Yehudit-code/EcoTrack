@@ -12,17 +12,25 @@ interface HabitDoc {
   year: number;
   value: number;
 }
+const categoryMap: Record<string, string> = {
+  electricity: "Electricity",
+  water: "Water",
+  gas: "Gas",
+  transportation: "Transportation",
+  waste: "Waste"
+};
 
 export async function GET(req: Request) {
   try {
     const auth = await requireAuth("company");
+    console.log("Auth result:", auth);
+
     if (!auth.ok) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     await connectDB();
 
-    // Get company info
     const companyEmail = auth.user.email;
     const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
     if (!companyDoc) {
@@ -34,31 +42,29 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const all = searchParams.get("all");
 
-    let users: any[] = [];
-
     if (all === "true") {
       const habits = await ConsumptionHabit.find({}).lean<HabitDoc[]>();
       return NextResponse.json({ users: habits });
     }
 
-    const category = searchParams.get("category") || "electricity";
+    const rawCategory = searchParams.get("category") || "electricity";
+    console.log("🔥 Raw category:", rawCategory);
 
-    // Fetch category habits
-    const matching = await ConsumptionHabit.find({
-      category: { $regex: new RegExp(`^${category}$`, "i") }
-    }).lean<HabitDoc[]>();
+    const category = categoryMap[rawCategory.toLowerCase()] || rawCategory;
+    console.log("🔥 Final category:", category);
 
-    // Group by userEmail
+    const matching = await ConsumptionHabit.find({ category }).lean<HabitDoc[]>();
+    console.log("🔥 Matching docs:", matching.length);
+
     const userMap = new Map<string, HabitDoc[]>();
     matching.forEach((doc) => {
       if (!userMap.has(doc.userEmail)) userMap.set(doc.userEmail, []);
       userMap.get(doc.userEmail)!.push(doc);
     });
 
-    users = await Promise.all(
+    const users = await Promise.all(
       Array.from(userMap.entries()).map(async ([email, records]) => {
         const userDoc = await User.findOne({ email }).lean<IUser | null>();
-        if (!userDoc) return null;
 
         const maxValueRecord = records.reduce<HabitDoc | null>(
           (max, curr) => (!max || curr.value > max.value ? curr : max),
@@ -70,29 +76,25 @@ export async function GET(req: Request) {
           .slice(0, 3)
           .reverse();
 
+        const fallbackName = email.split("@")[0];
+
         return {
-          _id: userDoc._id.toString(),
-          name: userDoc.name || email,
+          _id: userDoc?._id?.toString() || null,
+          name: userDoc?.name || fallbackName,
           email,
-          phone: userDoc.phone || "",
-          photo: userDoc.photo || "",
-          improvementScore: userDoc.improvementScore || 0,
+          phone: userDoc?.phone || "",
+          photo: userDoc?.photo || "",
+          improvementScore: userDoc?.improvementScore || 0,
           valuesByMonth: sorted.map((r) => ({
             month: r.month,
             year: r.year,
-            value: r.value
+            value: r.value,
           })),
           maxValue: maxValueRecord?.value ?? 0,
-          talked: userDoc.talkedByCompanies?.get(companyId) || false
+          talked: userDoc?.talkedByCompanies?.[companyId] || false
         };
       })
     );
-
-    users = users.filter((u) => u !== null);
-
-    users = users
-      .sort((a, b) => (b.maxValue ?? 0) - (a.maxValue ?? 0))
-      .slice(0, 3);
 
     return NextResponse.json({ users });
   } catch (err) {
@@ -102,9 +104,14 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
-}
+} // ←←← סגירה נכונה של GET כאן!!!
 
-// PATCH — NO TS ERRORS
+
+
+
+// --------------------------------------------------
+// PATCH
+// --------------------------------------------------
 export async function PATCH(req: NextRequest) {
   try {
     const auth = await requireAuth("company");
@@ -117,34 +124,29 @@ export async function PATCH(req: NextRequest) {
     const companyEmail = auth.user.email;
     const companyDoc = await User.findOne({ email: companyEmail }).lean<IUser>();
     if (!companyDoc) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
-    }
-
+  return NextResponse.json({ error: "Company not found" }, { status: 404 });
+}
     const companyId = companyDoc._id.toString();
 
     const url = new URL(req.url);
     const match = url.pathname.match(/\/api\/company\/users\/(.+)\/talked/);
     const userEmail = match ? decodeURIComponent(match[1]) : null;
 
-    if (!userEmail) {
-      return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
-    }
-
     const user = await User.findOne({ email: userEmail });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (!user.talkedByCompanies) user.talkedByCompanies = new Map<string, boolean>();
+    if (!user.talkedByCompanies) user.talkedByCompanies = {};
 
-    const current = user.talkedByCompanies.get(companyId) || false;
-    user.talkedByCompanies.set(companyId, !current);
+    const current = user.talkedByCompanies[companyId] || false;
+    user.talkedByCompanies[companyId] = !current;
 
     await user.save();
 
     return NextResponse.json({
       success: true,
-      talked: user.talkedByCompanies.get(companyId)
+      talked: user.talkedByCompanies[companyId]
     });
   } catch (err) {
     console.error("PATCH /company/users error:", err);
@@ -154,3 +156,5 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+

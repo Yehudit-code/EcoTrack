@@ -3,7 +3,19 @@ import { connectDB } from "@/app/services/server/mongodb";
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { email, name, phone, birthDate, companies } = body;
+    const {
+      email,
+      name,
+      phone,
+      birthDate,
+      companies,
+
+      // ⭐ פרטי חשבון בנק
+      bankName,
+      branch,
+      accountNumber,
+      accountOwner,
+    } = body;
 
     if (!email) {
       return new Response(
@@ -15,17 +27,21 @@ export async function PUT(req: Request) {
     const db = await connectDB();
     const usersCollection = db.collection("Users");
 
+    const updateFields: any = {
+      name,
+      phone,
+      birthDate,
+      companies,
+      bankName,
+      branch,
+      accountNumber,
+      accountOwner,
+      updatedAt: new Date(),
+    };
+
     const result = await usersCollection.updateOne(
       { email },
-      {
-        $set: {
-          name,
-          phone,
-          birthDate,
-          companies,
-          updatedAt: new Date(),
-        },
-      }
+      { $set: updateFields }
     );
 
     if (result.modifiedCount === 0) {

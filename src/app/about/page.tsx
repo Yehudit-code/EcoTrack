@@ -1,20 +1,22 @@
 'use client';
 
 import Header from "@/app/components/Header/Header";
+import CompanyHeader from "@/app/components/CompanyHeader/CompanyHeader";
 import Footer from "../components/Footer/Footer";
+
 import ContentBlock from "./components/ContentBlock";
 import styles from "./page.module.css";
 import { useUserStore } from "@/store/useUserStore";
 
 export default function AboutPage() {
 
-  // כמו ב־Home — לוקחים את התפקיד ישירות מ־Zustand
-  const role = useUserStore((state) => state.user?.role ?? null);
+  // לוקחים את התפקיד מה־Zustand
+  const role = useUserStore((state) => state.user?.role);
 
   return (
     <>
-      {/* Header based on role */}
-      {/* {currentUser?.role === "company" ? <CompanyHeader /> : <Header />} */}
+      {/* --- Header according to user role --- */}
+      {role === "company" ? <CompanyHeader /> : <Header />}
 
       <div className={styles.pageContainer}>
         <main className={styles.container}>

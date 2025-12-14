@@ -217,30 +217,34 @@ export default function ManageDataPage() {
       <Header />
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Manage Consumption Data</h1>
+        <div className={styles.contentBox}>
 
-        <MonthYearPicker
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          onChange={(m, y) => {
-            setSelectedMonth(m);
-            setSelectedYear(y);
-          }}
-        />
+          <h1 className={styles.title}>Manage Consumption Data</h1>
 
-        <section className={styles.dataSection}>
-          {renderCard("Electricity", "Electricity", "kWh", "Enter kWh")}
-          {renderCard("Water", "Water", "m³", "Enter m³")}
-          {renderCard("Gas", "Gas", "m³", "Enter m³")}
-          {renderCard(
-            "Transportation",
-            "Transportation",
-            "km",
-            "Enter km"
+          <MonthYearPicker
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onChange={(m, y) => {
+              setSelectedMonth(m);
+              setSelectedYear(y);
+            }}
+          />
+
+          {messages.global && (
+            <p className={styles.globalMessage}>{messages.global}</p>
           )}
-          {renderCard("Waste", "Waste", "kg", "Enter kg")}
-        </section>
+
+          <section className={styles.dataSection}>
+            {renderCard("Electricity", "Electricity", "kWh", "Enter kWh")}
+            {renderCard("Water", "Water", "m³", "Enter m³")}
+            {renderCard("Gas", "Gas", "m³", "Enter m³")}
+            {renderCard("Transportation", "Transportation", "km", "Enter km")}
+            {renderCard("Waste", "Waste", "kg", "Enter kg")}
+          </section>
+
+        </div>
       </main>
+
 
       <Footer />
     </div>

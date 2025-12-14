@@ -18,6 +18,10 @@ export interface UserProfile {
     recycling?: string;
     solar?: string;
   };
+    bankName?: string;
+  branch?: string;
+  accountNumber?: string;
+  accountOwner?: string;
 }
 
 interface UserState {

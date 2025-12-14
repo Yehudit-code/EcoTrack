@@ -25,7 +25,6 @@ export default function ProfilePage() {
   const [proposalsCount, setProposalsCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load data once store is hydrated
   useEffect(() => {
     if (!hasHydrated || !currentUser) return;
 
@@ -55,9 +54,6 @@ export default function ProfilePage() {
   if (!currentUser)
     return <p className={styles.loading}>No user data.</p>;
 
-  /* ----------------------------------------------------
-      Save profile changes
-  ---------------------------------------------------- */
   const handleSave = async () => {
     try {
       const updatedUser = { ...currentUser, ...editData };
@@ -80,27 +76,18 @@ export default function ProfilePage() {
     }
   };
 
-  /* ----------------------------------------------------
-      Proper logout (server + client)
-  ---------------------------------------------------- */
   const handleLogout = async () => {
     try {
-      // Invalidate JWT cookie on server
       await fetch("/api/logout", { method: "POST" });
-    } catch {
-      // Even if request fails, continue client cleanup
-    }
+    } catch {}
 
-    // Clear Zustand store (and persisted state)
     logoutStore();
     localStorage.removeItem("ecotrack-user");
-
-    // Redirect to sign-in
     router.replace("/signIn");
   };
 
   return (
-    <div className={styles.profilePage}>
+    <div className={styles.pageBackground}>
       <button className={styles.backBtn} onClick={() => router.back()}>
         <ArrowLeft size={20} /> Back
       </button>
@@ -109,48 +96,88 @@ export default function ProfilePage() {
         <LogOut size={18} /> Logout
       </button>
 
-      <div className={styles.profileCard}>
-        <div className={styles.headerSection}>
-          <ProfileAvatar
-            photo={currentUser.photo}
-            role={currentUser.role}
-            proposalsCount={proposalsCount}
-          />
+      <div className={styles.container}>
+        <h1 className={styles.title}>Profile</h1>
 
-          <ProfileInfo user={currentUser} />
-        </div>
+        <div className={styles.profileCard}>
+          <div className={styles.headerSection}>
+            <ProfileAvatar
+              photo={currentUser.photo}
+              role={currentUser.role}
+              proposalsCount={proposalsCount}
+            />
 
-        <div className={styles.content}>
-          {/* Personal info */}
-          <div className={styles.section}>
-            <h3>Personal Information</h3>
-
-            <div className={styles.row}>
-              <Phone size={18} /> Phone:
-              <strong>{currentUser.phone || "Not provided"}</strong>
-            </div>
-
-            <div className={styles.row}>
-              <Calendar size={18} /> Birth Date:
-              <strong>{currentUser.birthDate || "—"}</strong>
-            </div>
-
-            <div className={styles.row}>
-              <Calendar size={18} /> Member Since:
-              <strong>
-                {currentUser.createdAt
-                  ? new Date(currentUser.createdAt).toLocaleDateString()
-                  : "—"}
-              </strong>
-            </div>
-
-            <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
-              <Edit3 size={16} /> Edit Profile
-            </button>
+            <ProfileInfo user={currentUser} />
           </div>
 
-          {/* Companies */}
-          <ProfileCompanies companies={currentUser.companies} />
+          <div className={styles.content}>
+
+            {/* PERSONAL INFO */}
+            <div className={styles.section}>
+              <h3>Personal Information</h3>
+
+              <div className={styles.row}>
+                <Phone size={18} /> Phone:
+                <strong>{currentUser.phone || "Not provided"}</strong>
+              </div>
+
+              {/* hide birth date for companies */}
+              {currentUser.role === "user" && (
+                <div className={styles.row}>
+                  <Calendar size={18} /> Birth Date:
+                  <strong>{currentUser.birthDate || "—"}</strong>
+                </div>
+              )}
+
+              <div className={styles.row}>
+                <Calendar size={18} /> Member Since:
+                <strong>
+                  {currentUser.createdAt
+                    ? new Date(currentUser.createdAt).toLocaleDateString()
+                    : "—"}
+                </strong>
+              </div>
+
+              <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
+                <Edit3 size={16} /> Edit Profile
+              </button>
+            </div>
+
+            {/* COMPANIES — only for users */}
+            {currentUser.role === "user" && (
+              <ProfileCompanies
+                companies={currentUser.companies}
+                role={currentUser.role}
+              />
+            )}
+
+            {/* BANK INFO — only for company */}
+            {currentUser.role === "company" && (
+              <div className={styles.section}>
+                <h3>Bank Account Details</h3>
+
+                <div className={styles.row}>
+                  Bank Name:
+                  <strong>{currentUser.bankName || "Not provided"}</strong>
+                </div>
+
+                <div className={styles.row}>
+                  Branch:
+                  <strong>{currentUser.branch || "Not provided"}</strong>
+                </div>
+
+                <div className={styles.row}>
+                  Account Number:
+                  <strong>{currentUser.accountNumber || "Not provided"}</strong>
+                </div>
+
+                <div className={styles.row}>
+                  Account Owner:
+                  <strong>{currentUser.accountOwner || "Not provided"}</strong>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -160,6 +187,7 @@ export default function ProfilePage() {
           setEditData={setEditData}
           onSave={handleSave}
           onCancel={() => setIsEditing(false)}
+          role={currentUser.role}
         />
       )}
     </div>

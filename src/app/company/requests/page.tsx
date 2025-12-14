@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import styles from "./Requests.module.css";
 import { useUserStore } from "@/store/useUserStore";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface CompanyRequestItem {
   _id: string;
@@ -18,6 +20,7 @@ interface CompanyRequestItem {
 }
 
 export default function CompanyRequestsPage() {
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   const hasHydrated = useUserStore((state) => state._hasHydrated);
 
@@ -32,9 +35,7 @@ export default function CompanyRequestsPage() {
 
     const load = async () => {
       try {
-        const res = await fetch(
-          `/api/company-requests?companyId=${user._id}`
-        );
+        const res = await fetch(`/api/company-requests?companyId=${user._id}`);
         const data = await res.json();
         setRequests(Array.isArray(data) ? data : []);
       } finally {
@@ -51,7 +52,13 @@ export default function CompanyRequestsPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Payment offers sent</h1>
+      
+      {/* כפתור Back כמו בעמוד פרופיל */}
+      <button className={styles.backBtn} onClick={() => router.back()}>
+        <ArrowLeft size={18} /> Back
+      </button>
+
+      <h1 className={styles.title}>Payment Offers Sent</h1>
 
       {requests.length === 0 ? (
         <div className={styles.empty}>

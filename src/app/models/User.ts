@@ -6,7 +6,7 @@ export interface IUser {
   _id: string | Types.ObjectId;
   name?: string;
   email: string;
-  password: string;
+  password?: string;
   role: UserRole;
   companyCategory?: string;
   country?: string;
@@ -15,8 +15,13 @@ export interface IUser {
   birthDate?: Date;
   photo?: string;
 
-  // חדש:
-  talkedByCompanies?: Map<string, boolean>;
+  bankName?: string;
+  branch?: string;
+  accountNumber?: string;
+  accountOwner?: string;
+
+  /** שדה חדש: אובייקט שמכיל id של חברה -> true/false */
+  talkedByCompanies?: Record<string, boolean>;
 
   companies?: {
     electricity?: string;
@@ -30,25 +35,40 @@ export interface IUser {
   updatedAt?: Date;
 }
 
-const UserSchema = new Schema({
-  name: String,
-  email: { type: String, required: true, unique: true },
-  password: String,
-  photo: String,
-  provider: String,
-  role: String,
-  country: String,
-  birthDate: Date,
-  companyCategory: String,
-  improvementScore: Number,
+const UserSchema = new Schema(
+  {
+    name: String,
+    email: { type: String, required: true, unique: true },
+    password: String,
+    photo: String,
+    provider: String,
+    role: String,
+    country: String,
+    birthDate: Date,
+    companyCategory: String,
+    improvementScore: Number,
 
-  // ❌ במקום talked: Boolean
-  // ✔️ שדה חדש שמחזיק מצב לפי חברה
-  talkedByCompanies: {
-    type: Map,
-    of: Boolean,
-    default: {},
+    bankName: String,
+    branch: String,
+    accountNumber: String,
+    accountOwner: String,
+
+    /** כאן חייב להיות Object ולא Map */
+    talkedByCompanies: {
+      type: Object,
+      default: {},
+    },
+
+    companies: {
+      electricity: String,
+      water: String,
+      transport: String,
+      recycling: String,
+      solar: String,
+    },
   },
-});
+  { timestamps: true }
+);
+
 
 export const User = models.User || model("User", UserSchema, "Users");
