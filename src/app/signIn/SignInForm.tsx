@@ -16,6 +16,7 @@ export default function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [googleUser, setGoogleUser] = useState<any>(null);
 
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -57,7 +58,10 @@ export default function SignInForm() {
         return;
       }
 
-      setUser(data.user);
+      const meRes = await fetch("/api/me", { credentials: "include" });
+      const meData = await meRes.json();
+
+      setUser(meData.user);
       router.push("/home");
     } catch {
       showToast("Server error");
@@ -67,68 +71,88 @@ export default function SignInForm() {
   };
 
   /* ===============================
-     GOOGLE SIGN IN (FIREBASE)
+     GOOGLE SIGN IN
   =============================== */
   const handleGoogleSignIn = async () => {
+    setLoading(true);
+
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const firebaseUser = result.user;
 
-      // Save Firebase user temporarily
-      setGoogleUser(firebaseUser);
-
-      // Check if user already exists in DB
-      const checkRes = await fetch("/api/check-user", {
+      const res = await fetch("/api/social-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: firebaseUser.email }),
+        credentials: "include",
+        body: JSON.stringify({
+          email: result.user.email,
+          name: result.user.displayName,
+          photoURL: result.user.photoURL,
+        }),
       });
 
-      const checkData = await checkRes.json();
+      const data = await res.json();
 
-      // User exists → still MUST create JWT
-      if (checkData.exists) {
-        await finishGoogleSignup(null);
+      if (!res.ok) {
+        showToast(data.error || "Google login failed");
         return;
       }
 
-      // New user → ask for role
+      if (!data.isNewUser) {
+        const meRes = await fetch("/api/me", { credentials: "include" });
+        const meData = await meRes.json();
+        setUser(meData.user);
+        router.push("/home");
+        return;
+      }
+
+      setGoogleUser(result.user);
       setShowRoleModal(true);
-    } catch (err) {
-      console.error(err);
+    } catch {
       showToast("Google sign-in failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   /* ===============================
-     FINISH GOOGLE LOGIN / SIGNUP
-     (Creates JWT + cookie)
+     FINISH GOOGLE SIGNUP (NEW USER)
   =============================== */
   const finishGoogleSignup = async (category: string | null) => {
     if (!googleUser) return;
 
-    const res = await fetch("/api/social-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        email: googleUser.email,
-        name: googleUser.displayName,
-        photoURL: googleUser.photoURL,
-        role: googleUser.role || "user",
-        companyCategory: category,
-      }),
-    });
+    setLoading(true);
 
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/social-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: googleUser.email,
+          name: googleUser.displayName,
+          photoURL: googleUser.photoURL,
+          role: googleUser.role,
+          companyCategory: category,
+        }),
+      });
 
-    if (!res.ok) {
-      showToast(data.error || "Google login failed");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Google login failed");
+        return;
+      }
+
+      const meRes = await fetch("/api/me", { credentials: "include" });
+      const meData = await meRes.json();
+
+      setUser(meData.user);
+      router.push("/home");
+    } catch {
+      showToast("Google login failed");
+    } finally {
+      setLoading(false);
     }
-
-    setUser(data.user);
-    router.push("/home");
   };
 
   /* ===============================
@@ -146,7 +170,6 @@ export default function SignInForm() {
   };
 
   const handleCategorySelected = (category: string) => {
-    googleUser.companyCategory = category;
     setShowCategoryModal(false);
     finishGoogleSignup(category);
   };
@@ -163,7 +186,6 @@ export default function SignInForm() {
         <input
           type="email"
           className={styles.inputField}
-          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={loading}
@@ -173,7 +195,6 @@ export default function SignInForm() {
         <input
           type="password"
           className={styles.inputField}
-          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
@@ -192,6 +213,7 @@ export default function SignInForm() {
         <button
           onClick={handleGoogleSignIn}
           className={`${styles.providerBtn} ${styles.googleBtn}`}
+          disabled={loading}
         >
           <img src="/images/google.png" className={styles.icon} />
           Continue with Google

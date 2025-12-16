@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/app/lib/db";
-import { IUser, User } from "@/app/models/User";
+import { User, IUser } from "@/app/models/User";
 import { signJwt } from "@/app/lib/auth/jwt";
 
 export async function POST(req: Request) {
@@ -16,22 +16,19 @@ export async function POST(req: Request) {
     );
   }
 
-  // const user = await User.findOne({ email }).lean();
+  // Find user by email
   const user = await User.findOne({ email }).lean<IUser>();
-  if (!user) {
+
+  if (!user || !user.password) {
     return NextResponse.json(
       { error: "Invalid email or password" },
       { status: 401 }
     );
   }
-if (!password || !user.password) {
-  return NextResponse.json(
-    { error: "Invalid email or password" },
-    { status: 401 }
-  );
-}
 
+  // Verify password
   const valid = await bcrypt.compare(password, user.password);
+
   if (!valid) {
     return NextResponse.json(
       { error: "Invalid email or password" },
@@ -39,10 +36,11 @@ if (!password || !user.password) {
     );
   }
 
+  // Create JWT (same payload as social-login)
   const token = await signJwt({
     userId: String(user._id),
     email: user.email,
-    role: user.role
+    role: user.role,
   });
 
   const response = NextResponse.json(
@@ -53,18 +51,19 @@ if (!password || !user.password) {
         email: user.email,
         role: user.role,
         photo: user.photo,
-        companyCategory: user.companyCategory
-      }
+        companyCategory: user.companyCategory,
+      },
     },
     { status: 200 }
   );
 
+  // 🔑 Store JWT in HttpOnly cookie
   response.cookies.set("ecotrack-token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //  חובה ל-localhost
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return response;

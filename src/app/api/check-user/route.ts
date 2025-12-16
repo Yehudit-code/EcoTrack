@@ -14,9 +14,9 @@ export async function POST(req: Request) {
 
     const db = await connectDB();
     const usersCollection = db.collection("Users");
+
     const user = await usersCollection.findOne({ email });
 
-    // אם אין משתמש - לא ליצור קוקי
     if (!user) {
       return NextResponse.json(
         { exists: false, user: null },
@@ -24,22 +24,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // משתמש קיים - ליצור קוקי auth
-    const res = NextResponse.json(
+    return NextResponse.json(
       { exists: true, user },
       { status: 200 }
     );
 
-    res.cookies.set("auth", user.email, {
-      path: "/",
-      maxAge: 60 * 60 * 24, // יום שלם
-      sameSite: "lax",
-    });
-
-    return res;
-
   } catch (error) {
-    console.log("Error in check-user:", error);
+    console.error("Error in check-user:", error);
     return NextResponse.json(
       { exists: false, user: null },
       { status: 500 }
