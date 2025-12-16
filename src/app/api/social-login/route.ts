@@ -22,32 +22,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find user by email
     let user = await User.findOne({ email });
+    let isNewUser = false;
 
     if (!user) {
-      // Create new user (Google sign-up)
+      // New user – role is allowed only on creation
+      isNewUser = true;
+
       user = await User.create({
-        name,
         email,
+        name,
         role: role || "user",
-        companyCategory: role === "company" ? companyCategory : undefined,
+        companyCategory:
+          role === "company" ? companyCategory : undefined,
         photo: photoURL,
         provider: "google",
       });
     } else {
-      // Update existing user without overriding a custom uploaded photo
+      // Existing user – role & category must NOT change
+      user.name = name;
+
       const hasCustomPhoto =
         user.photo &&
         typeof user.photo === "string" &&
         !user.photo.startsWith("http");
-
-      user.name = name;
-      user.role = role || user.role;
-      user.companyCategory =
-        role === "company"
-          ? companyCategory ?? user.companyCategory
-          : user.companyCategory;
 
       if (!hasCustomPhoto && photoURL) {
         user.photo = photoURL;
@@ -57,7 +55,6 @@ export async function POST(req: Request) {
       await user.save();
     }
 
-    // Create JWT identical to regular signin/signup
     const token = await signJwt({
       userId: String(user._id),
       email: user.email,
@@ -74,14 +71,14 @@ export async function POST(req: Request) {
           companyCategory: user.companyCategory,
           photo: user.photo,
         },
+        isNewUser,
       },
       { status: 200 }
     );
 
-    // Store JWT in httpOnly cookie (used by proxy/middleware)
     response.cookies.set("ecotrack-token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // local dev
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
