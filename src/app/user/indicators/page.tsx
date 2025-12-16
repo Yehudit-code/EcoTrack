@@ -159,7 +159,6 @@ export default function IndicatorsPage() {
                       <th>Month</th>
                       <th>Year</th>
                       <th>Value</th>
-                      <th>Improvement Score</th>
                     </tr>
                   </thead>
 
@@ -183,7 +182,6 @@ export default function IndicatorsPage() {
                             <td>{item.month}</td>
                             <td>{item.year}</td>
                             <td>{item.value.toLocaleString()}</td>
-                            <td>{item.improvementScore ?? 0}</td>
                           </tr>
                         ))
                     ) : (
