@@ -112,7 +112,6 @@ const handleGoogleSignIn = async () => {
       return;
     }
 
-    // משתמש חדש
     setGoogleUser(result.user);
     setShowRoleModal(true);
 
