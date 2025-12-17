@@ -165,34 +165,7 @@
   line-height: 1.4;
 }
 
-/* Bottom Section */
-.bottomSection {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30px 0;
-  flex-wrap: wrap;
-  gap: 20px;
-}
 
-.copyright {
-  display: flex;
-  align-items: center;
-}
-
-.copyright p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #c0c0c0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.heartIcon {
-  color: #ff6b6b;
-  animation: heartbeat 2s ease-in-out infinite;
-}
 
 @keyframes heartbeat {
   0%, 100% { transform: scale(1); }

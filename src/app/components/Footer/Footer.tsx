@@ -1,4 +1,5 @@
 import React from 'react';
+import { useUserStore } from '@/store/useUserStore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLeaf, faEnvelope, faPhone, faMapMarkerAlt, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faTwitter, faInstagram, faLinkedin } from '@fortawesome/free-brands-svg-icons';
@@ -6,6 +7,34 @@ import styles from './Footer.module.css';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+
+  const user = useUserStore((s) => s.user);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
+
+  if (!hasHydrated) return null;
+
+  let quickLinks;
+  if (user?.role === 'user') {
+    quickLinks = [
+      { href: '/home', label: 'Home' },
+      { href: '/user/manage-data', label: 'Manage Data' },
+      { href: '/user/indicators', label: 'Analytics' },
+      { href: '/user/social-sharing', label: 'Social Sharing' },
+      { href: '/about', label: 'About Us' },
+    ];
+  } else if (user?.role === 'company') {
+    quickLinks = [
+      { href: '/home', label: 'Home' },
+      { href: '/company/display-users', label: 'Display Users' },
+      { href: '/contact', label: 'Contact' },
+      { href: '/about', label: 'About Us' },
+    ];
+  } else {
+    quickLinks = [
+      { href: '/', label: 'Home' },
+      { href: '/about', label: 'About Us' },
+    ];
+  }
 
   return (
     <footer className={styles.footer}>
@@ -69,10 +98,9 @@ const Footer: React.FC = () => {
           <div className={styles.column}>
             <h4>Quick Links</h4>
             <ul className={styles.linkList}>
-              <li><a href="/">Home</a></li>
-              <li><a href="/user/indicators">Consumption Tracking</a></li>
-              <li><a href="/user/manage-data">Manage Data</a></li>
-              <li><a href="/about">About Us</a></li>
+              {quickLinks.map((link) => (
+                <li key={link.href}><a href={link.href}>{link.label}</a></li>
+              ))}
             </ul>
           </div>
 
@@ -121,6 +149,12 @@ const Footer: React.FC = () => {
               </a>
             </div>
 
+            <ul className={styles.linkList}>
+              <li><a href="/home#feature-transport">Transportation Tracking</a></li>
+              <li><a href="/home#feature-environment">Waste Reduction</a></li>
+              <li><a href="/home#feature-water">Water Conservation</a></li>
+              <li><a href="/home#feature-energy">Energy Management</a></li>
+            </ul>
           </div>
 
           {/* Contact Info */}
@@ -133,7 +167,8 @@ const Footer: React.FC = () => {
               </div>
               <div className={styles.contactItem}>
                 <FontAwesomeIcon icon={faPhone} />
-                <span>+1 (555) 123-4567</span>
+                <span>+972515407228</span>
+
               </div>
               <div className={styles.contactItem}>
                 <FontAwesomeIcon icon={faEnvelope} />
@@ -143,21 +178,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className={styles.bottomSection}>
-          <div className={styles.copyright}>
-            <p>
-              © {currentYear} EcoTrack. Made with{' '}
-              <FontAwesomeIcon icon={faHeart} className={styles.heartIcon} />{' '}
-              for a sustainable future.
-            </p>
-          </div>
-          <div className={styles.legalLinks}>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Policy</a>
-          </div>
-        </div>
       </div>
     </footer>
   );
