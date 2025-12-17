@@ -73,46 +73,39 @@ export default function SignInForm() {
   /* ===============================
      GOOGLE SIGN IN
   =============================== */
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
+const handleGoogleSignIn = async () => {
+  setLoading(true);
 
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
 
-      const res = await fetch("/api/social-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          email: result.user.email,
-          name: result.user.displayName,
-          photoURL: result.user.photoURL,
-        }),
-      });
+    // 🔹 רק בדיקה אם המשתמש קיים – בלי יצירה
+    const checkRes = await fetch("/api/check-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email: result.user.email }),
+    });
 
-      const data = await res.json();
+    const checkData = await checkRes.json();
 
-      if (!res.ok) {
-        showToast(data.error || "Google login failed");
-        return;
-      }
-
-      if (!data.isNewUser) {
-        const meRes = await fetch("/api/me", { credentials: "include" });
-        const meData = await meRes.json();
-        setUser(meData.user);
-        router.push("/home");
-        return;
-      }
-
-      setGoogleUser(result.user);
-      setShowRoleModal(true);
-    } catch {
-      showToast("Google sign-in failed");
-    } finally {
-      setLoading(false);
+    // 🔹 משתמש קיים → כניסה רגילה
+    if (checkData.exists) {
+      setUser(checkData.user);
+      router.push("/home");
+      return;
     }
-  };
+
+    // 🔹 משתמש חדש → שומרים זמנית ומבקשים Role
+    setGoogleUser(result.user);
+    setShowRoleModal(true);
+  } catch {
+    showToast("Google sign-in failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   /* ===============================
      FINISH GOOGLE SIGNUP (NEW USER)
@@ -159,15 +152,16 @@ export default function SignInForm() {
      ROLE SELECTION
   =============================== */
   const handleRoleSelected = (role: "user" | "company") => {
-    googleUser.role = role;
-    setShowRoleModal(false);
+  setGoogleUser((prev: any) => ({ ...prev, role }));
+  setShowRoleModal(false);
 
-    if (role === "company") {
-      setShowCategoryModal(true);
-    } else {
-      finishGoogleSignup(null);
-    }
-  };
+  if (role === "company") {
+    setShowCategoryModal(true);
+  } else {
+    finishGoogleSignup(null);
+  }
+};
+
 
   const handleCategorySelected = (category: string) => {
     setShowCategoryModal(false);
