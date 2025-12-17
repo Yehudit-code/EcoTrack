@@ -5,7 +5,6 @@ import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import Pusher from "pusher-js";
-import { useSearchParams } from "next/navigation";
 
 import {
   getSavers,
@@ -18,6 +17,8 @@ import {
 import SkeletonPost from "@/app/components/Skeleton/SkeletonPost";
 import SkeletonSaver from "@/app/components/Skeleton/SkeletonSaver";
 import { useUserStore } from "@/store/useUserStore";
+import { Suspense } from "react";
+import SocialSharingClient from "./SocialSharingClient";
 
 interface Saver {
   name: string;
@@ -69,9 +70,6 @@ export default function SocialSharingPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const currentUser = useUserStore((state) => state.user);
-  const searchParams = useSearchParams();
-  const sharedPostId = searchParams.get("post");
-
   const [newPostText, setNewPostText] = useState("");
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
@@ -90,7 +88,7 @@ export default function SocialSharingPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<number | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-
+  const [sharedPostId, setSharedPostId] = useState<string | null>(null);
 
   useEffect(() => {
     getSavers().then((data) =>
@@ -332,6 +330,10 @@ export default function SocialSharingPage() {
         </div>
 
         {/* ---------------- CENTER ---------------- */}
+        <Suspense fallback={null}>
+          <SocialSharingClient onPostIdDetected={setSharedPostId} />
+        </Suspense>
+
         <div className={styles.centerColumn}>
           <h3 className={styles.columnTitle}>Community feed ✨</h3>
 
