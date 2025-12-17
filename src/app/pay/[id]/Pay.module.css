@@ -1,52 +1,95 @@
+/* ============================ */
+/*           WRAPPER            */
+/* ============================ */
+
 .wrapper {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: #f5f7fa;
-  padding: 20px;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
+  padding: 40px 20px;
 }
+
+
+
+/* ============================ */
+/*             CARD             */
+/* ============================ */
 
 .card {
-  width: 420px;
+  width: 360px;                   /* היה 420px */
   background: #ffffff;
-  padding: 28px;
-  border-radius: 16px;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+  padding: 22px;                  /* היה 28px */
+  border-radius: 14px;            /* היה 16px */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 18px;                      /* היה 22px */
+  border: 1px solid rgba(155,197,155,0.2);
 }
+
+
+
+/* ============================ */
+/*            TITLE             */
+/* ============================ */
 
 .title {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 19px;               /* היה 22px */
+  font-weight: 800;
   text-align: center;
-  color: #222;
+  color: #2d5c2d;
+  letter-spacing: -0.3px;
 }
 
+
+
+/* ============================ */
+/*           SECTIONS           */
+/* ============================ */
+
 .section {
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 12px;
+  padding: 12px;                  /* היה 16px */
+  background: #fafafa;
+  border-radius: 10px;            /* היה 12px */
   border: 1px solid #e2e8f0;
 }
 
+
+
+/* ============================ */
+/*      LABEL + VALUES          */
+/* ============================ */
+
 .label {
   font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 14px;
+  margin-bottom: 4px;             /* היה 6px */
+  font-size: 13px;                /* היה 14px */
+  color: #2d5c2d;
 }
 
 .value {
-  font-size: 15px;
-  color: #333;
+  font-size: 14px;               /* היה 15px */
+  color: #334155;
 }
+
+.subValue {
+  font-size: 12px;               /* היה 13px */
+  color: #64748b;
+  margin-top: 3px;
+}
+
+
+
+/* ============================ */
+/*            FORM              */
+/* ============================ */
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;                      /* היה 14px */
 }
 
 .inputGroup {
@@ -55,55 +98,63 @@
 }
 
 .input {
-  padding: 10px 12px;
+  padding: 9px 10px;              /* היה 10px 12px */
   border-radius: 8px;
   border: 1px solid #cbd5e1;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .row {
   display: flex;
-  gap: 10px;
+  gap: 8px;                       /* היה 10px */
 }
+
+
+
+/* ============================ */
+/*         PAY BUTTON           */
+/* ============================ */
 
 .btnPay {
   width: 100%;
-  padding: 12px;
-  background: #2ecc71;
+  padding: 10px;                  /* היה 12px */
+  background: linear-gradient(135deg, #16a34a, #2ecc71);
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;            /* היה 10px */
   color: white;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 15px;                /* היה 17px */
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.25s ease;
+  letter-spacing: 0.3px;
 }
 
 .btnPay:hover {
   background: #27ae60;
+  transform: translateY(-2px);
 }
+
+
+
+/* ============================ */
+/*       ERROR POPUP            */
+/* ============================ */
 
 .errorPopup {
   position: fixed;
-  top: -70px;
+  top: -80px;
   left: 50%;
   transform: translateX(-50%);
-  background: #ff5252;
+  background: #ef4444;
   color: white;
-  padding: 14px 22px;
+  padding: 12px 18px;             /* היה 14px 22px */
   border-radius: 8px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;                /* היה 15px */
   transition: 0.35s ease-in-out;
   z-index: 9999;
 }
 
 .errorPopup.show {
   top: 20px;
-}
-
-.subValue {
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 4px;
 }

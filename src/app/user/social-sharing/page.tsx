@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import styles from "./SocialSharing.module.css";
 import Header from "@/app/components/Header/Header";
-import { io, Socket } from "socket.io-client";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import Pusher from "pusher-js";
+import { useSearchParams } from "next/navigation";
 
 import {
   getSavers,
@@ -68,6 +69,8 @@ export default function SocialSharingPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const currentUser = useUserStore((state) => state.user);
+  const searchParams = useSearchParams();
+  const sharedPostId = searchParams.get("post");
 
   const [newPostText, setNewPostText] = useState("");
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
@@ -86,7 +89,7 @@ export default function SocialSharingPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<number | null>(null);
-  const socketRef = useRef<Socket | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
 
   useEffect(() => {
@@ -110,35 +113,50 @@ export default function SocialSharingPage() {
     setMessages(Array.isArray(data) ? data : []);
   };
 
+  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+  });
+
   useEffect(() => {
-    const socket = io("http://localhost:4000", {
-      transports: ["websocket", "polling"],
-      autoConnect: true,
+    const channel = pusher.subscribe("chat-channel");
+
+    channel.bind("new-message", (msg: Message) => {
+      setMessages(prev => [...prev, msg]);
     });
 
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("🔌 Socket connected");
-    });
-
-    socket.on("new_message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on("typing", (data) => {
-      setTypingUser(data.userName);
-      setTimeout(() => setTypingUser(null), 2000);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
+    channel.bind("typing", (data: { userName: string | null }) => {
+      if (data.userName) {
+        setTypingUser(data.userName);
+        setTimeout(() => setTypingUser(null), 1500);
+      }
     });
 
     return () => {
-      socket.disconnect();
+      channel.unbind_all();
+      channel.unsubscribe();
     };
   }, []);
+
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      const el = messagesContainerRef.current;
+      el.scrollTop = el.scrollHeight; // ⭐ גולל את הצ'אט בלבד, לעולם לא את כל העמוד
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (!sharedPostId || posts.length === 0) return;
+
+    const el = document.getElementById(`post-${sharedPostId}`);
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [sharedPostId, posts]);
+
 
   // ⭐ יצירת פוסט
   const handleCreatePost = async () => {
@@ -153,7 +171,10 @@ export default function SocialSharingPage() {
       imageUrl: newPostImage,
     });
 
-    setPosts((prev) => [created, ...prev]);
+    setPosts((prev) => {
+      const exists = prev.some(p => p._id === created._id);
+      return exists ? prev : [created, ...prev];
+    });
 
     setNewPostText("");
     setNewPostImage(null);
@@ -193,7 +214,7 @@ export default function SocialSharingPage() {
 
   // ⭐ שיתוף אמיתי
   const sharePost = async (id: string) => {
-    const shareUrl = `${window.location.origin}/social-sharing?post=${id}`;
+    const shareUrl = `${window.location.origin}/user/social-sharing?post=${id}`;
 
     try {
       if (navigator.share) {
@@ -233,7 +254,6 @@ export default function SocialSharingPage() {
     setNewMessage("");
     setShowChatEmoji(false);
 
-    socketRef.current?.emit("send_message", created);
   };
 
   // ⭐ פורמט זמן
@@ -403,7 +423,13 @@ export default function SocialSharingPage() {
                 post.likes.includes(currentUser._id);
 
               return (
-                <div key={post._id} className={styles.postCard}>
+                <div
+                  key={post._id}
+                  id={`post-${post._id}`}
+                  className={`${styles.postCard} ${sharedPostId === post._id ? styles.highlightedPost : ""
+                    }`}
+
+                >
                   <div className={styles.postHeader}>
                     <img
                       src={post.userPhoto || "/images/default-profile.png"}
@@ -523,7 +549,7 @@ export default function SocialSharingPage() {
           <h3 className={styles.columnTitle}>Community chat 💬</h3>
 
           <div className={styles.chatCard}>
-            <div className={styles.messagesArea}>
+            <div className={styles.messagesArea} ref={messagesContainerRef}>
               {messages.map((m) => {
                 const isMe = currentUser?._id === m.userId;
 
@@ -606,15 +632,15 @@ export default function SocialSharingPage() {
                 onChange={(e) => {
                   setNewMessage(e.target.value);
 
-                  socketRef.current?.emit("typing", {
-                    userName: currentUser?.name,
+                  setNewMessage(e.target.value);
+
+                  // שולחים לשרת שמישהו מקליד
+                  fetch("/api/chat/typing", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userName: currentUser?.name }),
                   });
 
-                  if (typingTimeoutRef.current)
-                    clearTimeout(typingTimeoutRef.current);
-                  typingTimeoutRef.current = window.setTimeout(() => {
-                    socketRef.current?.emit("typing", { userName: null });
-                  }, 1200);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />

@@ -1,13 +1,14 @@
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%) !important;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   margin: 0;
   padding: 0;
+  margin-top: -35px;
 }
 
 .container {
   min-height: 100vh;
-  padding: 80px 40px 80px;   /* היה 140px → הקטנתי ל־80px */
-  max-width: 1000px;
+  padding: 64px 32px 64px;   /* היה 80px */
+  max-width: 880px;
   margin: 0 auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
   position: relative;
@@ -61,14 +62,14 @@ body {
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 900;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   background: linear-gradient(135deg, #2d5c2d 0%, #4a934a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
   text-align: center;
   animation: fadeInDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -89,10 +90,10 @@ body {
 .card {
   background: #ffffff;
   border: 2px solid rgba(155, 197, 155, 0.25);
-  border-radius: 18px;              /* היה 24px */
-  padding: 26px;                   /* היה 36px */
-  margin-bottom: 24px;             /* היה 32px */
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08); /* קטן ועדין יותר */
+  border-radius: 14px;              /* היה 24px */
+  padding: 20px;                   /* היה 36px */
+  margin-bottom: 18px;             /* היה 32px */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); /* עדין יותר */
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -142,14 +143,14 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-6px);      /* היה -8px */
+  transform: translateY(-4px);      /* היה -8px */
   box-shadow: 0 12px 32px rgba(155, 197, 155, 0.2);
   border-color: rgba(155, 197, 155, 0.45);
 }
 
 .cardTitle {
-    font-size: 1.45rem;               /* היה 1.75rem */
-  margin-bottom: 18px;              /* היה 24px */
+    font-size: 1.25rem;               /* היה 1.75rem */
+  margin-bottom: 14px;              /* היה 24px */
   gap: 10px; 
   color: #2d5c2d;
   font-weight: 800;
@@ -161,7 +162,7 @@ body {
 .cardTitle::before {
   content: '';
   width: 5px;
-  height: 26px;
+  height: 20px;
   background: linear-gradient(180deg, #9bc59b 0%, #7ba87b 100%);
   border-radius: 3px;
   display: inline-block;
@@ -171,9 +172,9 @@ body {
   color: #334155;
   position: relative;
   transition: all 0.2s ease;
-    font-size: 0.95rem;               /* היה 1.0625rem */
-  line-height: 1.7;                 /* היה 2 */
-  margin-bottom: 10px;              /* היה 12px */
+    font-size: 0.9rem;               /* היה 1.0625rem */
+  line-height: 1.55;                 /* היה 2 */
+  margin-bottom: 8px;              /* היה 12px */
   padding-left: 14px; 
 }
 
@@ -218,11 +219,11 @@ body {
 
 .th {
   text-align: left;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   color: #ffffff;
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 3px solid #7ba87b;
@@ -252,9 +253,9 @@ body {
 }
 
 .td {
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid #e8f5e9;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #334155;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -307,12 +308,12 @@ body {
 }
 
 .button {
-  padding: 18px 48px;
+  padding: 14px 36px;
   background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   color: white;
-  border-radius: 16px;
+  border-radius: 12px;
   font-weight: 800;
-  font-size: 1.125rem;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -343,7 +344,7 @@ body {
 
 .button:hover {
   background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(155, 197, 155, 0.45);
 }
 

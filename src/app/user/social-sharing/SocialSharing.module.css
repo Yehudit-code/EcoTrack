@@ -1,7 +1,7 @@
 /* ==================== PAGE ==================== */
 .page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f9fbfd 0%, #f9fffa 100%);
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   padding-top: 0;
 }
 
@@ -574,14 +574,13 @@
   flex-direction: column;
   height: calc(100vh - 180px);
   max-height: 700px;
-  overflow: hidden;
-  border: 1px solid rgba(155, 197, 155, 0.2);
 }
 
 .messagesArea {
   flex: 1;
-  padding: 20px 16px;
+  min-height: 0;               /* 🔥 חובה בפלקס! מתקין את כל הבעיות */
   overflow-y: auto;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -823,4 +822,9 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #7ba87b, #6a956a);
+}
+
+.highlightedPost {
+  outline: 2px solid #90ee90;
+  box-shadow: 0 0 0 4px rgba(144, 238, 144, 0.2);
 }

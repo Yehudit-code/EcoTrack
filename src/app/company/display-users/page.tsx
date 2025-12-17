@@ -9,6 +9,9 @@ import {
   toggleUserTalkStatus,
 } from "@/app/services/client/company/userDisplayService";
 import CompanyHeader from "@/app/components/CompanyHeader/CompanyHeader";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
+import { useRouter } from "next/navigation";
+
 
 export default function DisplayUsersPage() {
   const currentUser = useUserStore((state) => state.user);
@@ -17,15 +20,14 @@ export default function DisplayUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  // Load category from Zustand user
   useEffect(() => {
     if (currentUser?.companyCategory) {
       setCategory(currentUser.companyCategory);
     }
   }, [currentUser]);
 
-  // Fetch users by category
   useEffect(() => {
     if (!category) return;
 
@@ -46,24 +48,35 @@ export default function DisplayUsersPage() {
 
   const handleToggleTalk = async (email: string) => {
     try {
-      await toggleUserTalkStatus(email);
+      // 1️⃣ שולחים בקשה לשרת - מחזיר אם talked=true/false
+      const { talked } = await toggleUserTalkStatus(email);
 
-      if (category) {
-        const updated = await fetchUsersByCategory(category);
-        setUsers(updated.slice(0, 3));
-      }
+      // 2️⃣ מעדכנים סטייט לפי מה שהשרת אמר
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.email === email ? { ...u, talked } : u
+        )
+      );
     } catch (err: any) {
-      alert(err.message);
+      alert(err.message || "Error updating talk status");
     }
   };
 
-  if (loading) return <p className={styles.loading}>Loading users...</p>;
+  if (loading) return <LeafSpinner />;
   if (error) return <p className={styles.error}>Error: {error}</p>;
   if (!category) return <p className={styles.error}>Company category missing.</p>;
 
   return (
     <div className={styles.container}>
-            <CompanyHeader />
+      <CompanyHeader />
+      <div className={styles.topActions}>
+        <button
+          className={styles.offersLink}
+          onClick={() => router.push("/company/requests")}
+        >
+          Offers
+        </button>
+      </div>
 
       <h1 className={styles.title}>Top users in category: {category}</h1>
 
