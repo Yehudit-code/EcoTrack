@@ -70,9 +70,13 @@ export default function HomePage() {
       {/* ---------- INFO BOXES (USER ONLY) ---------- */}
       {role === 'user' && (
         <section className={styles.infoBoxesSection}>
+          <div style={{ height: '40px' }} aria-hidden="true" />
+
           <h2 className={styles.infoBoxesTitle}>How to Use EcoTrack</h2>
 
           <div className={styles.infoBoxesGrid}>
+
+
             <div
               className={styles.infoBox}
               onClick={() => router.push('/manage-data')}
@@ -104,105 +108,58 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+          <div style={{ height: '40px' }} aria-hidden="true" />
+
         </section>
       )}
 
-      {/* ---------- MAIN CONTENT ---------- */}
-      <div className={styles.container}>
-        <main className={styles.main}>
-          {/* ---------- FEATURES ---------- */}
-          <div className={styles.featuresSection}>
-            <div
-              id="feature-water"
-              className={`${styles.featureRow} ${styles.slideLeft} ${
-                visibleItems.has('feature-water') ? styles.visible : ''
-              }`}
-            >
-              <div className={styles.featureImage}>
-                <img src="/images/מים.png" alt="Water Conservation" />
-              </div>
-              <div className={styles.featureContent}>
-                <h3>Smart Water Management</h3>
-                <p>
-                  Advanced systems help reduce water consumption significantly.
-                </p>
-              </div>
-            </div>
 
-            <div
-              id="feature-energy"
-              className={`${styles.featureRow} ${styles.slideRight} ${
-                visibleItems.has('feature-energy') ? styles.visible : ''
-              }`}
-            >
-              <div className={styles.featureContent}>
-                <h3>Energy Analytics</h3>
-                <p>
-                  Get insights into electricity usage and optimize your energy.
-                </p>
-              </div>
-              <div className={styles.featureImage}>
-                <img src="/images/חשמל.png" alt="Energy Management" />
-              </div>
-            </div>
+      {/* Spacer for visual gap between info boxes and videos section */}
+      <div style={{ height: '100px' }} aria-hidden="true" />
 
-            <div
-              id="feature-transport"
-              className={`${styles.featureRow} ${styles.slideLeft} ${
-                visibleItems.has('feature-transport') ? styles.visible : ''
-              }`}
-            >
-              <div className={styles.featureImage}>
-                <img src="/images/אופניים.png" alt="Eco Transport" />
-              </div>
-              <div className={styles.featureContent}>
-                <h3>Sustainable Transportation</h3>
-                <p>Track eco-friendly commuting habits and reduce emissions.</p>
-              </div>
-            </div>
+
+
+      {/* ---------- VIDEOS SECTION ---------- */}
+      <div className={styles.videosSection}>
+        <div className={styles.videosOverlayText}>
+          <h2 className={styles.overlayGreen}>Let's keep our world</h2>
+          <h2 className={styles.overlayWhite}>CLEAN</h2>
+        </div>
+
+        <div className={styles.videosContainer}>
+          <div className={styles.videoWrapper}>
+            <iframe
+              src="https://www.youtube.com/embed/2H_YyklnpFM?autoplay=1&mute=1&loop=1&playlist=2H_YyklnpFM"
+              title="Eco Video 1"
+              allow="autoplay"
+            />
           </div>
 
-          {/* ---------- VIDEOS SECTION ---------- */}
-          <div className={styles.videosSection}>
-            <div className={styles.videosOverlayText}>
-              <h2 className={styles.overlayGreen}>Let's keep our world</h2>
-              <h2 className={styles.overlayWhite}>CLEAN</h2>
-            </div>
-
-            <div className={styles.videosContainer}>
-              <div className={styles.videoWrapper}>
-                <iframe
-                  src="https://www.youtube.com/embed/2H_YyklnpFM?autoplay=1&mute=1&loop=1&playlist=2H_YyklnpFM"
-                  title="Eco Video 1"
-                  allow="autoplay"
-                />
-              </div>
-
-              <div className={styles.videoWrapper}>
-                <iframe
-                  src="https://www.youtube.com/embed/au1M6TggB_U?autoplay=1&mute=1&loop=1&playlist=au1M6TggB_U"
-                  title="Eco Video 2"
-                  allow="autoplay"
-                />
-              </div>
-
-              <div className={styles.videoWrapper}>
-                <iframe
-                  src="https://www.youtube.com/embed/G9NRzrx7m4U?autoplay=1&mute=1&loop=1&playlist=G9NRzrx7m4U"
-                  title="Eco Video 3"
-                  allow="autoplay"
-                />
-              </div>
-            </div>
+          <div className={styles.videoWrapper}>
+            <iframe
+              src="https://www.youtube.com/embed/au1M6TggB_U?autoplay=1&mute=1&loop=1&playlist=au1M6TggB_U"
+              title="Eco Video 2"
+              allow="autoplay"
+            />
           </div>
-        </main>
+
+          <div className={styles.videoWrapper}>
+            <iframe
+              src="https://www.youtube.com/embed/G9NRzrx7m4U?autoplay=1&mute=1&loop=1&playlist=G9NRzrx7m4U"
+              title="Eco Video 3"
+              allow="autoplay"
+            />
+          </div>
+        </div>
       </div>
 
-      {/* ---------- CHAT ---------- */}
+
       {open && <ChatWindow onClose={() => setOpen(false)} />}
       <ChatBubble onClick={() => setOpen(true)} />
 
-      {/* ---------- FOOTER ---------- */}
+      <div style={{ height: '80px' }} aria-hidden="true" />
+
+
       <Footer />
     </>
   );
