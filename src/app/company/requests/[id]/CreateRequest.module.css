@@ -1,6 +1,6 @@
 /* רקע כללי — כמו בעמוד User Details */
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%) !important;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   margin: 0;
   padding: 0;
 }

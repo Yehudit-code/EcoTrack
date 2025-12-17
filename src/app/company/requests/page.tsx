@@ -50,11 +50,15 @@ export default function CompanyRequestsPage() {
 
   return (
     <div className={styles.page}>
-      
+
       {/* כפתור Back כמו בעמוד פרופיל */}
-      <button className={styles.backBtn} onClick={() => router.back()}>
-        <ArrowLeft size={18} /> Back
+      <button
+        className={styles.backBtn}
+        onClick={() => router.push("/home")}
+      >
+        <ArrowLeft size={18} /> Back Home
       </button>
+
 
       <h1 className={styles.title}>Payment Offers Sent</h1>
 
@@ -111,15 +115,15 @@ function StatusRow({
     status === "sent"
       ? styles.statusPending
       : status === "paid"
-      ? styles.statusSuccess
-      : styles.statusDeclined;
+        ? styles.statusSuccess
+        : styles.statusDeclined;
 
   const statusText =
     status === "sent"
       ? "Pending payment"
       : status === "paid"
-      ? "Paid"
-      : "Declined";
+        ? "Paid"
+        : "Declined";
 
   return (
     <div className={styles.statusRow}>

@@ -1,16 +1,13 @@
-/* ============================================================
-   PAGE BACKGROUND + FLOATING DECORATIONS
-   ============================================================ */
+
 .pageBackground {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   padding: 120px 20px 60px;
   position: relative;
   overflow: hidden;
 }
 
-/* top floating bubble */
 .pageBackground::before {
   content: "";
   position: absolute;
@@ -24,7 +21,6 @@
   pointer-events: none;
 }
 
-/* bottom floating bubble */
 .pageBackground::after {
   content: "";
   position: absolute;
@@ -48,10 +44,6 @@
   50% { transform: translate(-40px,40px) scale(1.12); }
 }
 
-/* ============================================================
-   PAGE TITLE
-   ============================================================ */
-
 .title {
   font-size: 2.4rem;
   font-weight: 900;
@@ -71,10 +63,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   PROFILE CARD — MAIN WHITE CARD
-   ============================================================ */
-
 .container {
   max-width: 900px;
   margin: 0 auto;
@@ -93,7 +81,6 @@
   overflow: hidden;
 }
 
-/* animated top border */
 .profileCard::before {
   content: "";
   position: absolute;
@@ -115,10 +102,6 @@
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* ============================================================
-   HEADER SECTION — AVATAR + USER INFO
-   ============================================================ */
 
 .headerSection {
   display: flex;
@@ -163,10 +146,6 @@
   font-size: 1rem;
 }
 
-/* ============================================================
-   CONTENT AREA — LEFT + RIGHT SECTIONS
-   ============================================================ */
-
 .content {
   margin-top: 30px;
   display: flex;
@@ -198,10 +177,6 @@
   gap: 10px;
 }
 
-/* ============================================================
-   ROWS — INFO LINES INSIDE SECTIONS
-   ============================================================ */
-
 .row {
   display: flex;
   align-items: center;
@@ -227,10 +202,6 @@
   margin-left: auto;
 }
 
-/* ============================================================
-   EDIT BUTTON
-   ============================================================ */
-
 .editBtn {
   width: fit-content;
   margin-top: 12px;
@@ -252,10 +223,6 @@
   transform: translateY(-3px);
   background: linear-gradient(135deg,#7ba87b,#6a956a);
 }
-
-/* ============================================================
-   BACK BUTTON + LOGOUT BUTTON
-   ============================================================ */
 
 .backBtn {
   position: absolute;
@@ -290,10 +257,6 @@
 .logoutBtn:hover {
   background: #ffe8e8;
 }
-
-/* ============================================================
-   EDIT MODAL (REDESIGNED TO MATCH GREEN THEME)
-   ============================================================ */
 
 .modalOverlay {
   position: fixed;
@@ -336,7 +299,6 @@
   margin-bottom: 20px;
 }
 
-/* form inputs */
 .modalBox label {
   font-weight: 700;
   color: #334155;
@@ -391,10 +353,6 @@
 .cancelBtn:hover {
   background: #d4ddd4;
 }
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
 
 @media (max-width: 800px) {
   .headerSection {

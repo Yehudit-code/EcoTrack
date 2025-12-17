@@ -1,9 +1,10 @@
 .wrapper {
+  min-height: 100vh;        /* גובה מסך מלא */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 0;
+  justify-content: center;  /* מרכז אופקית */
+  align-items: center;      /* מרכז אנכית */
 }
+
 
 /* העלה משתמש באייקון שאת העלית */
 .leaf {

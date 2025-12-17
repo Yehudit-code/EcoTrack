@@ -39,10 +39,20 @@ export default function CreateRequestPage({
   // Load user details (the target user, not company)
   useEffect(() => {
     async function loadUser() {
-      const res = await fetch(`/api/users/${id}`);
-      const data = await res.json();
-      setUser(data.user);
-      setLoading(false);
+const res = await fetch(`/api/users/${id}`);
+
+const raw = await res.text(); // חשוב! קוראים פעם אחת
+console.log("GET /api/users status:", res.status);
+console.log("GET /api/users body:", raw);
+
+if (!res.ok) {
+  throw new Error(`Failed to load user (${res.status})`);
+}
+
+const data = raw ? JSON.parse(raw) : {};
+setUser(data.user);
+setLoading(false);
+
     }
     loadUser();
   }, [id]);

@@ -55,9 +55,11 @@ const UserSchema = new Schema(
 
     /** כאן חייב להיות Object ולא Map */
     talkedByCompanies: {
-      type: Object,
+      type: Map,
+      of: Boolean,
       default: {},
     },
+
 
     companies: {
       electricity: String,

@@ -1,5 +1,7 @@
 // src/app/api/messages/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
+import { pusherServer } from "@/app/lib/pusher";
+
 
 export async function GET() {
   try {
@@ -44,10 +46,13 @@ export async function POST(req: Request) {
 
     const result = await messagesCollection.insertOne(newMessage);
 
-    return Response.json(
-      { ...newMessage, _id: result.insertedId },
-      { status: 201 }
-    );
+    const createdMessage = { ...newMessage, _id: result.insertedId };
+
+    // 🔥 שולחים בזמן אמת לפושר
+    await pusherServer.trigger("chat-channel", "new-message", createdMessage);
+
+    return Response.json(createdMessage, { status: 201 });
+
   } catch (err) {
     console.error("❌ Error in POST /api/messages:", err);
     return Response.json(

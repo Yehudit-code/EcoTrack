@@ -19,21 +19,48 @@ const Footer: React.FC = () => {
               <h3>EcoTrack</h3>
             </div>
             <p className={styles.description}>
-              Leading the way in sustainable consumption tracking and environmental awareness. 
+              Leading the way in sustainable consumption tracking and environmental awareness.
               Join us in creating a greener future for generations to come.
             </p>
             <div className={styles.socialLinks}>
-              <a href="#" className={styles.socialLink} aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/profile.php?id=61585262580268"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Facebook"
+              >
                 <FontAwesomeIcon icon={faFacebook} />
               </a>
-              <a href="#" className={styles.socialLink} aria-label="Twitter">
-                <FontAwesomeIcon icon={faTwitter} />
-              </a>
-              <a href="#" className={styles.socialLink} aria-label="Instagram">
+
+              <a
+                href="https://www.instagram.com/ecotrack336/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Instagram"
+              >
                 <FontAwesomeIcon icon={faInstagram} />
               </a>
-              <a href="#" className={styles.socialLink} aria-label="LinkedIn">
+
+              <a
+                href="https://www.linkedin.com/in/hadar-nagar-5a0ab032a/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack LinkedIn"
+              >
                 <FontAwesomeIcon icon={faLinkedin} />
+              </a>
+
+              <a
+                href="https://x.com/TrackEco85780"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Twitter"
+              >
+                <FontAwesomeIcon icon={faTwitter} />
               </a>
             </div>
           </div>
@@ -52,12 +79,48 @@ const Footer: React.FC = () => {
           {/* Services */}
           <div className={styles.column}>
             <h4>Our Services</h4>
-            <ul className={styles.linkList}>
-              <li><a href="#">Water Conservation</a></li>
-              <li><a href="#">Energy Management</a></li>
-              <li><a href="#">Transportation Tracking</a></li>
-              <li><a href="#">Waste Reduction</a></li>
-            </ul>
+            <div className={styles.socialLinks}>
+              <a
+                href="https://www.facebook.com/profile.php?id=61585262580268"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Facebook"
+              >
+                <FontAwesomeIcon icon={faFacebook} />
+              </a>
+
+              <a
+                href="https://www.instagram.com/ecotrack336/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Instagram"
+              >
+                <FontAwesomeIcon icon={faInstagram} />
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/hadar-nagar-5a0ab032a/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack LinkedIn"
+              >
+                <FontAwesomeIcon icon={faLinkedin} />
+              </a>
+
+              <a
+                href="https://x.com/TrackEco85780"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                aria-label="EcoTrack Twitter"
+              >
+                <FontAwesomeIcon icon={faTwitter} />
+              </a>
+            </div>
+
           </div>
 
           {/* Contact Info */}

@@ -1,7 +1,7 @@
 .container {
   min-height: 100vh;
-  padding: 140px 24px 60px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  padding: 120px 24px 48px; /* היה 140 / 60 */
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   position: relative;
   overflow: hidden;
 }
@@ -46,15 +46,15 @@
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  margin-bottom: 48px;
+  margin-bottom: 28px;
   text-align: center;
   background: linear-gradient(135deg, #2d5c2d 0%, #4a934a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   animation: fadeInDown 0.8s ease;
   position: relative;
   z-index: 1;
@@ -115,9 +115,9 @@
 .userList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   /* היה 32px */
-  max-width: 720px;
+  max-width: 640px;
   /* היה 900px */
   margin: 0 auto;
   position: relative;
@@ -126,12 +126,12 @@
 
 .card {
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 12px;
   /* היה 18px */
-  padding: 20px;
+  padding: 16px;
   /* היה 32px */
   border: 1px solid rgba(155, 197, 155, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
   /* צל קטן יותר */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -182,8 +182,8 @@
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 48px rgba(155, 197, 155, 0.25);
+  transform: translateY(-4px); /* היה -8px */
+  box-shadow: 0 10px 28px rgba(155, 197, 155, 0.2);
   border-color: rgba(155, 197, 155, 0.5);
 }
 
@@ -206,9 +206,9 @@
 }
 
 .avatar {
-  width: 60px;
+  width: 52px;
   /* היה 80px */
-  height: 60px;
+  height: 52px;
   border-radius: 50%;
   border: 3px solid #9bc59b;
   /* היה 4px */
@@ -226,7 +226,7 @@
 }
 
 .userName {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   /* היה 1.5rem */
   font-weight: 700;
   color: #2d5c2d;
@@ -235,7 +235,7 @@
 }
 
 .userInfo {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   /* היה 0.9375rem */
   margin-bottom: 4px;
   position: relative;
@@ -277,9 +277,9 @@
 }
 
 .graphBox {
-  margin-top: 16px;
+  margin-top: 12px;
   /* היה 24px */
-  padding: 14px;
+  padding: 10px;
   background: linear-gradient(135deg, #f8fdf8 0%, #ffffff 100%);
   border-radius: 12px;
   /* היה 16px */
@@ -290,12 +290,12 @@
 }
 
 .talkButton {
-  margin-top: 16px;
+  margin-top: 12px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 8px 14px;
   font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 10px;
+  font-size: 0.85rem;
+  border-radius: 8px;
   color: #fff;
   cursor: pointer;
   border: none;
@@ -528,4 +528,29 @@
     font-size: 0.9375rem;
     padding: 14px 20px;
   }
+}
+
+.topActions {
+  position: absolute;
+  top: 110px; /* איפה שמצא חן בעינייך */
+  right: 24px;
+  z-index: 10;
+}
+
+.offersLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #075a26; /* ירוק של EcoTrack */
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: all 0.2s ease;
+}
+
+.offersLink:hover {
+  color: #15803d; /* ירוק כהה יותר */
+  transform: translateY(-1px);
 }

@@ -3,48 +3,75 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f7fa;
-  padding: 20px;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
 }
 
+/* כרטיס הצלחה גדול ויוקרתי */
 .card {
-  background: white;
+  background: #ffffff;
   width: 100%;
-  max-width: 450px;
-  border-radius: 16px;
-  padding: 40px 28px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
+  max-width: 520px; /* היה 450px — עכשיו יותר גדול */
+  padding: 48px 38px; /* היה קטן — עכשיו מרווח */
+  border-radius: 20px;
   text-align: center;
+  border: 2px solid rgba(155,197,155,0.25);
+  box-shadow: 0 14px 40px rgba(155,197,155,0.25);
+  animation: popIn 0.6s ease;
+}
+
+/* אנימציית כניסה נקייה */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #1f2937;
+  font-size: 2rem; /* היה 28px */
+  font-weight: 900;
+  background: linear-gradient(135deg, #2d5c2d, #4a934a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
 }
 
 .text {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #4b5563;
-  margin-bottom: 32px;
+  font-size: 1.15rem; /* גדול וקריא יותר */
+  line-height: 1.7;
+  color: #44504f;
+  margin-bottom: 34px;
 }
 
+/* כפתור איכותי יותר */
 .button {
   width: 100%;
-  background: #16a34a;
-  border: none;
   padding: 14px 0;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #16a34a, #3cc96c);
   color: white;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(22,163,74,0.3);
   transition: 0.2s;
 }
 
 .button:hover {
   background: #15803d;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: scale(0.98);
 }

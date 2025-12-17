@@ -30,6 +30,8 @@
     "next": "^16.0.7",
     "nodemailer": "^7.0.11",
     "openai": "^6.9.1",
+    "pusher": "^5.2.0",
+    "pusher-js": "^8.4.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^3.5.1",
