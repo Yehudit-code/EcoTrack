@@ -6,7 +6,6 @@
   overflow: hidden;
 }
 
-/* רקע עגול דקורטיבי */
 .page::before {
   content: "";
   position: absolute;
@@ -36,7 +35,6 @@
   50% { transform: translate(40px, -40px) scale(1.1); }
 }
 
-/* --- BACK BUTTON like Profile Page --- */
 .backBtn {
   position: absolute;
   top: 30px;
@@ -59,7 +57,6 @@
   opacity: 0.8;
 }
 
-/* TITLE */
 .title {
   max-width: 900px;
   margin: 0 auto 32px;
@@ -74,7 +71,6 @@
   z-index: 1;
 }
 
-/* EMPTY STATE */
 .empty {
   max-width: 900px;
   margin: 0 auto;
@@ -88,7 +84,6 @@
   box-shadow: 0 4px 16px rgba(155, 197, 155, 0.15);
 }
 
-/* LIST OF CARDS */
 .list {
   max-width: 950px;
   margin: 0 auto;
@@ -114,7 +109,6 @@
   border-color: rgba(155, 197, 155, 0.5);
 }
 
-/* ROW INSIDE CARD */
 .row {
   display: flex;
   justify-content: space-between;
@@ -132,7 +126,6 @@
   font-weight: 500;
 }
 
-/* STATUS */
 .statusRow {
   display: flex;
   justify-content: space-between;

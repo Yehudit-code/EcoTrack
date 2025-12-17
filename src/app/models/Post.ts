@@ -1,4 +1,3 @@
-// src/models/Post.ts
 import { Schema, model, models } from "mongoose";
 
 export interface IPost {

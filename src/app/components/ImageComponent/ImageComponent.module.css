@@ -64,7 +64,6 @@
   overflow-wrap: break-word;
 }
 
-/* צד הפוך - חיתוך אלכסוני ימין */
 .reverse .featureImage img {
   clip-path: polygon(
     0 0,
@@ -74,7 +73,6 @@
   );
 }
 
-/* טקסט */
 .featureText h3 {
   margin-bottom: 15px;
   font-size: 32px;
@@ -90,7 +88,6 @@
   line-height: 1.8;
 }
 
-/* רספונסיביות */
 @media (max-width: 900px) {
   .featureSection {
     flex-direction: column;

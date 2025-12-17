@@ -1,4 +1,3 @@
-// src/models/CompanyAlert.ts
 import { Schema, model, models, Types } from "mongoose";
 
 export interface ICompanyAlert {

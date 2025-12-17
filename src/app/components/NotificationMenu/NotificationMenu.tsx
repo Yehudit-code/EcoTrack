@@ -21,7 +21,6 @@ export default function NotificationMenu({ open }: { open: boolean }) {
   const [items, setItems] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 🚀 טעינת ההתראות עבור המשתמש
   useEffect(() => {
     if (!hasHydrated || !user?._id) return;
 

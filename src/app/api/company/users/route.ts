@@ -109,7 +109,7 @@ export async function GET(req: Request) {
       .sort((a, b) => {
         const avgA = a?.avgValue ?? 0;
         const avgB = b?.avgValue ?? 0;
-        return avgB - avgA; // גבוה → נמוך
+        return avgB - avgA; 
       });
 
   return NextResponse.json({ users });

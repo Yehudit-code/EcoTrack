@@ -1,4 +1,3 @@
-// app/api/route.ts
 import { fetchCollection } from "@/app/services/server/EcoTrackCollection";
 
 export async function GET() {

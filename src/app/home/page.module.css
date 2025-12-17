@@ -23,8 +23,6 @@
   }
 }
 
-
-/* Actions Card */
 .actionButtons {
   display: flex;
   flex-direction: column;
@@ -145,7 +143,6 @@
   }
 }
 
-/* Features Section with Scroll Animations */
 .featuresSection {
   margin: 30px 0;
   padding: 0 20px;
@@ -170,13 +167,11 @@
   margin: 0;
 }
 
-/* עיצוב חדש לפיצ'רים */
 .featuresWrapper {
   width: 100%;
   overflow: hidden;
 }
 
-/* כל סקשן = תמונה + טקסט */
 .featureSection {
   position: relative;
   display: flex;
@@ -184,7 +179,6 @@
   height: 100vh;
 }
 
-/* === תמונה — 2/3 מהמסך === */
 .featureImage {
   flex: 2;
   height: 100%;
@@ -197,7 +191,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* ברירת מחדל = חיתוך אלכסון שמאל ← ריק */
   clip-path: polygon(
     0 0,
     100% 0,
@@ -206,17 +199,15 @@
   );
 }
 
-/* === טקסט — 1/3 מהמסך === */
 .featureText {
   flex: 1;
   padding: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: white; /* קריא וברור */
+  background: white;
 }
 
-/* === צד הפוך — חיתוך אלכסוני לצד ימין === */
 .reverse .featureImage img {
   clip-path: polygon(
     0 0,
@@ -241,7 +232,6 @@
   line-height: 1.8;
 }
 
-/* סגנון פסקה כמו ב-ImageComponent */
 .featureTextParagraph {
   margin-bottom: 20px;
   line-height: 1.6;
@@ -249,7 +239,6 @@
   color: #222;
 }
 
-/* רספונסיביות למובייל */
 @media (max-width: 900px) {
   .featureSection {
     flex-direction: column;
@@ -270,7 +259,6 @@
   }
 }
 
-/* Initial hidden states for slide animations */
 .slideLeft {
   opacity: 0;
 }
@@ -307,13 +295,11 @@
   order: 2;
 }
 
-/* Visible state */
 .featureRow.visible {
   opacity: 1;
   transform: translateX(0);
 }
 
-/* Staggered animation delays for smoother effect */
 .featureRow.visible .featureImage {
   transition-delay: 0.1s;
 }
@@ -361,8 +347,6 @@
   font-size: 1.1rem;
 }
 
-/* Responsive Design for New Layout */
-/* Responsive Design */
 @media (max-width: 1024px) {
   .categoriesGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -514,7 +498,6 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
 
-/* מניעת אינטראקציה עם הסרטונים */
 .noInteractionOverlay {
   position: absolute;
   top: 0;
@@ -524,36 +507,33 @@
   z-index: 5;
   background: transparent;
   cursor: default;
-  pointer-events: all; /* מגן על הוידאו מכל קליק */
+  pointer-events: all; 
 }
 
 .videoWrapper iframe {
   width: 100%;
   height: 100%;
-  pointer-events: none; /* ביטול אינטראקציה */
+  pointer-events: none;
 }
 
-/* VIDEO SECTION */
 .videosSection {
   position: relative;
   margin-top: 0px;
 }
 
-/* Overlay ON TOP of videos */
 .videosOverlayText {
   position: absolute;
-  top: 40%;                     /* מרכז גובה הסרטונים */
+  top: 40%;                   
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 50;
   text-align: center;
-  pointer-events: none;         /* שלא יחסום את הסרטונים */
+  pointer-events: none;
 }
 
 .overlayGreen {
   font-size: 3.5rem;
   font-weight: 800;
-  /* color: #0b552b; */
   color: #ffffff;
   margin: 0;
   text-shadow: 0 0 10px rgba(0,0,0,0.6);
@@ -567,16 +547,15 @@
   text-shadow: 0 0 14px rgba(0,0,0,0.8);
 }
 
-/* Videos container is now the "relative box" */
 .videosContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
-  position: relative;           /* חשוב! מגדיר את הבסיס ל-overlay */
+  position: relative;         
   padding: 30px 0;
 }
-/* INFO BOXES SECTION */
+
 .infoBoxesSection {
   margin: 100px 0 80px;
   text-align: center;
@@ -596,7 +575,6 @@
   padding: 0 20px;
 }
 
-/* BOX CONTAINER */
 .infoBox {
   background: #ffffff;
   border: 1px solid #10b981;
@@ -605,9 +583,6 @@
   cursor: pointer;
   transition: border-color 0.3s ease;
   text-align: center;
-  /* אין הצללה */
-
-  /* Center icon + text */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -617,10 +592,8 @@
 .infoBox:hover {
   transform: translateY(-4px);
   border-color: #10b981;
-  /* אין הצללה במצב hover */
 }
 
-/* ICON CONTAINER */
 .infoIcon {
   width: 64px;
   height: 64px;
@@ -630,7 +603,6 @@
   margin-bottom: 18px;
 }
 
-/* SVG inside icon */
 .infoIcon svg {
   width: 48px;
   height: 48px;
@@ -642,7 +614,6 @@
   transform: scale(1.08);
 }
 
-/* HEADINGS + TEXT */
 .infoBox h3 {
   font-size: 1.25rem;
   margin-bottom: 12px;
@@ -656,7 +627,6 @@
   line-height: 1.6;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .infoBoxesTitle {
     font-size: 1.9rem;
@@ -674,7 +644,6 @@
   margin-bottom: 40px;
 }
 
-/* התמונה נשארת במקום */
 .featureImage {
   flex: 0 0 380px;
   position: sticky;
@@ -689,10 +658,9 @@
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   display: block;
-  clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); /* Diagonal cut: top 75% height, bottom right quarter cut diagonally */
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); 
 }
 
-/* שכבת טקסט על התמונה */
 .imageOverlay {
   position: absolute;
   bottom: 0;
@@ -715,7 +683,6 @@
   text-align: right;
 }
 
-/* תוכן */
 .featureContent {
   flex: 1;
   padding-right: 10px;
@@ -736,8 +703,6 @@
   line-height: 1.8;
 }
 
-
-/* רספונסיביות */
 @media (max-width: 900px) {
   .featureRow {
     flex-direction: column;

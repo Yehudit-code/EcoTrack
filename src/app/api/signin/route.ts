@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   // 🔑 Store JWT in HttpOnly cookie
   response.cookies.set("ecotrack-token", token, {
     httpOnly: true,
-    secure: false, //  חובה ל-localhost
+    secure: false, 
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,

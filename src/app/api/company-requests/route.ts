@@ -18,7 +18,6 @@ export async function GET(req: Request) {
     const pipeline: any[] = [
       { $match: match },
 
-      // 🔵 הבאת פרטי המשתמש (לקוח)
       {
         $lookup: {
           from: "Users",
@@ -29,7 +28,6 @@ export async function GET(req: Request) {
       },
       { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
 
-      // 🟢 הבאת פרטי החברה (החברה שהציעה את ההצעה)
       {
         $lookup: {
           from: "Users",
@@ -52,12 +50,10 @@ export async function GET(req: Request) {
           userId: 1,
           companyId: 1,
 
-          // פרטי המשתמש
           "userData.name": 1,
           "userData.email": 1,
           "userData.phone": 1,
 
-          // פרטי החברה
           companyName: "$companyData.name",
           companyEmail: "$companyData.email",
           companyCategory: "$companyData.companyCategory",

@@ -10,9 +10,7 @@ const Footer: React.FC = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        {/* Top Section */}
         <div className={styles.topSection}>
-          {/* Company Info */}
           <div className={styles.column}>
             <div className={styles.brand}>
               <FontAwesomeIcon icon={faLeaf} className={styles.brandIcon} />
@@ -65,7 +63,6 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className={styles.column}>
             <h4>Quick Links</h4>
             <ul className={styles.linkList}>
@@ -76,7 +73,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Services */}
           <div className={styles.column}>
             <h4>Our Services</h4>
             <div className={styles.socialLinks}>
@@ -123,7 +119,6 @@ const Footer: React.FC = () => {
 
           </div>
 
-          {/* Contact Info */}
           <div className={styles.column}>
             <h4>Contact Us</h4>
             <div className={styles.contactInfo}>
@@ -143,7 +138,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Section */}
         <div className={styles.bottomSection}>
           <div className={styles.copyright}>
             <p>

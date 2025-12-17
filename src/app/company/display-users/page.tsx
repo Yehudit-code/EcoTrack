@@ -48,10 +48,8 @@ export default function DisplayUsersPage() {
 
   const handleToggleTalk = async (email: string) => {
     try {
-      // 1️⃣ שולחים בקשה לשרת - מחזיר אם talked=true/false
       const { talked } = await toggleUserTalkStatus(email);
 
-      // 2️⃣ מעדכנים סטייט לפי מה שהשרת אמר
       setUsers((prev) =>
         prev.map((u) =>
           u.email === email ? { ...u, talked } : u

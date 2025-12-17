@@ -5,7 +5,7 @@ import { requireAuth } from "@/app/lib/auth/serverAuth";
 
 export async function PATCH(req: Request, context: { params: { email: string } }) {
   try {
-    const { email } = context.params; // ← חייב להיות תקין
+    const { email } = context.params; 
 
     console.log("PATCH TALKED FOR:", email);
 

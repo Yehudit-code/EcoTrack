@@ -1,4 +1,3 @@
-// src/models/Tip.ts
 import { Schema, model, models } from "mongoose";
 
 export interface ITip {

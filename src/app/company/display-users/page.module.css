@@ -1,12 +1,11 @@
 .container {
   min-height: 100vh;
-  padding: 120px 24px 48px; /* היה 140 / 60 */
+  padding: 120px 24px 48px;
   background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* רקע דקורטיבי מונפש */
 .container::before {
   content: '';
   position: absolute;
@@ -116,9 +115,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* היה 32px */
   max-width: 640px;
-  /* היה 900px */
   margin: 0 auto;
   position: relative;
   z-index: 1;
@@ -127,12 +124,9 @@
 .card {
   background: #ffffff;
   border-radius: 12px;
-  /* היה 18px */
   padding: 16px;
-  /* היה 32px */
   border: 1px solid rgba(155, 197, 155, 0.25);
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
-  /* צל קטן יותר */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -163,7 +157,6 @@
   }
 }
 
-/* קו עליון דקורטיבי */
 .card::before {
   content: '';
   position: absolute;
@@ -190,12 +183,9 @@
 .userHeader {
   display: flex;
   gap: 14px;
-  /* היה 20px */
   cursor: pointer;
   padding: 10px;
-  /* היה 16px */
   border-radius: 12px;
-  /* היה 16px */
   transition: all 0.3s ease;
   margin: -10px -10px 10px -10px;
 }
@@ -207,11 +197,9 @@
 
 .avatar {
   width: 52px;
-  /* היה 80px */
   height: 52px;
   border-radius: 50%;
   border: 3px solid #9bc59b;
-  /* היה 4px */
   flex-shrink: 0;
   object-fit: cover;
   box-shadow: 0 3px 10px rgba(155, 197, 155, 0.25);
@@ -227,7 +215,6 @@
 
 .userName {
   font-size: 1.05rem;
-  /* היה 1.5rem */
   font-weight: 700;
   color: #2d5c2d;
   margin-bottom: 4px;
@@ -236,7 +223,6 @@
 
 .userInfo {
   font-size: 0.8rem;
-  /* היה 0.9375rem */
   margin-bottom: 4px;
   position: relative;
   padding-left: 12px;
@@ -248,7 +234,6 @@
   font-weight: 700;
   color: #2d5c2d;
   font-size: 0.9rem;
-  /* היה 1rem */
 }
 
 
@@ -278,11 +263,9 @@
 
 .graphBox {
   margin-top: 12px;
-  /* היה 24px */
   padding: 10px;
   background: linear-gradient(135deg, #f8fdf8 0%, #ffffff 100%);
   border-radius: 12px;
-  /* היה 16px */
   display: flex;
   justify-content: center;
   border: 1px solid #e8f5e9;
@@ -350,7 +333,6 @@
   background: linear-gradient(135deg, #7ba87b 0%, #6a956a 100%);
 }
 
-/* MODAL */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -385,7 +367,6 @@
   position: relative;
 }
 
-/* קו עליון דקורטיבי במודל */
 .modal::before {
   content: '';
   position: absolute;
@@ -471,7 +452,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .container {
     padding: 120px 16px 40px;
@@ -532,7 +512,7 @@
 
 .topActions {
   position: absolute;
-  top: 110px; /* איפה שמצא חן בעינייך */
+  top: 110px; 
   right: 24px;
   z-index: 10;
 }
@@ -543,7 +523,7 @@
   padding: 0;
   font-size: 13px;
   font-weight: 600;
-  color: #075a26; /* ירוק של EcoTrack */
+  color: #075a26;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -551,6 +531,6 @@
 }
 
 .offersLink:hover {
-  color: #15803d; /* ירוק כהה יותר */
+  color: #15803d;
   transform: translateY(-1px);
 }

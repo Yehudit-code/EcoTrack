@@ -1,4 +1,3 @@
-// src/models/User.ts
 import { Schema, Types, model, models } from "mongoose";
 import type { UserRole } from "@/app/types/common";
 
@@ -20,7 +19,6 @@ export interface IUser {
   accountNumber?: string;
   accountOwner?: string;
 
-  /** שדה חדש: אובייקט שמכיל id של חברה -> true/false */
   talkedByCompanies?: Record<string, boolean>;
 
   companies?: {
@@ -53,7 +51,6 @@ const UserSchema = new Schema(
     accountNumber: String,
     accountOwner: String,
 
-    /** כאן חייב להיות Object ולא Map */
     talkedByCompanies: {
       type: Map,
       of: Boolean,

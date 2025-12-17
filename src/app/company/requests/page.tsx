@@ -51,7 +51,6 @@ export default function CompanyRequestsPage() {
   return (
     <div className={styles.page}>
 
-      {/* כפתור Back כמו בעמוד פרופיל */}
       <button
         className={styles.backBtn}
         onClick={() => router.push("/home")}
@@ -89,7 +88,6 @@ export default function CompanyRequestsPage() {
   );
 }
 
-/* ---------- Sub-components ---------- */
 
 function InfoRow({
   label,

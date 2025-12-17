@@ -87,7 +87,7 @@ export default function ProfilePage() {
       await fetch("/api/logout", { method: "POST" });
     } catch {}
 
-    logoutStore(); // Zustand מוחק את ה־persist לבד
+    logoutStore(); 
 
     router.replace("/");
   };

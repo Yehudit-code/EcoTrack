@@ -1,4 +1,3 @@
-// src/app/api/messages/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 import { pusherServer } from "@/app/lib/pusher";
 
@@ -10,7 +9,7 @@ export async function GET() {
 
     const messages = await messagesCollection
       .find({})
-      .sort({ createdAt: 1 }) // מהישן לחדש
+      .sort({ createdAt: 1 }) 
       .limit(100)
       .toArray();
 
@@ -48,7 +47,6 @@ export async function POST(req: Request) {
 
     const createdMessage = { ...newMessage, _id: result.insertedId };
 
-    // 🔥 שולחים בזמן אמת לפושר
     await pusherServer.trigger("chat-channel", "new-message", createdMessage);
 
     return Response.json(createdMessage, { status: 201 });

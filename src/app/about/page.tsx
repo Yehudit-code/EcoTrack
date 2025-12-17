@@ -10,7 +10,6 @@ import { useUserStore } from "@/store/useUserStore";
 
 export default function AboutPage() {
 
-  // לוקחים את התפקיד מה־Zustand
   const role = useUserStore((state) => state.user?.role);
 
   return (

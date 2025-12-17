@@ -27,9 +27,6 @@ interface ApiResponse<T> {
 
 const API_BASE = "/api/consumption";
 
-/* ----------------------------------------
-    Handle Server Responses
----------------------------------------- */
 async function handleResponse<T>(res: Response): Promise<T> {
   const json: ApiResponse<T> = await res.json();
 
@@ -41,9 +38,6 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return json.data as T;
 }
 
-/* ----------------------------------------
-    FETCH consumption by email + filters
----------------------------------------- */
 export async function fetchUserConsumptionByEmail(
   userEmail: string,
   category?: ConsumptionCategory,
@@ -64,9 +58,6 @@ export async function fetchUserConsumptionByEmail(
   return handleResponse<ConsumptionHabitDto[]>(res);
 }
 
-/* ----------------------------------------
-    Create new consumption
----------------------------------------- */
 export interface ConsumptionUpsertInput {
   _id?: string;
   userEmail: string;
@@ -88,9 +79,6 @@ export async function createConsumption(
   return handleResponse<ConsumptionHabitDto>(res);
 }
 
-/* ----------------------------------------
-    Update existing consumption
----------------------------------------- */
 export async function updateConsumption(
   input: ConsumptionUpsertInput & { _id: string }
 ): Promise<ConsumptionHabitDto> {
@@ -103,9 +91,6 @@ export async function updateConsumption(
   return handleResponse<ConsumptionHabitDto>(res);
 }
 
-/* ----------------------------------------
-    NEW: Fetch consumption filtered by company category
----------------------------------------- */
 export async function getFilteredConsumption(
   userId: string,
   companyEmail: string
@@ -131,9 +116,6 @@ export async function getFilteredConsumption(
   };
 }
 
-// ----------------------------------------
-// Fetch filtered user details for company dashboard
-// ----------------------------------------
 export async function fetchCompanyFilteredUserDetails(
   userId: string
 ): Promise<{
@@ -143,7 +125,7 @@ export async function fetchCompanyFilteredUserDetails(
 }> {
   const res = await fetch(`/api/company/user-details/${userId}`, {
     method: "GET",
-    credentials: "include", // חשוב ל-cookie ב-Vercel / דפדפן
+    credentials: "include",
     cache: "no-store",
   });
 

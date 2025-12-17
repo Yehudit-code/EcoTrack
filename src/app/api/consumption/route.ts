@@ -41,18 +41,15 @@ export async function POST(req: Request) {
       return fail("Missing required fields", 400);
     }
 
-    // ⬅️ שליפת הצריכה הקודמת של המשתמש באותה קטגוריה
     const lastRecord = await ConsumptionHabit.findOne({
       userEmail,
       category,
     })
-      .sort({ year: -1, month: -1 }) // חשוב - כדי לקבל את האחרונה
+      .sort({ year: -1, month: -1 }) 
       .lean() as any;
 
-    // ⬅️ הגדרת previousValue אוטומטית
     const previousValue = lastRecord?.value ?? null;
 
-    // בדיקה אם קיים כבר רישום לחודש הזה → עדכון
     const existing = await ConsumptionHabit.findOne({
       userEmail,
       category,
@@ -65,17 +62,16 @@ export async function POST(req: Request) {
         existing._id,
         {
           ...body,
-          previousValue, // ⬅️ חשוב!
+          previousValue,
         },
         { new: true }
       );
       return ok(updated);
     }
 
-    // יצירת רשומה חדשה
     const created = await ConsumptionHabit.create({
       ...body,
-      previousValue, // ⬅️ נשמר כאן
+      previousValue, 
     });
 
     return ok(created);

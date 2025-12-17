@@ -11,7 +11,6 @@ export default function ProfileModal({ editData, setEditData, onSave, onCancel, 
       <div className={styles.modalBox}>
         <h2>Edit Profile</h2>
 
-        {/* Name */}
         <label>Full Name</label>
         <input
           type="text"
@@ -19,7 +18,6 @@ export default function ProfileModal({ editData, setEditData, onSave, onCancel, 
           onChange={(e) => setEditData({ ...editData, name: e.target.value })}
         />
 
-        {/* Phone */}
         <label>Phone</label>
         <input
           type="text"
@@ -27,7 +25,6 @@ export default function ProfileModal({ editData, setEditData, onSave, onCancel, 
           onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
         />
 
-        {/* ❌ לא מציגים תאריך לידה לחברות */}
         {role === "user" && (
           <>
             <label>Birth Date</label>
@@ -41,7 +38,6 @@ export default function ProfileModal({ editData, setEditData, onSave, onCancel, 
           </>
         )}
 
-        {/* ❌ לחברה לא מציגים חיבורי חברות */}
         {role === "user" && (
           <>
             <h3>Connected Companies</h3>
@@ -67,7 +63,6 @@ export default function ProfileModal({ editData, setEditData, onSave, onCancel, 
           </>
         )}
 
-        {/* ⭐ פרטי בנק — רק לחברה */}
         {role === "company" && (
           <>
             <h3>Bank Account Details</h3>

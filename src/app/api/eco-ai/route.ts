@@ -16,7 +16,6 @@ export async function POST(req: Request) {
             );
         }
 
-        // הכנת היסטוריית השיחה
         const formattedHistory = Array.isArray(history)
             ? history.map((msg: any) => ({
                 role: msg.sender === "user" ? "user" : "assistant",
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
             }))
             : [];
 
-        // 👇 עקיפת הטייפים של Groq — ככה זה עובד בלי שגיאות
         const completion: any = await (client as any).chat.completions.create({
             model: "llama-3.1-8b-instant",
             messages: [

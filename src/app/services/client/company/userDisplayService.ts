@@ -1,4 +1,3 @@
-// src/app/services/client/company/userDisplayService.ts
 
 export async function fetchUsersByCategory(category: string) {
   const res = await fetch(`/api/company/users?category=${encodeURIComponent(category)}`, {

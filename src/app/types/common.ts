@@ -1,4 +1,3 @@
-// src/types/common.ts
 export const ConsumptionCategory = {
   Water: "Water",
   Electricity: "Electricity",

@@ -41,7 +41,7 @@ export default function CreateRequestPage({
     async function loadUser() {
 const res = await fetch(`/api/users/${id}`);
 
-const raw = await res.text(); // חשוב! קוראים פעם אחת
+const raw = await res.text(); 
 console.log("GET /api/users status:", res.status);
 console.log("GET /api/users body:", raw);
 

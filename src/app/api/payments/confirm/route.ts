@@ -1,4 +1,3 @@
-// src/app/api/payments/confirm/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
@@ -16,7 +15,6 @@ export async function POST(req: Request) {
     const paymentsCol = db.collection("Payments");
     const requestsCol = db.collection("CompanyRequests");
 
-    // שליפת התשלום עצמו
     const payment = await paymentsCol.findOne({
       _id: new ObjectId(paymentId),
     });
@@ -26,7 +24,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }
 
-    // 1️⃣ עדכון התשלום ל-Paid
     await paymentsCol.updateOne(
       { _id: new ObjectId(paymentId) },
       {
@@ -37,7 +34,6 @@ export async function POST(req: Request) {
       }
     );
 
-    // 2️⃣ עדכון CompanyRequests לפי requestId
     if (payment.requestId && ObjectId.isValid(payment.requestId)) {
       await requestsCol.updateOne(
         { _id: new ObjectId(payment.requestId) },

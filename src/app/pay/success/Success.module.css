@@ -7,12 +7,11 @@
   background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
 }
 
-/* כרטיס הצלחה גדול ויוקרתי */
 .card {
   background: #ffffff;
   width: 100%;
-  max-width: 520px; /* היה 450px — עכשיו יותר גדול */
-  padding: 48px 38px; /* היה קטן — עכשיו מרווח */
+  max-width: 520px; 
+  padding: 48px 38px;
   border-radius: 20px;
   text-align: center;
   border: 2px solid rgba(155,197,155,0.25);
@@ -20,7 +19,6 @@
   animation: popIn 0.6s ease;
 }
 
-/* אנימציית כניסה נקייה */
 @keyframes popIn {
   0% {
     opacity: 0;
@@ -36,7 +34,7 @@
 }
 
 .title {
-  font-size: 2rem; /* היה 28px */
+  font-size: 2rem; 
   font-weight: 900;
   background: linear-gradient(135deg, #2d5c2d, #4a934a);
   -webkit-background-clip: text;
@@ -46,13 +44,12 @@
 }
 
 .text {
-  font-size: 1.15rem; /* גדול וקריא יותר */
+  font-size: 1.15rem; 
   line-height: 1.7;
   color: #44504f;
   margin-bottom: 34px;
 }
 
-/* כפתור איכותי יותר */
 .button {
   width: 100%;
   padding: 14px 0;

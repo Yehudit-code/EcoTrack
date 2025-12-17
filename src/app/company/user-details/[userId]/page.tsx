@@ -14,7 +14,7 @@ export default function UserDetailsPage({
   // Next.js 16 — params is a Promise
   const { userId } = use(params);
 
-  const router = useRouter(); // ← תיקון חשוב
+  const router = useRouter(); 
 
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -42,7 +42,6 @@ export default function UserDetailsPage({
     load();
   }, [userId]);
 
-  // ================= UI ==================
 
   if (loading) return <div className={styles.container}>Loading...</div>;
 

@@ -1,4 +1,3 @@
-// src/app/api/posts/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 
 export async function GET() {
@@ -60,11 +59,6 @@ export async function POST(req: Request) {
 }
 
 
-
-/* ------------------------------------------
-   📌 ה-PATCH: כאן כל הקסם קורה 
-   Like / Comment / Share ממש עובדים
------------------------------------------- */
 export async function PATCH(req: Request) {
     try {
         const db = await connectDB();
@@ -94,7 +88,6 @@ export async function PATCH(req: Request) {
                 return Response.json({ error: "Post not found" }, { status: 404 });
             }
 
-            // אם אין מערך לייקים ניצור אחד
             let likes = Array.isArray(post.likes) ? post.likes : [];
 
             // Toggle

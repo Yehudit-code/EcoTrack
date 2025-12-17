@@ -40,7 +40,6 @@
   gap: 14px;
 }
 
-/* ====== NEW CARD DESIGN ====== */
 .card {
   background: #f7f9fb;
   border: 1px solid #e0e6ed;
@@ -58,7 +57,6 @@
   transform: translateY(-2px);
 }
 
-/* Left section */
 .info {
   display: flex;
   flex-direction: column;
@@ -77,7 +75,6 @@
   font-weight: 500;
 }
 
-/* Right section */
 .bottomRow {
   display: flex;
   flex-direction: column;
@@ -91,7 +88,6 @@
   color: #2e7d32;
 }
 
-/* Modern Pay button */
 .payButton {
   background: linear-gradient(135deg, #2e7d32, #3fa447);
   color: white;

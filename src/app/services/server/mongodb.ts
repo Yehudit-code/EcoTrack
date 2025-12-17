@@ -1,4 +1,3 @@
-// services/server/mongodb.ts
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 const options = {

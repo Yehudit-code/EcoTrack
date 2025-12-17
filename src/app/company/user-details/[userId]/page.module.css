@@ -7,13 +7,13 @@ body {
 
 .container {
   min-height: 100vh;
-  padding: 64px 32px 64px;   /* היה 80px */
+  padding: 64px 32px 64px;
   max-width: 880px;
   margin: 0 auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
   position: relative;
   overflow: hidden;
-  
+
 }
 
 .pageBackground {
@@ -22,8 +22,6 @@ body {
   width: 100%;
 }
 
-
-/* רקע דקורטיבי מונפש */
 .container::before {
   content: '';
   position: absolute;
@@ -53,9 +51,12 @@ body {
 }
 
 @keyframes floatSlow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   50% {
     transform: translate(40px, -40px) scale(1.1);
   }
@@ -81,6 +82,7 @@ body {
     opacity: 0;
     transform: translateY(-40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -90,10 +92,10 @@ body {
 .card {
   background: #ffffff;
   border: 2px solid rgba(155, 197, 155, 0.25);
-  border-radius: 14px;              /* היה 24px */
-  padding: 20px;                   /* היה 36px */
-  margin-bottom: 18px;             /* היה 32px */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); /* עדין יותר */
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -114,13 +116,13 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* קו עליון מונפש */
 .card::before {
   content: '';
   position: absolute;
@@ -134,24 +136,27 @@ body {
 }
 
 @keyframes shimmer {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
 }
 
 .card:hover {
-  transform: translateY(-4px);      /* היה -8px */
+  transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(155, 197, 155, 0.2);
   border-color: rgba(155, 197, 155, 0.45);
 }
 
 .cardTitle {
-    font-size: 1.25rem;               /* היה 1.75rem */
-  margin-bottom: 14px;              /* היה 24px */
-  gap: 10px; 
+  font-size: 1.25rem;
+  margin-bottom: 14px;
+  gap: 10px;
   color: #2d5c2d;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -172,10 +177,10 @@ body {
   color: #334155;
   position: relative;
   transition: all 0.2s ease;
-    font-size: 0.9rem;               /* היה 1.0625rem */
-  line-height: 1.55;                 /* היה 2 */
-  margin-bottom: 8px;              /* היה 12px */
-  padding-left: 14px; 
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 8px;
+  padding-left: 14px;
 }
 
 .card p::before {
@@ -192,7 +197,7 @@ body {
 }
 
 .card p:hover {
-  transform: translateX(6px);       /* היה 8px */
+  transform: translateX(6px);
   color: #2d5c2d;
 }
 
@@ -207,7 +212,6 @@ body {
   margin-right: 8px;
 }
 
-/* טבלה מעוצבת */
 .table {
   width: 100%;
   border-collapse: separate;
@@ -273,8 +277,7 @@ body {
   border-radius: 0 0 12px 0;
 }
 
-/* Empty state */
-.card > p:only-child {
+.card>p:only-child {
   text-align: center;
   padding: 40px 20px;
   color: #64748b;
@@ -301,6 +304,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -353,8 +357,7 @@ body {
   box-shadow: 0 8px 24px rgba(155, 197, 155, 0.35);
 }
 
-/* Loading & Error States */
-.container > div:first-child {
+.container>div:first-child {
   text-align: center;
   padding: 60px 20px;
   background: #ffffff;
@@ -371,16 +374,17 @@ body {
     opacity: 0;
     transform: scale(0.95);
   }
+
   50% {
     transform: scale(1.02);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .container {
     padding: 120px 24px 60px;

@@ -4,7 +4,7 @@ import { Factory, Droplet, Bus, Recycle, Sun } from "lucide-react";
 import styles from "@/app/profile/page.module.css";
 
 export default function ProfileCompanies({ companies, role }: any) {
-    if (role === "company") return null; // ❌ לא להציג לחברה
+    if (role === "company") return null; 
   const c = companies || {};
 
   return (

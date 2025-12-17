@@ -1,4 +1,3 @@
-/* ==== PAGE BG ==== */
 .container {
   height: 100vh;
   display: flex;
@@ -8,11 +7,10 @@
   font-family: "Inter", sans-serif;
 }
 
-/* ==== CARD ==== */
 .formWrapper {
   width: 360px;
   background: #ffffff;
-  padding: 48px 50px; /* מרווח כללי משופר */
+  padding: 48px 50px; 
   border-radius: 12px;
   border: 1px solid #e6e6e6;
   box-shadow: 0 4px 16px rgba(0,0,0,0.05);
@@ -25,7 +23,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ==== TITLE ==== */
 .logo {
   font-size: 22px;
   font-weight: 700;
@@ -37,18 +34,16 @@
   color: #3f7a3f;
 }
 
-/* ==== SUBTITLE ==== */
 .subtitle {
   font-size: 14px;
   color: #555;
-  margin-bottom: 28px; /* ריווח משופר */
+  margin-bottom: 28px; 
 }
 
-/* ==== INPUTS ==== */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* ריווח בין כל אינפוט */
+  gap: 10px;
   margin-top: 22px;
 }
 
@@ -69,11 +64,10 @@
   outline: none;
 }
 
-/* ==== BUTTON ==== */
 .signInButton {
   width: 100%;
   margin-top: 14px;
-  margin-bottom: 16px; /* רווח מלמטה */
+  margin-bottom: 16px; 
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -89,23 +83,21 @@
   background: #366a36;
 }
 
-/* ==== CONSENT ==== */
 .consentText {
   font-size: 10px;
   color: #888;
   margin-top: 2px;
-  margin-bottom: 1px; /* רווח לפני המפריד */
+  margin-bottom: 1px;
   line-height: 1.3;
 }
 
-/* ==== DIVIDER ==== */
 .divider {
   color: #777;
   font-size: 13px;
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 26px 0 22px; /* ריווחים חזקים */
+  margin: 26px 0 22px; 
 }
 
 .divider::before,
@@ -116,7 +108,6 @@
   background: #e3e3e3;
 }
 
-/* ==== GOOGLE BUTTON ==== */
 .providerBtn {
   width: 100%;
   border: 1px solid #dcdcdc;
@@ -131,7 +122,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
-  margin-top: 6px; /* ריווח מהקו */
+  margin-top: 6px; 
 }
 
 .providerBtn:hover {

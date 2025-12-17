@@ -12,7 +12,7 @@ export async function GET() {
     for (const user of users) {
       const habits = await habitsCollection
         .find({ userEmail: user.email })
-        .sort({ year: 1, month: 1 }) // לא חובה כאן, אבל מסודר יפה
+        .sort({ year: 1, month: 1 }) 
         .toArray();
 
       if (habits.length === 0) continue;
@@ -41,7 +41,6 @@ export async function GET() {
       });
     }
 
-    // ממיין מהכי חוסך (אחוז גבוה) להכי פחות
     results.sort((a, b) => b.avgSaving - a.avgSaving);
 
     return Response.json(results.slice(0, 4));

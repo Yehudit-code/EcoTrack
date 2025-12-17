@@ -9,7 +9,6 @@
     overflow: hidden;
 }
 
-/* רקע דקורטיבי */
 .page::before {
     content: '';
     position: absolute;
@@ -67,7 +66,6 @@
     }
 }
 
-/* קו דקורטיבי עליון */
 .card::before {
     content: '';
     position: absolute;
@@ -103,7 +101,6 @@
     }
 }
 
-/* Subtitle */
 .subtitle {
     text-align: center;
     color: #64748b;
@@ -118,7 +115,6 @@
     gap: 12px;
 }
 
-/* Input Group with Label */
 .inputGroup {
     position: relative;
     animation: fadeIn 0.6s ease backwards;
@@ -310,7 +306,6 @@
     }
 }
 
-/* אייקונים לשדות */
 .inputWrapper {
     position: relative;
     display: flex;
@@ -324,7 +319,6 @@
     pointer-events: none;
 }
 
-/* RESPONSIVE */
 @media (max-width: 640px) {
     .page {
         padding: 18vh 16px 40px;

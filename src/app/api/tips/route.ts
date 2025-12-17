@@ -1,4 +1,3 @@
-// src/app/api/tips/route.ts
 import { connectDB } from "@/app/lib/db";
 import { Tip } from "@/app/models/Tip";
 import { fail, ok } from "@/app/lib/api-helpers";

@@ -11,13 +11,11 @@
   animation: fadeInUp 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
 }
 
-/* Success Toast */
 .success {
   background: #22c55e;
   color: white;
 }
 
-/* Error Toast */
 .error {
   background: #ef4444;
   color: white;

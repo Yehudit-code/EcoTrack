@@ -1,4 +1,3 @@
-// src/models/Message.ts
 import { Schema, model, models } from "mongoose";
 
 export interface IMessage {

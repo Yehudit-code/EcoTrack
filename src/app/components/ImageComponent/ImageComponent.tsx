@@ -87,7 +87,6 @@ export default function Features() {
             visibleItems.has(id) ? styles.visible : ''
           }`}
         >
-          {/* תמונה בצד ימין ומלל בצד שמאל רק לאופניים ולמים */}
           {id === 'feature-transport' || id === 'feature-water' ? (
             <>
               <div className={styles.featureImage} style={{ order: 2 }}>

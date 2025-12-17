@@ -1,21 +1,18 @@
-/* רקע כללי — כמו בעמוד User Details */
 body {
   background: linear-gradient(135deg, #f8fffe 0%, #f0f9f0 100%);
   margin: 0;
   padding: 0;
 }
 
-/* עוטף מרכזי */
 .wrapper {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 60px 20px;
-  background: none; /* כדי לא לדרוס את הרקע הירוק מה-body */
+  background: none; 
 }
 
-/* כותרת — בדיוק כמו בעמוד הראשון */
 .title {
   font-size: 2.2rem;
   font-weight: 900;
@@ -28,7 +25,6 @@ body {
   letter-spacing: -1px;
 }
 
-/* כרטיס — בעיצוב הירוק הרך */
 .card {
   background: #ffffff;
   padding: 32px 28px;
@@ -44,7 +40,6 @@ body {
   animation: fadeUp 0.5s ease backwards;
 }
 
-/* פס ירקרק עליון — כמו בכרטיסים */
 .card::before {
   content: "";
   position: absolute;
@@ -67,7 +62,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* כותרות שדות */
 .label,
 .inputGroup label {
   font-weight: 700;
@@ -76,7 +70,6 @@ body {
   color: #2d5c2d;
 }
 
-/* ערכים שיוצגו */
 .value {
   margin-bottom: 20px;
   font-size: 1rem;
@@ -87,14 +80,12 @@ body {
   border: 1px solid #d9e7d9;
 }
 
-/* קבוצת שדה */
 .inputGroup {
   display: flex;
   flex-direction: column;
   margin-bottom: 18px;
 }
 
-/* קלטים */
 .inputGroup input {
   padding: 12px 14px;
   border-radius: 12px;
@@ -110,7 +101,6 @@ body {
   box-shadow: 0 0 0 3px rgba(123, 168, 123, 0.25);
 }
 
-/* כפתור — ירוק כמו בעמוד הראשון */
 .btn {
   margin-top: 10px;
   width: 100%;
@@ -136,7 +126,6 @@ body {
   transform: translateY(0);
 }
 
-/* Toast — באותו סגנון ירוק */
 .toast {
   position: fixed;
   top: 24px;

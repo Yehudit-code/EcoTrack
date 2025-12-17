@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // הגדרות שרת מייל (SMTP)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

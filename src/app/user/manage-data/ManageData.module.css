@@ -1,4 +1,3 @@
-/* src/app/manage-data/ManageData.module.css */
 
 .container {
   display: flex;
@@ -9,7 +8,6 @@
   padding-top: 13vh;
 }
 
-/* MAIN CONTENT */
 .main {
   flex: 1;
   display: flex;
@@ -59,7 +57,6 @@
   line-height: 1.6;
 }
 
-/* GRID OF CARDS */
 .dataSection {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -126,7 +123,6 @@
   justify-content: center;
 }
 
-/* INPUT GROUP */
 .inputGroup {
   margin-bottom: 24px;
   text-align: left;
@@ -175,7 +171,6 @@
   font-weight: 400;
 }
 
-/* BUTTONS */
 .saveBtn {
   background: linear-gradient(135deg, #9bc59b 0%, #7ba87b 100%);
   color: #ffffff;
@@ -225,7 +220,6 @@
   opacity: 0.6;
 }
 
-/* MESSAGES */
 .statusMessage {
   margin-top: 16px;
   font-size: 0.875rem;
@@ -263,10 +257,6 @@
   border-radius: 10px;
   border: 1px solid #fecaca;
 }
-
-/* ----------------------- */
-/* Month / Year Picker      */
-/* ----------------------- */
 
 .pickerContainer {
   position: relative;
@@ -401,7 +391,6 @@
   box-shadow: 0 4px 12px rgba(155, 197, 155, 0.4);
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .main {
     padding: 40px 16px;

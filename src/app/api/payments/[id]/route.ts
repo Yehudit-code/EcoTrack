@@ -1,4 +1,3 @@
-// src/app/api/payments/[id]/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
@@ -21,7 +20,6 @@ export async function GET(req: Request, context: RouteParams) {
         const requestsCol = db.collection("CompanyRequests");
         const usersCol = db.collection("Users");
 
-        // 1️⃣ קבלת התשלום
         const payment = await paymentsCol.findOne({ _id: new ObjectId(id) });
 
         if (!payment) {
@@ -29,7 +27,6 @@ export async function GET(req: Request, context: RouteParams) {
             return NextResponse.json({ error: "Payment not found" }, { status: 404 });
         }
 
-        // ======== 2️⃣ שליפת פרטי הבקשה (מוצר, מחיר) ========
         let productName = "";
         let price = payment.amount || 0;
         let userId = payment.userId;
@@ -47,7 +44,6 @@ export async function GET(req: Request, context: RouteParams) {
             }
         }
 
-        // ======== 3️⃣ שליפת פרטי החברה (הספק) ========
         let companyName = "";
         if (payment.companyId && ObjectId.isValid(payment.companyId)) {
             const company = await usersCol.findOne({
@@ -59,7 +55,6 @@ export async function GET(req: Request, context: RouteParams) {
             }
         }
 
-        // ======== 4️⃣ שליפת פרטי המשתמש (הלקוח) ========
         let userName = "";
         let userEmail = "";
         let fullUser = null;
@@ -72,7 +67,6 @@ export async function GET(req: Request, context: RouteParams) {
             if (user) {
                 userName = user.name || "";
                 userEmail = user.email || "";
-                // ⭐ שמור את כל המשתמש
                 fullUser = {
                     _id: user._id.toString(),
                     name: user.name,

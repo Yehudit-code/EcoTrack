@@ -43,7 +43,6 @@ interface Post {
   imageUrl?: string | null;
   createdAt?: string;
 
-  // יכול להיות או מספר (ישן) או מערך userIds (חדש)
   likes: number | string[];
   comments: CommentObj[];
   shares: number;
@@ -76,11 +75,9 @@ export default function SocialSharingPage() {
 
   const [typingUser, setTypingUser] = useState<string | null>(null);
 
-  // 🎯 אמוג'י פוסט + צ'אט
   const [showPostEmoji, setShowPostEmoji] = useState(false);
   const [showChatEmoji, setShowChatEmoji] = useState(false);
 
-  // 💬 תגובות לפוסט
   const [openCommentsPostId, setOpenCommentsPostId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
 
@@ -139,7 +136,7 @@ export default function SocialSharingPage() {
   useEffect(() => {
     if (messagesContainerRef.current) {
       const el = messagesContainerRef.current;
-      el.scrollTop = el.scrollHeight; // ⭐ גולל את הצ'אט בלבד, לעולם לא את כל העמוד
+      el.scrollTop = el.scrollHeight; 
     }
   }, [messages]);
 
@@ -156,7 +153,6 @@ export default function SocialSharingPage() {
   }, [sharedPostId, posts]);
 
 
-  // ⭐ יצירת פוסט
   const handleCreatePost = async () => {
     if (!currentUser) return;
     if (!newPostText.trim() && !newPostImage) return;
@@ -179,7 +175,6 @@ export default function SocialSharingPage() {
     setShowPostEmoji(false);
   };
 
-  // ⭐ לייק לפי משתמש אחד
   const likePost = async (id: string) => {
     if (!currentUser) return;
 
@@ -193,7 +188,6 @@ export default function SocialSharingPage() {
     );
   };
 
-  // ⭐ תגובה לפוסט
   const commentPost = async (id: string, text: string) => {
     if (!currentUser) return;
     if (!text.trim()) return;
@@ -210,7 +204,6 @@ export default function SocialSharingPage() {
     );
   };
 
-  // ⭐ שיתוף אמיתי
   const sharePost = async (id: string) => {
     const shareUrl = `${window.location.origin}/user/social-sharing?post=${id}`;
 
@@ -236,7 +229,6 @@ export default function SocialSharingPage() {
     );
   };
 
-  // ⭐ שליחת הודעה בצ׳אט
   const handleSendMessage = async () => {
     if (!currentUser) return;
     if (!newMessage.trim()) return;
@@ -254,7 +246,6 @@ export default function SocialSharingPage() {
 
   };
 
-  // ⭐ פורמט זמן
   const formatTime = (iso?: string) => {
     if (!iso) return "";
     const d = new Date(iso);
@@ -412,7 +403,6 @@ export default function SocialSharingPage() {
             </button>
           </div>
 
-          {/* פוסטים */}
           <div className={styles.postsList}>
             {posts.map((post) => {
               const likesCount = Array.isArray(post.likes)
@@ -474,7 +464,6 @@ export default function SocialSharingPage() {
                     </button>
                   </div>
 
-                  {/* קופסת תגובות */}
                   {openCommentsPostId === post._id && (
                     <div className={styles.commentsBox}>
                       <div className={styles.commentsList}>
@@ -636,7 +625,6 @@ export default function SocialSharingPage() {
 
                   setNewMessage(e.target.value);
 
-                  // שולחים לשרת שמישהו מקליד
                   fetch("/api/chat/typing", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

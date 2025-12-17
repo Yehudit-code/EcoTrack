@@ -1,27 +1,24 @@
-/* ====== HEADER WRAPPER ====== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
 
-  height: 12vh;            /* גובה אחיד וגבוה */
-  min-height: 90px;        /* לא יקרוס במסכים קטנים */
+  height: 12vh;     
+  min-height: 90px;       
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  padding: 0 40px;         /* ריווח טוב יותר */
-  background-color: #ffffffcc; /* רקע לבן עם שקיפות */
+  padding: 0 40px;     
+  background-color: #ffffffcc; 
   border-bottom: 1px solid #ddd;
-  backdrop-filter: blur(6px);  /* אפקט מודרני */
+  backdrop-filter: blur(6px);  
   box-sizing: border-box;
   z-index: 9999;
 }
 
-
-/* ====== LOGO ====== */
 .logoContainer {
   display: flex;
   align-items: center;
@@ -29,7 +26,6 @@
 }
 
 
-/* ====== NAVIGATION ====== */
 .nav {
   position: absolute;
   left: 50%;
@@ -52,7 +48,6 @@
 }
 
 
-/* ====== PROFILE AREA ====== */
 .profileContainer {
   display: flex;
   align-items: center;
@@ -80,31 +75,24 @@
   border: 2px solid #3b6e3b;
 }
 
-/* ---------------------- */
-/* DEFAULT: TEXT ONLY     */
-/* ---------------------- */
+
 .navIcon {
-  display: none;       /* אייקונים מוסתרים במסך גדול */
+  display: none;       
   font-size: 20px;
 }
 
 .navText {
-  display: inline-block; /* טקסט מוצג */
+  display: inline-block;
 }
 
-
-/* =========================================================
-   RESPONSIVE – SMALL SCREENS
-   במסכים קטנים: מציג אייקונים, מסתיר טקסט
-========================================================= */
 @media (max-width: 850px) {
 
   .navText {
-    display: none;      /* טקסט נעלם */
+    display: none;     
   }
 
   .navIcon {
-    display: inline-block; /* אייקון מוצג */
+    display: inline-block; 
   }
 
   .nav {

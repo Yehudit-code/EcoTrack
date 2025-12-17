@@ -1,4 +1,3 @@
-// app/api/seed-data/route.ts
 import { NextResponse } from "next/server";
 import { connectDB } from "@/app/services/server/mongodb";
 import mongoose from "mongoose";

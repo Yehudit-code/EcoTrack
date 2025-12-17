@@ -1,4 +1,3 @@
-// src/types/api.ts
 import { z } from "zod";
 import { ConsumptionCategory } from "./common";
 

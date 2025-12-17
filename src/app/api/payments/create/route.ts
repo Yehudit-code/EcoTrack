@@ -1,4 +1,3 @@
-// src/app/api/payments/create/route.ts
 import { connectDB } from "@/app/services/server/mongodb";
 import { CompanyRequest } from "@/app/models/CompanyRequest";
 import { Payment } from "@/app/models/Payment";
@@ -19,11 +18,9 @@ export async function POST(req: Request) {
       return Response.json({ error: "CompanyRequest not found" }, { status: 404 });
     }
 
-    // מחשבים עמלה 10%
     const ecoTrackFee = request.price * 0.1;
     const companyRevenue = request.price - ecoTrackFee;
 
-    // יוצרים תשלום חדש
     const payment = await Payment.create({
       userId: request.userId,
       companyId: request.companyId,
@@ -34,7 +31,6 @@ export async function POST(req: Request) {
       status: "pending",
     });
 
-    // מוסיפים את ה־paymentId להצעת תשלום
     request.paymentId = payment._id;
     await request.save();
 

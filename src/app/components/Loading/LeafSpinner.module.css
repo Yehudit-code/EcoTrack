@@ -1,12 +1,10 @@
 .wrapper {
-  min-height: 100vh;        /* גובה מסך מלא */
+  min-height: 100vh;       
   display: flex;
-  justify-content: center;  /* מרכז אופקית */
-  align-items: center;      /* מרכז אנכית */
+  justify-content: center;  
+  align-items: center;      
 }
 
-
-/* העלה משתמש באייקון שאת העלית */
 .leaf {
   width: 50px;
   height: 50px;
@@ -17,7 +15,6 @@
   animation: spin 1.2s linear infinite;
 }
 
-/* אנימציית סיבוב */
 @keyframes spin {
   0% {
     transform: rotate(0deg) scale(1);

@@ -1,6 +1,4 @@
-/* =========================================================
-   HEADER – TRANSPARENT LIKE VERSION 2
-========================================================= */
+
 .header {
   position: fixed;
   top: 0;
@@ -15,17 +13,13 @@
   align-items: center;
 
   padding: 0 40px;
-  background-color: #ffffffcc; /* שקוף כמו ההדר השני */
+  background-color: #ffffffcc; 
   border-bottom: 1px solid #ddd;
-  backdrop-filter: blur(6px); /* אפקט זכוכית */
+  backdrop-filter: blur(6px); 
   box-sizing: border-box;
   z-index: 9999;
 }
 
-
-/* =========================================================
-   LOGO
-========================================================= */
 .logoContainer {
   display: flex;
   align-items: center;
@@ -37,9 +31,6 @@
 }
 
 
-/* =========================================================
-   NAVIGATION – CENTERED
-========================================================= */
 .nav {
   position: absolute;
   left: 50%;
@@ -61,10 +52,6 @@
   transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   PROFILE AREA
-========================================================= */
 .profileContainer {
   display: flex;
   align-items: center;
@@ -94,9 +81,6 @@
 }
 
 
-/* =========================================================
-   NOTIFICATION BELL + BADGE
-========================================================= */
 .rightSection {
   display: flex;
   align-items: center;
@@ -148,10 +132,6 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-
-/* =========================================================
-   MESSAGE BADGE
-========================================================= */
 .badge {
   position: absolute;
   top: -6px;
@@ -167,36 +147,26 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* ---------------------- */
-/* DEFAULT: TEXT ONLY     */
-/* ---------------------- */
+
 .navIcon {
-  display: none;         /* אייקונים מוסתרים במסך גדול */
+  display: none;       
   font-size: 20px;
 }
 
 .navText {
-  display: inline-block; /* טקסט מוצג */
+  display: inline-block;
 }
 
-
-/* =========================================================
-   RESPONSIVE – SMALL SCREENS
-   מתחת ל־850px: טקסט נעלם, אייקונים מופיעים
-========================================================= */
 @media (max-width: 850px) {
 
-  /* הטקסט נעלם */
   .navText {
     display: none;
   }
 
-  /* האייקונים מוצגים */
   .navIcon {
     display: inline-block;
   }
 
-  /* הופך את הניווט לידידותי לנייד */
   .nav {
     gap: 22px;
   }

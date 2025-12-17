@@ -10,7 +10,6 @@ export async function PUT(req: Request) {
       birthDate,
       companies,
 
-      // ⭐ פרטי חשבון בנק
       bankName,
       branch,
       accountNumber,

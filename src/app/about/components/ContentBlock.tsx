@@ -7,7 +7,6 @@ interface Props {
   text: string;
 }
 
-/* Reusable block for a section of text */
 export default function ContentBlock({ title, text }: Props) {
   return (
     <div className={styles.textBlock}>

@@ -28,7 +28,6 @@ export default function Header() {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
-  /* סגירת תפריט בלחיצה בחוץ */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -40,7 +39,6 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownOpen]);
 
-  /* טעינת תמונת פרופיל */
   useEffect(() => {
     if (!hasHydrated || !user) return;
     setProfilePic(getProfileImage(user));
@@ -50,13 +48,11 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      {/* לוגו */}
       <div className={styles.logoContainer}>
         <FontAwesomeIcon icon={faLeaf} className={styles.logoIcon} />
         <span className={styles.logoText}>EcoTrack</span>
       </div>
 
-      {/* ניווט */}
       <nav className={styles.nav}>
         <Link href="/home" className={styles.navLink}>
           <FontAwesomeIcon icon={faHome} className={styles.navIcon} />
@@ -84,9 +80,7 @@ export default function Header() {
         </Link>
       </nav>
 
-      {/* צד ימין */}
       <div className={styles.rightSection} ref={menuRef}>
-        {/* פעמון – תמיד מוצג (אם תרצי אפשר למנוע כאן) */}
         <div
           className={styles.bellWrapper}
           onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -100,7 +94,6 @@ export default function Header() {
 
         {dropdownOpen && <NotificationMenu open={dropdownOpen} />}
 
-        {/* פרופיל */}
         <Link href="/profile" className={styles.profileLink}>
           <img src={profilePic} className={styles.profileImg} />
         </Link>

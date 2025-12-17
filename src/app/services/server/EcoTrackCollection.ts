@@ -1,4 +1,3 @@
-// services/server/EcoTrackCollection.ts
 import { connectDB } from "@/app/services/server/mongodb";
 
 export async function fetchCollection(collectionName: string) {

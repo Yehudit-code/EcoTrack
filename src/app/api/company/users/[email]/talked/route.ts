@@ -35,7 +35,6 @@ export async function PATCH(
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // ודא שזו MAP
         if (!(user.talkedByCompanies instanceof Map)) {
             user.talkedByCompanies = new Map();
         }
@@ -47,7 +46,6 @@ export async function PATCH(
 
         user.talkedByCompanies.set(companyId, newState);
 
-        // חובה עבור MAP
         user.markModified("talkedByCompanies");
 
         console.log("SETTING:", companyId, "=>", newState);

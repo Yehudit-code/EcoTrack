@@ -1,4 +1,3 @@
-/* Base Styles */
 .container {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #ffffff;
@@ -10,7 +9,6 @@
   overflow: hidden;
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -94,7 +92,6 @@
   box-shadow: 0 8px 30px rgba(76, 175, 80, 0.4);
 }
 
-/* Hero Section */
 .hero {
   padding: 40px 40px 0px;
   background: #fafefb;
@@ -115,7 +112,6 @@
   text-align: center;
 }
 
-/* Hero Text */
 .heroText {
   animation: fadeInLeft 0.8s ease-out;
 }
@@ -195,11 +191,6 @@
   transform: translateY(-2px);
 }
 
-
-
-
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .heroTitle {
     font-size: 2rem;

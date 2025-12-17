@@ -22,7 +22,6 @@ export default function HomePage() {
   const { user, _hasHydrated } = useUserStore();
   const role = user?.role ?? null;
 
-  // כל ה־Hooks חייבים להיות כאן תמיד
   const [visibleItems, setVisibleItems] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -53,21 +52,16 @@ export default function HomePage() {
     return () => observerRef.current?.disconnect();
   }, [_hasHydrated, intersectionCallback]);
 
-  // 🔥 התנאי חייב להיות כאן — אחרי כל ההוקים
   if (!_hasHydrated) return null;
 
   return (
     <>
-      {/* ---------- HEADER ---------- */}
       {role === 'company' ? <CompanyHeader /> : <Header />}
 
-      {/* ---------- HERO IMAGE ---------- */}
       <ImageComponent />
 
-      {/* ---------- HERO SECTION ---------- */}
       <section className={styles.heroSection}></section>
 
-      {/* ---------- INFO BOXES (USER ONLY) ---------- */}
       {role === 'user' && (
         <section className={styles.infoBoxesSection}>
           <h2 className={styles.infoBoxesTitle}>How to Use EcoTrack</h2>
@@ -107,10 +101,8 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ---------- MAIN CONTENT ---------- */}
       <div className={styles.container}>
         <main className={styles.main}>
-          {/* ---------- FEATURES ---------- */}
           <div className={styles.featuresSection}>
             <div
               id="feature-water"
@@ -162,7 +154,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ---------- VIDEOS SECTION ---------- */}
           <div className={styles.videosSection}>
             <div className={styles.videosOverlayText}>
               <h2 className={styles.overlayGreen}>Let's keep our world</h2>
@@ -198,11 +189,9 @@ export default function HomePage() {
         </main>
       </div>
 
-      {/* ---------- CHAT ---------- */}
       {open && <ChatWindow onClose={() => setOpen(false)} />}
       <ChatBubble onClick={() => setOpen(true)} />
 
-      {/* ---------- FOOTER ---------- */}
       <Footer />
     </>
   );
