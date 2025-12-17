@@ -108,35 +108,11 @@ export default function SocialSharingPage() {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-  });
-
-  useEffect(() => {
-    const channel = pusher.subscribe("chat-channel");
-
-    channel.bind("new-message", (msg: Message) => {
-      setMessages(prev => [...prev, msg]);
-    });
-
-    channel.bind("typing", (data: { userName: string | null }) => {
-      if (data.userName) {
-        setTypingUser(data.userName);
-        setTimeout(() => setTypingUser(null), 1500);
-      }
-    });
-
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
-  }, []);
-
 
   useEffect(() => {
     if (messagesContainerRef.current) {
       const el = messagesContainerRef.current;
-      el.scrollTop = el.scrollHeight; 
+      el.scrollTop = el.scrollHeight;
     }
   }, [messages]);
 
@@ -151,6 +127,39 @@ export default function SocialSharingPage() {
       });
     }
   }, [sharedPostId, posts]);
+
+useEffect(() => {
+  if (
+    !process.env.NEXT_PUBLIC_PUSHER_KEY ||
+    !process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+  ) {
+    console.error("❌ Missing Pusher env vars");
+    return;
+  }
+
+  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+  });
+
+  const channel = pusher.subscribe("chat-channel");
+
+  channel.bind("new-message", (msg: Message) => {
+    setMessages((prev) => [...prev, msg]);
+  });
+
+  channel.bind("typing", (data: { userName: string | null }) => {
+    if (data.userName) {
+      setTypingUser(data.userName);
+      setTimeout(() => setTypingUser(null), 1500);
+    }
+  });
+
+  return () => {
+    channel.unbind_all();
+    channel.unsubscribe();
+    pusher.disconnect();
+  };
+}, []);
 
 
   const handleCreatePost = async () => {

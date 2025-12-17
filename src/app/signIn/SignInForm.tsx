@@ -79,7 +79,6 @@ const handleGoogleSignIn = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
 
-    // 🔹 רק בדיקה אם המשתמש קיים – בלי יצירה
     const checkRes = await fetch("/api/check-user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -89,22 +88,41 @@ const handleGoogleSignIn = async () => {
 
     const checkData = await checkRes.json();
 
-    // 🔹 משתמש קיים → כניסה רגילה
     if (checkData.exists) {
-      setUser(checkData.user);
+      const loginRes = await fetch("/api/social-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: result.user.email,
+          name: result.user.displayName,
+          photoURL: result.user.photoURL,
+        }),
+      });
+
+      const loginData = await loginRes.json();
+
+      if (!loginRes.ok) {
+        showToast(loginData.error || "Google login failed");
+        return;
+      }
+
+      setUser(loginData.user);
       router.push("/home");
       return;
     }
 
-    // 🔹 משתמש חדש → שומרים זמנית ומבקשים Role
+    // משתמש חדש
     setGoogleUser(result.user);
     setShowRoleModal(true);
+
   } catch {
     showToast("Google sign-in failed");
   } finally {
     setLoading(false);
   }
 };
+
 
 
   /* ===============================
