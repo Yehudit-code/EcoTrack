@@ -828,3 +828,68 @@
   outline: 2px solid #90ee90;
   box-shadow: 0 0 0 4px rgba(144, 238, 144, 0.2);
 }
+
+.commentsBox {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f3f6f4;
+  border-radius: 14px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commentItem {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.commentAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.commentText {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  max-width: 85%;
+}
+
+.commentInputRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.commentInput {
+  flex: 1;
+  border-radius: 18px;
+  padding: 6px 12px;
+  border: 1px solid #cfd8d3;
+  font-size: 14px;
+}
+
+.sendCommentBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #8fbc8f;
+  cursor: pointer;
+}
+
+.noComments
+{
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}

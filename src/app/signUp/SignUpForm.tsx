@@ -8,6 +8,7 @@ import RoleModal from "@/app/components/Modals/RoleModal";
 import CompanyCategoryModal from "@/app/components/Modals/CompanyCategoryModal";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
+import { uploadToCloudinary } from "@/app/services/client/uploadToCloudinary";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -34,17 +35,23 @@ export default function SignUpForm() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-        setFormData({ ...formData, photo: reader.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const imageUrl = await uploadToCloudinary(file);
+
+    // 👀 לפריוויו
+    setPhotoPreview(imageUrl);
+
+    // 💾 נשמר רק URL
+    setFormData({ ...formData, photo: imageUrl });
+  } catch (err) {
+    console.error("Image upload failed", err);
+    showToast("Image upload failed");
+  }
+};
 
   const handleProfileClick = () => fileInputRef.current?.click();
 

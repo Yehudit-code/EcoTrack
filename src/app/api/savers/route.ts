@@ -12,39 +12,32 @@ export async function GET() {
     for (const user of users) {
       const habits = await habitsCollection
         .find({ userEmail: user.email })
-        .sort({ year: 1, month: 1 }) 
+        .sort({ year: -1, month: -1 }) 
+        .limit(2)                    
         .toArray();
 
-      if (habits.length === 0) continue;
+      if (habits.length < 2) continue;
 
-      const savings: number[] = [];
+      const [current, previous] = habits;
 
-      for (const h of habits) {
-        if (h.previousValue && h.previousValue > 0) {
-          const savingPercent =
-            ((h.previousValue - h.value) / h.previousValue) * 100;
+      if (!previous.value || previous.value <= 0) continue;
 
-          savings.push(savingPercent);
-        }
-      }
+      const savingPercent =
+        ((previous.value - current.value) / previous.value) * 100;
 
-      if (savings.length === 0) continue;
-
-      const avgSaving =
-        savings.reduce((a, b) => a + b, 0) / savings.length;
+      if (savingPercent <= 0) continue;
 
       results.push({
         name: user.name || "Unknown",
         email: user.email,
         photo: user.photo || null,
-        avgSaving: Number(avgSaving.toFixed(1)),
+        avgSaving: Number(savingPercent.toFixed(1)),
       });
     }
 
     results.sort((a, b) => b.avgSaving - a.avgSaving);
 
     return Response.json(results.slice(0, 4));
-
   } catch (err) {
     console.error("❌ Error in /api/savers:", err);
     return Response.json({ error: "failed" }, { status: 500 });

@@ -239,7 +239,6 @@ export default function ManageDataPage() {
             {renderCard("Water", "Water", "m³", "Enter m³")}
             {renderCard("Gas", "Gas", "m³", "Enter m³")}
             {renderCard("Transportation", "Transportation", "km", "Enter km")}
-            {renderCard("Waste", "Waste", "kg", "Enter kg")}
           </section>
 
         </div>

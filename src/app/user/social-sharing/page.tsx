@@ -128,38 +128,42 @@ export default function SocialSharingPage() {
     }
   }, [sharedPostId, posts]);
 
-useEffect(() => {
-  if (
-    !process.env.NEXT_PUBLIC_PUSHER_KEY ||
-    !process.env.NEXT_PUBLIC_PUSHER_CLUSTER
-  ) {
-    console.error("❌ Missing Pusher env vars");
-    return;
-  }
-
-  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-  });
-
-  const channel = pusher.subscribe("chat-channel");
-
-  channel.bind("new-message", (msg: Message) => {
-    setMessages((prev) => [...prev, msg]);
-  });
-
-  channel.bind("typing", (data: { userName: string | null }) => {
-    if (data.userName) {
-      setTypingUser(data.userName);
-      setTimeout(() => setTypingUser(null), 1500);
+  useEffect(() => {
+    if (
+      !process.env.NEXT_PUBLIC_PUSHER_KEY ||
+      !process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+    ) {
+      console.error("❌ Missing Pusher env vars");
+      return;
     }
-  });
 
-  return () => {
-    channel.unbind_all();
-    channel.unsubscribe();
-    pusher.disconnect();
-  };
-}, []);
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+    });
+
+    const channel = pusher.subscribe("chat-channel");
+
+    channel.bind("new-message", (msg: Message) => {
+      setMessages((prev) => {
+        if (msg.userId === currentUser?._id) return prev;
+        return [...prev, msg];
+      });
+    });
+
+
+    channel.bind("typing", (data: { userName: string | null }) => {
+      if (data.userName) {
+        setTypingUser(data.userName);
+        setTimeout(() => setTypingUser(null), 1500);
+      }
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
+    };
+  }, []);
 
 
   const handleCreatePost = async () => {
@@ -242,18 +246,34 @@ useEffect(() => {
     if (!currentUser) return;
     if (!newMessage.trim()) return;
 
-    const created = await sendMessage({
+    // 🔹 הודעה זמנית (Optimistic UI)
+    const tempMessage: Message = {
+      _id: `temp-${Date.now()}`,
       userId: currentUser._id,
       userName: currentUser.name,
       userPhoto: currentUser.photo,
       message: newMessage.trim(),
-    });
+      createdAt: new Date().toISOString(),
+    };
 
-    setMessages((prev) => [...prev, created]);
+    // 🔹 מציגים מייד בצ’אט
+    setMessages((prev) => [...prev, tempMessage]);
+
     setNewMessage("");
     setShowChatEmoji(false);
 
+    try {
+      await sendMessage({
+        userId: currentUser._id,
+        userName: currentUser.name,
+        userPhoto: currentUser.photo,
+        message: tempMessage.message,
+      });
+    } catch (err) {
+      console.error("❌ Failed to send message", err);
+    }
   };
+
 
   const formatTime = (iso?: string) => {
     if (!iso) return "";
@@ -496,11 +516,9 @@ useEffect(() => {
                         ))}
 
                         {(!post.comments || post.comments.length === 0) && (
-                          <>
-                            <SkeletonPost />
-                            <SkeletonPost />
-                            <SkeletonPost />
-                          </>
+                          <div className={styles.noComments}>
+                            No comments yet. Start the conversation 💬
+                          </div>
                         )}
                       </div>
 
@@ -630,8 +648,6 @@ useEffect(() => {
                 placeholder="Write a message…"
                 value={newMessage}
                 onChange={(e) => {
-                  setNewMessage(e.target.value);
-
                   setNewMessage(e.target.value);
 
                   fetch("/api/chat/typing", {
