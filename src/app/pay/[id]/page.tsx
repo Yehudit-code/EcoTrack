@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from "react";
 import styles from "./Pay.module.css";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/useUserStore"; // ← הוספנו
+import { useUserStore } from "@/store/useUserStore";
 
 interface PaymentDto {
   _id: string;
@@ -34,14 +34,47 @@ export default function PayPage({
     cvv: "",
   });
   const [error, setError] = useState(false);
+  const user = useUserStore((s) => s.user);
+  const [paying, setPaying] = useState(false);
+
+
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromEmail = params.get("from") === "email";
+
+    if (fromEmail) {
+      sessionStorage.setItem("emailPaymentFlow", "true");
+      sessionStorage.removeItem("emailPaymentAuthenticated");
+      router.replace(`/signIn?redirect=/pay/${id}`);
+    }
+  }, [id, router]);
+
+
+  useEffect(() => {
+    const isEmailFlow =
+      sessionStorage.getItem("emailPaymentFlow") === "true";
+
+    const emailAuthenticated =
+      sessionStorage.getItem("emailPaymentAuthenticated") === "true";
+
+    if (isEmailFlow && !emailAuthenticated) {
+      setLoading(false);
+      return;
+    }
     async function load() {
       const res = await fetch(`/api/payments/${id}`);
+
+      if (!res.ok) {
+        router.push("/payment-not-found");
+        return;
+      }
+
       const data = await res.json();
 
-      if (data.fullUser) {
-        setUser(data.fullUser);
+      if (user && data.userId !== user._id) {
+        router.replace("/unauthorized");
+        return;
       }
 
       setPayment(data);
@@ -55,7 +88,9 @@ export default function PayPage({
     }
 
     load();
-  }, [id, router, setUser]);
+  }, [id, router, user]);
+
+
 
   function isValidCardNumber(num: string) {
     const digits = num.replace(/\s+/g, "");
@@ -80,6 +115,8 @@ export default function PayPage({
   }
 
   async function handlePayment() {
+    if (paying) return;
+
     if (
       !isValidCardNumber(cardData.number) ||
       !isValidExp(cardData.exp) ||
@@ -89,11 +126,15 @@ export default function PayPage({
       return;
     }
 
+    setPaying(true);
+
     const res = await fetch("/api/payments/confirm", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paymentId: id }),
     });
+
+    setPaying(false);
 
     if (res.ok) {
       router.push(`/pay/success?userId=${payment!.userId}`);
@@ -102,14 +143,34 @@ export default function PayPage({
     }
   }
 
+
   function showError() {
     setError(true);
     setTimeout(() => setError(false), 2500);
   }
 
-  if (loading || !payment) {
-    return <div className={styles.wrapper}>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.card}>
+          <h2>Loading payment…</h2>
+        </div>
+      </div>
+    );
   }
+  const isEmailFlow =
+    typeof window !== "undefined" &&
+    sessionStorage.getItem("emailPaymentFlow") === "true";
+
+  const emailAuthenticated =
+    typeof window !== "undefined" &&
+    sessionStorage.getItem("emailPaymentAuthenticated") === "true";
+
+  if (isEmailFlow && !emailAuthenticated) {
+    return null;
+  }
+
+  if (!payment) return null;
 
   const amount = payment.amount || 0;
   const commission = amount * 0.1;
@@ -201,9 +262,14 @@ export default function PayPage({
           </div>
         </div>
 
-        <button className={styles.btnPay} onClick={handlePayment}>
-          Pay Now
+        <button
+          className={styles.btnPay}
+          onClick={handlePayment}
+          disabled={paying}
+        >
+          {paying ? "Processing…" : "Pay Now"}
         </button>
+
       </div>
     </div>
   );

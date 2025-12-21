@@ -1,8 +1,13 @@
 
 export async function fetchUsersByCategory(category: string) {
-  const res = await fetch(`/api/company/users?category=${encodeURIComponent(category)}`, {
-    method: "GET",
-  });
+  const normalizedCategory = category.toLowerCase();
+
+  const res = await fetch(
+    `/api/company/users?category=${encodeURIComponent(normalizedCategory)}`,
+    {
+      method: "GET",
+    }
+  );
 
   if (!res.ok) {
     throw new Error("Failed to fetch users");
@@ -11,6 +16,7 @@ export async function fetchUsersByCategory(category: string) {
   const data = await res.json();
   return data.users || [];
 }
+
 
 export async function toggleUserTalkStatus(email: string): Promise<{ talked: boolean }> {
   const res = await fetch(

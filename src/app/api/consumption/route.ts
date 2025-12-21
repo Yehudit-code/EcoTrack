@@ -8,7 +8,11 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const userEmail = searchParams.get("userEmail");
-    const category = searchParams.get("category") ?? undefined;
+    const categoryParam = searchParams.get("category");
+    const category = categoryParam
+      ? categoryParam.toLowerCase()
+      : undefined;
+    console.log("CATEGORY RECEIVED:", category);
     const monthParam = searchParams.get("month");
     const yearParam = searchParams.get("year");
 
@@ -17,6 +21,7 @@ export async function GET(req: Request) {
     }
 
     const query: any = { userEmail };
+    console.log("QUERY:", query);
 
     if (category) query.category = category;
     if (monthParam) query.month = Number(monthParam);
@@ -35,7 +40,15 @@ export async function POST(req: Request) {
     await connectDB();
     const body = await req.json();
 
-    const { userEmail, category, month, year, value } = body;
+    const {
+      userEmail,
+      category: rawCategory,
+      month,
+      year,
+      value,
+    } = body;
+
+    const category = rawCategory?.toLowerCase();
 
     if (!userEmail || !category || !month || !year || value == null) {
       return fail("Missing required fields", 400);
@@ -45,7 +58,7 @@ export async function POST(req: Request) {
       userEmail,
       category,
     })
-      .sort({ year: -1, month: -1 }) 
+      .sort({ year: -1, month: -1 })
       .lean() as any;
 
     const previousValue = lastRecord?.value ?? null;
@@ -62,6 +75,7 @@ export async function POST(req: Request) {
         existing._id,
         {
           ...body,
+          category,
           previousValue,
         },
         { new: true }
@@ -71,7 +85,8 @@ export async function POST(req: Request) {
 
     const created = await ConsumptionHabit.create({
       ...body,
-      previousValue, 
+      category,
+      previousValue,
     });
 
     return ok(created);
@@ -80,6 +95,7 @@ export async function POST(req: Request) {
     return fail("Failed to create/update consumption", 500, err);
   }
 }
+
 
 
 export async function PUT(req: Request) {

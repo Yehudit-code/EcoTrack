@@ -110,11 +110,14 @@
 }
 
 .row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 90px 1fr; 
+  align-items: start;
+  gap: 10px;
   font-size: 14px;
   margin-bottom: 10px;
 }
+
 
 .label {
   font-weight: 600;
@@ -127,10 +130,12 @@
 }
 
 .statusRow {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 90px 1fr;
   align-items: center;
+  gap: 10px;
 }
+
 
 .status {
   padding: 6px 12px;

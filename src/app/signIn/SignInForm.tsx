@@ -10,6 +10,7 @@ import Toast from "@/app/components/Toast/Toast";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 
+
 export default function SignInForm() {
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
@@ -24,6 +25,12 @@ export default function SignInForm() {
 
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const getRedirect = () => {
+    if (typeof window === "undefined") return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("redirect");
+  };
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -62,7 +69,15 @@ export default function SignInForm() {
       const meData = await meRes.json();
 
       setUser(meData.user);
-      router.push("/home");
+      sessionStorage.setItem("emailPaymentAuthenticated", "true");
+      const redirect = getRedirect();
+
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push("/home");
+      }
+
     } catch {
       showToast("Server error");
     } finally {
@@ -73,54 +88,64 @@ export default function SignInForm() {
   /* ===============================
      GOOGLE SIGN IN
   =============================== */
-const handleGoogleSignIn = async () => {
-  setLoading(true);
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
 
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
 
-    const checkRes = await fetch("/api/check-user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email: result.user.email }),
-    });
-
-    const checkData = await checkRes.json();
-
-    if (checkData.exists) {
-      const loginRes = await fetch("/api/social-login", {
+      const checkRes = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          email: result.user.email,
-          name: result.user.displayName,
-          photoURL: result.user.photoURL,
-        }),
+        body: JSON.stringify({ email: result.user.email }),
       });
 
-      const loginData = await loginRes.json();
+      const checkData = await checkRes.json();
 
-      if (!loginRes.ok) {
-        showToast(loginData.error || "Google login failed");
+      if (checkData.exists) {
+        const loginRes = await fetch("/api/social-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            email: result.user.email,
+            name: result.user.displayName,
+            photoURL: result.user.photoURL,
+          }),
+        });
+
+        const loginData = await loginRes.json();
+
+        if (!loginRes.ok) {
+          showToast(loginData.error || "Google login failed");
+          return;
+        }
+
+        setUser(loginData.user);
+        sessionStorage.setItem("emailPaymentAuthenticated", "true");
+
+        const redirect = getRedirect();
+
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/home");
+        }
+
+
         return;
       }
 
-      setUser(loginData.user);
-      router.push("/home");
-      return;
+      setGoogleUser(result.user);
+      setShowRoleModal(true);
+
+    } catch {
+      showToast("Google sign-in failed");
+    } finally {
+      setLoading(false);
     }
-
-    setGoogleUser(result.user);
-    setShowRoleModal(true);
-
-  } catch {
-    showToast("Google sign-in failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
 
@@ -157,7 +182,17 @@ const handleGoogleSignIn = async () => {
       const meData = await meRes.json();
 
       setUser(meData.user);
-      router.push("/home");
+      sessionStorage.setItem("emailPaymentAuthenticated", "true");
+
+      const redirect = getRedirect();
+
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push("/home");
+      }
+
+
     } catch {
       showToast("Google login failed");
     } finally {
@@ -169,15 +204,15 @@ const handleGoogleSignIn = async () => {
      ROLE SELECTION
   =============================== */
   const handleRoleSelected = (role: "user" | "company") => {
-  setGoogleUser((prev: any) => ({ ...prev, role }));
-  setShowRoleModal(false);
+    setGoogleUser((prev: any) => ({ ...prev, role }));
+    setShowRoleModal(false);
 
-  if (role === "company") {
-    setShowCategoryModal(true);
-  } else {
-    finishGoogleSignup(null);
-  }
-};
+    if (role === "company") {
+      setShowCategoryModal(true);
+    } else {
+      finishGoogleSignup(null);
+    }
+  };
 
 
   const handleCategorySelected = (category: string) => {

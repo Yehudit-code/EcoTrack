@@ -39,19 +39,19 @@ export default function CreateRequestPage({
   // Load user details (the target user, not company)
   useEffect(() => {
     async function loadUser() {
-const res = await fetch(`/api/users/${id}`);
+      const res = await fetch(`/api/users/${id}`);
 
-const raw = await res.text(); 
-console.log("GET /api/users status:", res.status);
-console.log("GET /api/users body:", raw);
+      const raw = await res.text();
+      console.log("GET /api/users status:", res.status);
+      console.log("GET /api/users body:", raw);
 
-if (!res.ok) {
-  throw new Error(`Failed to load user (${res.status})`);
-}
+      if (!res.ok) {
+        throw new Error(`Failed to load user (${res.status})`);
+      }
 
-const data = raw ? JSON.parse(raw) : {};
-setUser(data.user);
-setLoading(false);
+      const data = raw ? JSON.parse(raw) : {};
+      setUser(data.user);
+      setLoading(false);
 
     }
     loadUser();
@@ -98,7 +98,7 @@ setLoading(false);
           ? window.location.origin
           : "https://ecotrack.com";
 
-      const paymentLink = `${origin}/pay/${paymentId}`;
+      const paymentLink = `${origin}/pay/${paymentId}?from=email`;
 
       await emailjs.send(
         "service_eo7p18q",
