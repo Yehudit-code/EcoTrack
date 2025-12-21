@@ -7,6 +7,7 @@ import { fetchCompanyRequests } from "@/app/services/client/company/companyReque
 import type { CompanyRequestItem } from "@/app/types/companyRequests";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
 
 export default function CompanyRequestsPage() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function CompanyRequestsPage() {
   }, [hasHydrated, user]);
 
   if (loading) {
-    return <div className={styles.page}>Loading requests...</div>;
+    return <LeafSpinner />;
   }
 
   if (error) {

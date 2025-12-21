@@ -12,6 +12,7 @@ import ProfileAvatar from "@/app/components/Profile/ProfileAvatar";
 import ProfileInfo from "@/app/components/Profile/ProfileInfo";
 import ProfileCompanies from "@/app/components/Profile/ProfileCompanies";
 import ProfileModal from "@/app/components/Profile/ProfileModal";
+import LeafSpinner from "../components/Loading/LeafSpinner";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function ProfilePage() {
   }, [currentUser, hasHydrated]);
 
   if (!hasHydrated)
-    return <p className={styles.loading}>Loading profile...</p>;
+    return <LeafSpinner />;
 
   if (!currentUser)
     return <p className={styles.loading}>No user data.</p>;

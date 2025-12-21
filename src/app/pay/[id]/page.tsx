@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import styles from "./Pay.module.css";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
 
 interface PaymentDto {
   _id: string;
@@ -153,7 +154,7 @@ export default function PayPage({
     return (
       <div className={styles.wrapper}>
         <div className={styles.card}>
-          <h2>Loading payment…</h2>
+          <LeafSpinner />
         </div>
       </div>
     );

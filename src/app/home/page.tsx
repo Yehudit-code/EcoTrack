@@ -148,8 +148,13 @@ export default function HomePage() {
       </div>
 
 
-      {open && <ChatWindow onClose={() => setOpen(false)} />}
-      <ChatBubble onClick={() => setOpen(true)} />
+      {role === "user" && (
+        <>
+          {open && <ChatWindow onClose={() => setOpen(false)} />}
+          <ChatBubble onClick={() => setOpen(true)} />
+        </>
+      )}
+
 
       <div style={{ height: '80px' }} aria-hidden="true" />
 

@@ -44,6 +44,21 @@ export default function Header() {
     setProfilePic(getProfileImage(user));
   }, [user, hasHydrated]);
 
+  useEffect(() => {
+  if (!hasHydrated || !user?._id) return;
+
+  fetch(`/api/company-requests?userId=${user._id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      const pending = Array.isArray(data)
+        ? data.filter((req: any) => req.status !== "paid")
+        : [];
+
+      setProposalsCount(pending.length);
+    })
+    .catch(() => setProposalsCount(0));
+}, [hasHydrated, user?._id]);
+
   if (!hasHydrated) return null;
 
   return (

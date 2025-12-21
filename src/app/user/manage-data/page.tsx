@@ -14,6 +14,7 @@ import {
   ConsumptionCategory,
   ConsumptionHabitDto,
 } from "@/app/services/client/company/consumptionClient";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
 
 type MainCategory =
   | "Electricity"
@@ -209,7 +210,7 @@ export default function ManageDataPage() {
   }
 
   if (!hasHydrated) {
-    return <div className={styles.container}>Loading...</div>;
+    return <LeafSpinner />;
   }
 
   return (

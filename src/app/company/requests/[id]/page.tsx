@@ -7,6 +7,7 @@ import emailjs from "@emailjs/browser";
 
 import Toast from "@/app/components/Toast/Toast";
 import { useUserStore } from "@/store/useUserStore";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
 
 export default function CreateRequestPage({
   params,
@@ -125,7 +126,7 @@ export default function CreateRequestPage({
     }, 1200);
   }
 
-  if (loading || !user) return <div>Loading...</div>;
+  if (loading || !user) return <LeafSpinner />;
 
   return (
     <div className={styles.wrapper}>

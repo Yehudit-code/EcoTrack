@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import styles from "./page.module.css";
 import { fetchCompanyFilteredUserDetails } from "@/app/services/client/company/consumptionClient";
+import LeafSpinner from "@/app/components/Loading/LeafSpinner";
 
 export default function UserDetailsPage({
   params,
@@ -43,7 +44,7 @@ export default function UserDetailsPage({
   }, [userId]);
 
 
-  if (loading) return <div className={styles.container}>Loading...</div>;
+  if (loading) return <LeafSpinner />;
 
   if (error)
     return (
