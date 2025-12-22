@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./NotificationMenu.module.css";
 import { useUserStore } from "@/store/useUserStore";
+import LeafSpinner from "../Loading/LeafSpinner";
 
 type RequestItem = {
   _id: string;
@@ -42,7 +43,7 @@ export default function NotificationMenu({ open }: { open: boolean }) {
     <div className={`${styles.menu} ${open ? styles.open : ""}`}>
       <h4 className={styles.title}>Pending Offers</h4>
 
-      {loading && <p className={styles.empty}>Loading…</p>}
+      {loading && <LeafSpinner />}
 
       {!loading && items.length === 0 && (
         <p className={styles.empty}>No pending offers</p>
