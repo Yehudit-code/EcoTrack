@@ -103,47 +103,6 @@ const Footer: React.FC = () => {
 
           <div className={styles.column}>
             <h4>Our Services</h4>
-            <div className={styles.socialLinks}>
-              <a
-                href="https://www.facebook.com/profile.php?id=61585262580268"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialLink}
-                aria-label="EcoTrack Facebook"
-              >
-                <FontAwesomeIcon icon={faFacebook} />
-              </a>
-
-              <a
-                href="https://www.instagram.com/ecotrack336/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialLink}
-                aria-label="EcoTrack Instagram"
-              >
-                <FontAwesomeIcon icon={faInstagram} />
-              </a>
-
-              <a
-                href="https://www.linkedin.com/in/hadar-nagar-5a0ab032a/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialLink}
-                aria-label="EcoTrack LinkedIn"
-              >
-                <FontAwesomeIcon icon={faLinkedin} />
-              </a>
-
-              <a
-                href="https://x.com/TrackEco85780"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialLink}
-                aria-label="EcoTrack Twitter"
-              >
-                <FontAwesomeIcon icon={faTwitter} />
-              </a>
-            </div>
 
             <ul className={styles.linkList}>
               <li><a href="/home#feature-transport">Transportation Tracking</a></li>
