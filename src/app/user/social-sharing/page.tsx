@@ -86,6 +86,8 @@ export default function SocialSharingPage() {
   const typingTimeoutRef = useRef<number | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [sharedPostId, setSharedPostId] = useState<string | null>(null);
+  const commentsEndRef = useRef<HTMLDivElement | null>(null);
+  const commentInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     getSavers().then((data) =>
@@ -164,6 +166,20 @@ export default function SocialSharingPage() {
       pusher.disconnect();
     };
   }, []);
+
+
+  useEffect(() => {
+    if (openCommentsPostId) {
+      setTimeout(() => {
+        commentsEndRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+
+        commentInputRef.current?.focus();
+      }, 0);
+    }
+  }, [openCommentsPostId]);
 
 
   const handleCreatePost = async () => {
@@ -520,10 +536,13 @@ export default function SocialSharingPage() {
                             No comments yet. Start the conversation 💬
                           </div>
                         )}
+
+                        <div ref={commentsEndRef} />
                       </div>
 
                       <div className={styles.commentInputRow}>
                         <input
+                          ref={commentInputRef}
                           type="text"
                           className={styles.commentInput}
                           placeholder="Write a comment…"

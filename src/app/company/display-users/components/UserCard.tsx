@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "../page.module.css";
-import ConsumptionGraph from "@/app/components/ConsumptionGraph";
+import ConsumptionGraph from "@/app/components/ConsumptionGraph/ConsumptionGraph";
 import { useRouter } from "next/navigation";
 
 export default function UserCard({ user, onToggleTalk }: any) {
@@ -10,11 +10,18 @@ export default function UserCard({ user, onToggleTalk }: any) {
   const goToUserDetails = () => {
     router.push(`/company/user-details/${user._id}`);
   };
+
   const maxValue =
     Math.max(
       ...(user.valuesByMonth || []).map((v: any) => v.value),
       1
     );
+
+  const sortedValues = [...(user.valuesByMonth || [])].sort(
+    (a, b) => Number(a.month) - Number(b.month)
+  );
+
+  const lastIndex = sortedValues.length - 1;
 
   return (
     <div className={styles.card}>
@@ -47,14 +54,18 @@ export default function UserCard({ user, onToggleTalk }: any) {
 
       <div className={styles.graphBox}>
         <ConsumptionGraph
-          data={(user.valuesByMonth || []).map((v: any) => {
+          data={sortedValues.map((v, index) => {
             const normalized = (v.value / maxValue) * 100;
+
             return {
               month: v.month.toString(),
-              value: Math.max(5, Math.round(normalized)), // 👈 מינימום נראה לעין
+              value: Math.max(5, Math.round(normalized)),
+              realValue: v.value,
+              isLast: index === lastIndex ? 1 : 0, 
             };
           })}
         />
+
       </div>
 
       <button

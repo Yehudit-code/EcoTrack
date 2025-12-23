@@ -140,11 +140,6 @@ const Footer: React.FC = () => {
               for a sustainable future.
             </p>
           </div>
-          <div className={styles.legalLinks}>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Policy</a>
-          </div>
         </div>
       </div>
     </footer>

@@ -10,7 +10,6 @@ import { ArrowLeft, LogOut, Phone, Calendar, Edit3 } from "lucide-react";
 
 import ProfileAvatar from "@/app/components/Profile/ProfileAvatar";
 import ProfileInfo from "@/app/components/Profile/ProfileInfo";
-import ProfileCompanies from "@/app/components/Profile/ProfileCompanies";
 import ProfileModal from "@/app/components/Profile/ProfileModal";
 import LeafSpinner from "../components/Loading/LeafSpinner";
 
@@ -29,16 +28,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!hasHydrated || !currentUser) return;
 
-    setEditData({
-      ...currentUser,
-      companies: currentUser.companies || {
-        electricity: "",
-        water: "",
-        transport: "",
-        recycling: "",
-        solar: "",
-      },
-    });
+    setEditData(currentUser);
 
     if (currentUser.role === "user") {
       fetch(`/api/company-requests?userId=${currentUser._id}`)
@@ -150,14 +140,6 @@ export default function ProfilePage() {
                 <Edit3 size={16} /> Edit Profile
               </button>
             </div>
-
-            {/* COMPANIES (user only) */}
-            {currentUser.role === "user" && (
-              <ProfileCompanies
-                companies={currentUser.companies}
-                role={currentUser.role}
-              />
-            )}
 
             {/* BANK INFO (company only) */}
             {currentUser.role === "company" && (

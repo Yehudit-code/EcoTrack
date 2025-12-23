@@ -3,10 +3,26 @@
 import React from "react";
 import styles from "./chat.module.css";
 
-export default function ChatBubble({ onClick }: { onClick: () => void }) {
-    return (
-        <div className={styles.chatBubbleBox} onClick={onClick}>
-            <img src="/images/ai.png" alt="AI" className={styles.chatBubbleIcon} />
-        </div>
-    );
+type ChatBubbleProps = {
+  onClick: () => void;
+  isOpen: boolean;
+};
+
+export default function ChatBubble({ onClick, isOpen }: ChatBubbleProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${styles.chatBubbleBox} ${
+        isOpen ? styles.open : ""
+      }`}
+      aria-label={isOpen ? "Close chat" : "Open chat"}
+    >
+      <img
+        src="/images/ai.png"
+        alt="AI Assistant"
+        className={styles.chatBubbleIcon}
+      />
+    </button>
+  );
 }

@@ -1,0 +1,32 @@
+.graphWrapper {
+  width: 100%;
+  height: 70px;
+  background: transparent;
+}
+
+.tooltip {
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #c8e6c9;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: #1b5e20;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tooltipMonth {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-bottom: 2px;
+}
+
+.tooltipValue {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+:global(.nivo-grid line) {
+  stroke: #e8f5e9;
+  stroke-dasharray: 4 4;
+}
